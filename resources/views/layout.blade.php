@@ -6,7 +6,7 @@
 </head>
 <body>
     <nav class="navbar navbar-dark bg-dark px-3">
-        <a class="navbar-brand" href="{{ route('dashboard') }}">Toko Online</a>
+        <a href="{{ route('admin.dashboard') }}">toko online</a>
         @auth
         <a href="{{ route('logout') }}" class="btn btn-danger">Logout</a>
         @endauth

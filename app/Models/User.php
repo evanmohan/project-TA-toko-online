@@ -6,7 +6,8 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    protected $table = 'users';
+    use HasFactory, Notifiable;
+
     protected $fillable = [
         'nama',
         'email',
@@ -16,8 +17,15 @@ class User extends Authenticatable
         'password',
         'role',
     ];
+
     protected $hidden = [
         'password',
+        'remember_token',
     ];
+
+    public function pesanan()
+    {
+        return $this->hasMany(Pesanan::class, 'user_id');
+    }
 }
 

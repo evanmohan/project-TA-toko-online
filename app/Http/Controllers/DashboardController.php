@@ -17,4 +17,15 @@ class DashboardController extends Controller
             'totalUser' => User::count()
         ]);
     }
+
+    public function admin()
+{
+   return view('admin.dashboard', [
+    'totalProduk' => Produk::count(),
+    'totalPesanan' => Pesanan::count(),
+    'totalUser'   => User::where('role', 'customer')->count(),
+]);
+
+}
+
 }
