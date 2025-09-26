@@ -11,8 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('detail_pesanans', function (Blueprint $table) {
+        Schema::create('detail_pesanan', function (Blueprint $table) {
             $table->id();
+
+            // relasi ke pesanan
+            $table->unsignedBigInteger('pesanan_id');
+            $table->foreign('pesanan_id')->references('id')->on('pesanans')->onDelete('cascade');
+
+            // relasi ke produk
+            $table->unsignedBigInteger('produk_id');
+            $table->foreign('produk_id')->references('id')->on('produks')->onDelete('cascade');
+
+            $table->integer('kuantiti');
+            $table->string('satuan', 20)->nullable();
+            $table->decimal('harga', 12, 2);
+            $table->decimal('total_harga', 12, 2);
+
             $table->timestamps();
         });
     }
@@ -22,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('detail_pesanans');
+        Schema::dropIfExists('detail_pesanan');
     }
 };

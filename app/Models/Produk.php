@@ -10,6 +10,7 @@ class Produk extends Model
     use HasFactory;
 
     protected $table = 'produk';
+
     protected $fillable = [
         'kode_produk', 
         'nama_produk', 
@@ -18,7 +19,7 @@ class Produk extends Model
         'satuan', 
         'harga', 
         'stok', 
-        'sisa_stock', 
+        'sisa_stok',   // perbaikan: pakai sisa_stok sesuai tabel
         'image', 
         'kategori_id'
     ];

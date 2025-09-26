@@ -11,8 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('produks', function (Blueprint $table) {
+        Schema::create('produk', function (Blueprint $table) {
             $table->id();
+
+            $table->string('kode_produk', 20)->unique();
+            $table->string('nama_produk', 100);
+            $table->text('deskripsi')->nullable();
+            $table->string('size', 20)->nullable();
+            $table->string('satuan', 20)->nullable();
+            $table->decimal('harga', 12, 2)->default(0);
+
+            $table->integer('stok')->default(0);
+            $table->integer('sisa_stok')->default(0);
+
+            $table->string('image', 255)->nullable();
+
+            // relasi ke kategori
+            $table->unsignedBigInteger('kategori_id');
+            $table->foreign('kategori_id')->references('id')->on('kategori')->onDelete('cascade');
+
             $table->timestamps();
         });
     }
@@ -22,6 +39,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('produks');
+        Schema::dropIfExists('produk');
     }
 };

@@ -10,10 +10,21 @@ class Pesanan extends Model
     use HasFactory;
 
     protected $table = 'pesanan';
+
     protected $fillable = [
-        'kode_pesanan', 'user_id', 'total_harga',
-        'status_bayar', 'status_verifikasi', 'status_pengiriman',
-        'bukti_pembayaran', 'ekspedisi_id', 'harga_pengiriman'
+        'kode_pesanan',
+        'user_id',
+        'alamat_pengiriman',
+        'no_hp',
+        'subtotal',
+        'harga_pengiriman',
+        'grand_total',
+        'kode_unik',
+        'status_bayar',
+        'bukti_pembayaran',
+        'status_verifikasi',
+        'status_pengiriman_manual',
+        'status_pengiriman_api',
     ];
 
     // Relasi ke user (pembeli)
@@ -26,12 +37,6 @@ class Pesanan extends Model
     public function detailPesanan()
     {
         return $this->hasMany(DetailPesanan::class, 'pesanan_id');
-    }
-
-    // Relasi ke ekspedisi
-    public function ekspedisi()
-    {
-        return $this->belongsTo(Ekspedisi::class, 'ekspedisi_id');
     }
 
     // Relasi ke pengiriman

@@ -71,7 +71,7 @@ class AuthController extends Controller
                 'no_hp' => $request->no_hp,
                 'alamat' => $request->alamat,
                 'username' => $request->username,
-                'password' => Hash::make($request->password), // ✅ wajib hash
+                'password' => Hash::make($request->password), 
                 'role' => $request->role ?? 'customer',
             ]);
 

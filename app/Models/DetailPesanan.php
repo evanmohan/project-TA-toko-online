@@ -10,15 +10,24 @@ class DetailPesanan extends Model
     use HasFactory;
 
     protected $table = 'detail_pesanan';
-    protected $fillable = ['pesanan_id','produk_id','jumlah','subtotal'];
 
-    // Relasi ke pesanan
+    // sesuai field di database
+    protected $fillable = [
+        'pesanan_id',
+        'produk_id',
+        'kuantiti',
+        'satuan',
+        'harga',
+        'total_harga',
+    ];
+
+    // Relasi ke Pesanan
     public function pesanan()
     {
         return $this->belongsTo(Pesanan::class, 'pesanan_id');
     }
 
-    // Relasi ke produk
+    // Relasi ke Produk
     public function produk()
     {
         return $this->belongsTo(Produk::class, 'produk_id');

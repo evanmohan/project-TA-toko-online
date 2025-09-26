@@ -11,9 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pengirimans', function (Blueprint $table) {
+        Schema::create('pengiriman', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('pesanan_id');   // relasi ke pesanan
+            $table->unsignedBigInteger('ekspedisi_id'); // relasi ke ekspedisi
+            $table->string('no_resi', 50)->nullable();
+            $table->enum('status_pengiriman', ['pending', 'dikirim', 'selesai'])->default('pending');
             $table->timestamps();
+
+            // 🔹 Foreign key
+            $table->foreign('pesanan_id')
+                  ->references('id')->on('pesanan')
+                  ->onDelete('cascade');
+
+            $table->foreign('ekspedisi_id')
+                  ->references('id')->on('ekspedisi')
+                  ->onDelete('cascade');
         });
     }
 
@@ -22,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pengirimans');
+        Schema::dropIfExists('pengiriman');
     }
 };

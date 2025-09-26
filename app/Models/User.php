@@ -7,8 +7,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
+
 {
     use HasFactory, Notifiable;
+
+    public $timestamps = false;
+    protected $table = 'users';
 
     protected $fillable = [
         'nama',
@@ -25,9 +29,10 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    
+    // Relasi ke pesanan (satu user bisa punya banyak pesanan)
     public function pesanan()
     {
         return $this->hasMany(Pesanan::class, 'user_id');
     }
 }
-
