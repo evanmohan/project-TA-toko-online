@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
+            $table->id();
             $table->timestamps();
-            $table->string('nama', 100);
+            // $table->string('nama', 100);
             $table->string('email', 100)->unique();
             $table->string('no_hp', 20)->nullable();
             $table->text('alamat')->nullable();
@@ -21,8 +22,7 @@ return new class extends Migration
             $table->string('password', 255);
             $table->enum('role', ['admin', 'customer'])->default('customer');
 
-            // $table->timestamp('created_at')->useCurrent();
-            // $table->timestamp('updated_at')->nullable();
+            $table->timestamps();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

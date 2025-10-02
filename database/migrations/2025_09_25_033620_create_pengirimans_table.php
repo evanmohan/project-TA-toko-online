@@ -21,7 +21,7 @@ return new class extends Migration
 
             // 🔹 Foreign key
             $table->foreign('pesanan_id')
-                  ->references('id')->on('pesanan')
+                  ->references('id')->on('pesanans')
                   ->onDelete('cascade');
 
             $table->foreign('ekspedisi_id')

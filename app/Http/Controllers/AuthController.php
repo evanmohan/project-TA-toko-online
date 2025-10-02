@@ -63,10 +63,9 @@ class AuthController extends Controller
                 'password' => 'required|string|min:3|confirmed',
                 'role' => 'required|in:admin,customer',
             ]);
-            dd($request->all());
+            // dd($request->all());
 
             $user = User::create([
-                'nama' => $request->nama,
                 'email' => $request->email,
                 'no_hp' => $request->no_hp,
                 'alamat' => $request->alamat,
@@ -75,12 +74,9 @@ class AuthController extends Controller
                 'role' => $request->role ?? 'customer',
             ]);
 
-            Auth::login($user);
+            // Auth::login($user);
 
-            return $user->role === 'admin'
-                ? redirect()->route('admin.dashboard')
-                : redirect()->route('user.dashboard');
-            //code...
+            
         } catch (\Exception $e) {
             dd($e->getMessage());
         }

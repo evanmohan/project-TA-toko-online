@@ -7,11 +7,6 @@
         @csrf
 
         <div class="form-group mb-3">
-            <label>nama</label>
-            <input type="text" name="nama" class="form-control" required>
-        </div>
-
-        <div class="form-group mb-3">
             <label>Username</label>
             <input type="text" name="username" class="form-control" required>
         </div>

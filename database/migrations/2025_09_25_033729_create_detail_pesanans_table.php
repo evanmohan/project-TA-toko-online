@@ -20,7 +20,7 @@ return new class extends Migration
 
             // relasi ke produk
             $table->unsignedBigInteger('produk_id');
-            $table->foreign('produk_id')->references('id')->on('produks')->onDelete('cascade');
+            $table->foreign('produk_id')->references('id')->on('products')->onDelete('cascade');
 
             $table->integer('kuantiti');
             $table->string('satuan', 20)->nullable();

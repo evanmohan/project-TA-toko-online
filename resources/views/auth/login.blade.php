@@ -6,6 +6,10 @@
     <form method="POST" action="{{ url('/login') }}" class="mt-4">
         @csrf
         <div class="form-group mb-3">
+            <label>nama</label>
+            <input type="text" name="nama" class="form-control" required>
+        </div>
+        <div class="form-group mb-3">
             <label>Email</label>
             <input type="email" name="email" class="form-control" required>
         </div>
