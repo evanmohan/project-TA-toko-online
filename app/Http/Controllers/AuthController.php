@@ -30,7 +30,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // 👇 Redirect sesuai role
+            // Redirect sesuai role
             return Auth::user()->role === 'admin'
                 ? redirect()->route('admin.dashboard')
                 : redirect()->route('user.dashboard');
@@ -53,34 +53,29 @@ class AuthController extends Controller
      * Proses register
      */
     public function register(Request $request)
-    {
-        try {
-            $request->validate([
-                'username' => 'required|string|unique:users,username|max:50',
-                'email' => 'required|email|unique:users,email',
-                'no_hp' => 'nullable|string|max:20',
-                'alamat' => 'nullable|string',
-                'password' => 'required|string|min:3|confirmed',
-                'role' => 'required|in:admin,customer',
-            ]);
-            // dd($request->all());
+{
+        $request->validate([
+            'username' => 'required|string|unique:users,username|max:50',
+            'email' => 'required|email|unique:users,email',
+            'no_hp' => 'nullable|string|max:20',
+            'alamat' => 'nullable|string',
+            'password' => 'required|string|min:3|confirmed',
+            'role' => 'required|in:admin,customer',
+        ]);
 
-            $user = User::create([
-                'email' => $request->email,
-                'no_hp' => $request->no_hp,
-                'alamat' => $request->alamat,
-                'username' => $request->username,
-                'password' => Hash::make($request->password), 
-                'role' => $request->role ?? 'customer',
-            ]);
+        $user = User::create([
+            'email' => $request->email,
+            'no_hp' => $request->no_hp,
+            'alamat' => $request->alamat,
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+            'role' => $request->role ?? 'customer',
+        ]);
 
-            // Auth::login($user);
+        // Setelah register, langsung arahkan ke login
+        return redirect()->route('login')->with('success', 'Registrasi berhasil, silakan login!');
+}
 
-            
-        } catch (\Exception $e) {
-            dd($e->getMessage());
-        }
-    }
 
     /**
      * Logout
