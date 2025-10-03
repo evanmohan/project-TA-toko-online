@@ -8,7 +8,8 @@ use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 // ================= ADMIN =================
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+// ================= ADMIN =================
+Route::middleware(['role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
     Route::resource('produk', ProdukController::class);
     Route::resource('pesanan', PesananController::class)->only(['index', 'show', 'update']);
@@ -16,22 +17,18 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 });
 
 // ================= AUTH =================
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.post'); // ✅ login.post
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('guest');
 
-Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('/register', [AuthController::class, 'register'])->name('register.post'); // ✅ register.post
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register')->middleware('guest');
+Route::post('/register', [AuthController::class, 'register'])->name('register.post')->middleware('guest');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// ================= USER DASHBOARD =================
-Route::middleware(['auth'])->group(function () {
+// ================= USER =================
+Route::middleware(['role:customer'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'user'])->name('user.dashboard');
 });
-
-Route::get('/home', function () {
-    return view('home');
-})->name('home');
 
 // ================= RESET PASSWORD =================
 Route::get('/reset-password', function () {

@@ -13,15 +13,20 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('users')->insert([
-            'username' => 'Admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password123'),
-            'no_hp' => '',
-            'alamat' => '',
-            'role' => 'admin',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Cek dulu apakah admin sudah ada
+        $exists = DB::table('users')->where('email', 'admin@example.com')->exists();
+
+        if (!$exists) {
+            DB::table('users')->insert([
+                'username'   => 'Admin',
+                'email'      => 'admin@example.com',
+                'password'   => Hash::make('1234'), // ✅ jangan lupa pakai Hash
+                'no_hp'      => '-',
+                'alamat'     => '-',
+                'role'       => 'admin',            // pastikan kolom 'role' ada di tabel
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 }

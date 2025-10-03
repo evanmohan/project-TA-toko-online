@@ -17,15 +17,6 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-dark bg-dark px-3">
-        <a href="{{ route('admin.dashboard') }}">Toko Online</a>
-        @auth
-            <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                @csrf
-                <button type="submit" class="btn btn-danger">Logout</button>
-            </form>
-        @endauth
-    </nav>
 
 
     <div class="container mt-4">

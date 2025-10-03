@@ -2,29 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Produk;
-use App\Models\Pesanan;
-use App\Models\Product;
-use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    // public function index()
-    // {
-    //     return view('dashboard', [
-    //         'totalProduk' => Product::count(),
-    //         'totalPesanan' => Pesanan::count(),
-    //         'totalUser' => User::count()
-    //     ]);
-    // }
-
+    // Dashboard untuk ADMIN
     public function admin()
     {
-        return view('admin.dashboard', [
-            // 'totalProduk' => Product::count(),
-            // 'totalPesanan' => Pesanan::count(),
-            // 'totalUser'   => User::where('role', 'customer')->count(),
-        ]);
+        // tanpa hitung produk/pesanan/user dulu
+        return view('admin.dashboard');
+    }
+
+    // Dashboard untuk USER
+    public function user()
+    {
+        $user = Auth::user();
+        return view('customer.dashboard', compact('user'));
     }
 }
