@@ -8,9 +8,8 @@
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-5 text-center mx-auto">
-                        <h1 class="text-white mb-2 mt-5">Welcome!</h1>
-                        <p class="text-lead text-white">Use these awesome forms to login or create new account in your
-                            project for free.</p>
+                        <h1 class="text-white mb-2 mt-5">Selamat Datang Di Second Store 🤙</h1>
+                        <p class="text-lead text-white">Silakan isi data terlebih dahulu agar Anda dapat mengakses website kami.</p>
                     </div>
                 </div>
             </div>
@@ -21,8 +20,6 @@
                     <div class="card z-index-0">
                         <div class="card-header text-center pt-4">
                             <h5>Register</h5>
-                        </div>
-                        <div class="row px-xl-5 px-sm-4 px-3">
                         </div>
                         <div class="card-body">
                             <form method="POST" action="{{ route('register.post') }}">
@@ -44,7 +41,7 @@
                                         required>
                                 </div>
                                 <div class="mb-3">
-                                    <input type="telp" name="no_hp" class="form-control" placeholder="Nomor Hp"
+                                    <input type="text" name="no_hp" class="form-control" placeholder="Nomor Hp"
                                         value="{{ old('no_hp') }}" required>
                                 </div>
                                 <div class="mb-3">
@@ -56,6 +53,13 @@
                                 </div>
                             </form>
 
+                            <!-- Tambahan teks ke login -->
+                            <div class="card-footer text-center pt-0 px-lg-2 px-1">
+                                <p class="mb-4 text-sm mx-auto">
+                                    Apakah anda sudah memiliki akun?
+                                    <a href="{{ route('login') }}" class="text-primary text-gradient font-weight-bold">Login</a>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>

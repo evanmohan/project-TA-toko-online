@@ -29,16 +29,18 @@ class AuthController extends Controller
             ]);
 
             if (Auth::attempt($credentials)) {
+                $request->session()->regenerate();
+
                 return Auth::user()->role === 'admin'
                     ? redirect()->route('admin.dashboard')
                     : redirect()->route('user.dashboard');
             }
 
             return back()->withErrors([
-                'email' => 'The provided credentials do not match our records.',
+                'email' => 'Email atau password salah.',
             ])->onlyInput('email');
         } catch (\Exception $e) {
-            dd($e->getMessage());
+            return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
     }
 
@@ -56,7 +58,6 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         try {
-            // dd($request->all());
             $request->validate([
                 'username' => 'required|string|unique:users,username|max:50',
                 'email' => 'required|email|unique:users,email',
@@ -66,7 +67,7 @@ class AuthController extends Controller
                 'role' => 'in:admin,customer',
             ]);
 
-            $user = User::create([
+            User::create([
                 'email' => $request->email,
                 'no_hp' => $request->no_hp,
                 'alamat' => $request->alamat,
@@ -75,10 +76,10 @@ class AuthController extends Controller
                 'role' => $request->role ?? 'customer',
             ]);
 
-            // Setelah register, langsung arahkan ke login
-            return redirect()->route('login')->with('success', 'Registrasi berhasil, silakan login!');
+            // Setelah register, arahkan ke halaman login dengan pesan sukses
+            return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login.');
         } catch (\Exception $e) {
-            dd($e->getMessage());
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat registrasi: ' . $e->getMessage()]);
         }
     }
 

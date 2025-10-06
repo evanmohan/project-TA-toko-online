@@ -7,11 +7,19 @@
                 {{ session('error') }}
             </div>
         @endif
+
+        @if(session('success'))
+            <div class="alert alert-success" role="alert">
+                {{ session('success') }}
+            </div>
+        @endif
+
         @if($errors->any())
             <div class="alert alert-danger" role="alert">
                 {{ $errors->first() }}
             </div>
         @endif
+
         <section>
             <div class="page-header min-vh-100">
                 <div class="container">
@@ -19,8 +27,8 @@
                         <div class="col-xl-4 col-lg-5 col-md-7 d-flex flex-column mx-lg-0 mx-auto">
                             <div class="card card-plain">
                                 <div class="card-header pb-0 text-start">
-                                    <h4 class="font-weight-bolder">Sign In</h4>
-                                    <p class="mb-0">Enter your email and password to sign in</p>
+                                    <h4 class="font-weight-bolder">Selamat Datang</h4>
+                                    <p class="mb-0">Masukkan email dan kata sandi Anda untuk masuk</p>
                                 </div>
                                 <div class="card-body">
                                     <form method="POST" action="{{ route('login.post') }}">
@@ -41,19 +49,12 @@
                                             <button type="submit" class="btn btn-success w-100">Login</button>
                                         </div>
                                     </form>
-
                                 </div>
-                                <!-- <div class="card-footer text-center pt-0 px-lg-2 px-1">
-                                        <p class="mb-1 text-sm mx-auto">
-                                            Forgot you password? Reset your password
-                                            <a href="{{ route('reset-password') }}" class="text-primary text-gradient font-weight-bold">here</a>
-                                        </p>
-                                    </div> -->
                                 <div class="card-footer text-center pt-0 px-lg-2 px-1">
                                     <p class="mb-4 text-sm mx-auto">
-                                        Don't have an account?
+                                        Apakah anda belum memiliki akun?
                                         <a href="{{ route('register') }}"
-                                            class="text-primary text-gradient font-weight-bold">Sign up</a>
+                                            class="text-primary text-gradient font-weight-bold">Register</a>
                                     </p>
                                 </div>
                             </div>

@@ -7,7 +7,7 @@ use App\Http\Controllers\Admin\PesananController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
-// ================= ADMIN =================
+
 // ================= ADMIN =================
 Route::middleware(['role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
