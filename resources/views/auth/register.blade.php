@@ -8,8 +8,9 @@
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-5 text-center mx-auto">
-                        <h1 class="text-white mb-2 mt-5">Selamat Datang Di Second Store 🤙</h1>
-                        <p class="text-lead text-white">Silakan isi data terlebih dahulu agar Anda dapat mengakses website kami.</p>
+                        <h1 class="text-white mb-2 mt-5">Selamat Datang Di Second Store🤙</h1>
+                        <p class="text-lead text-white">Silakan isi data terlebih dahulu agar Anda dapat mengakses website
+                            kami.</p>
                     </div>
                 </div>
             </div>
@@ -37,8 +38,8 @@
                                         required>
                                 </div>
                                 <div class="mb-3">
-                                    <input type="password" name="password_confirmation" class="form-control" placeholder="Confirm Password"
-                                        required>
+                                    <input type="password" name="password_confirmation" class="form-control"
+                                        placeholder="Confirm Password" required>
                                 </div>
                                 <div class="mb-3">
                                     <input type="text" name="no_hp" class="form-control" placeholder="Nomor Hp"
@@ -57,7 +58,8 @@
                             <div class="card-footer text-center pt-0 px-lg-2 px-1">
                                 <p class="mb-4 text-sm mx-auto">
                                     Apakah anda sudah memiliki akun?
-                                    <a href="{{ route('login') }}" class="text-primary text-gradient font-weight-bold">Login</a>
+                                    <a href="{{ route('login') }}"
+                                        class="text-primary text-gradient font-weight-bold">Login</a>
                                 </p>
                             </div>
                         </div>

@@ -1,9 +1,9 @@
-@extends('layouts.navbar.auth.app')
+@extends('layouts.navbar.auth.app' )
 
 @section('content')
 
 @section('content')
-    {{-- @include('layouts.navbars.auth.topnav', ['title' => 'Dashboard']) --}}
+    {{-- @include('layouts.navbar.auth.topnav', ['title' => 'admin.dashboard']) --}}
     <div class="container-fluid py-4">
         <div class="row">
             <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
@@ -392,7 +392,7 @@
                 </div>
             </div>
         </div>
-        {{-- @include('layouts.footers.auth.footer') --}}
+        @include('layouts.footers.auth.footer')
     </div>
 @endsection
 
