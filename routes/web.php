@@ -14,6 +14,11 @@ Route::middleware(['role:admin'])->prefix('admin')->group(function () {
     Route::resource('produk', ProdukController::class);
     Route::resource('pesanan', PesananController::class)->only(['index', 'show', 'update']);
     Route::resource('user', UserController::class)->only(['index', 'destroy']);
+    Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
+    Route::get('/billing', [DashboardController::class, 'billing'])->name('billing');
+    Route::get('/management', [DashboardController::class, 'management'])->name('management');
+    Route::get('/tables', [DashboardController::class, 'tables'])->name('tables');
+    Route::get('/kategori', [DashboardController::class, 'kategori'])->name('kategori');
 });
 
 // ================= AUTH =================
