@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\PesananController;
 use App\Http\Controllers\Admin\UserController;
@@ -17,8 +18,14 @@ Route::middleware(['role:admin'])->prefix('admin')->group(function () {
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
     Route::get('/billing', [DashboardController::class, 'billing'])->name('billing');
     Route::get('/management', [DashboardController::class, 'management'])->name('management');
-    Route::get('/tables', [DashboardController::class, 'tables'])->name('tables');
-    Route::get('/kategori', [DashboardController::class, 'kategori'])->name('kategori');
+    // Route::get('/tables', [DashboardController::class, 'tables'])->name('tables');
+    // Route::get('/kategori', [DashboardController::class, 'kategori'])->name('kategori');
+    Route::get('/kategori', [KategoriController::class, 'index'])->name('kategori');
+    Route::get('/kategori/create', [KategoriController::class, 'create'])->name('kategori.create');
+    Route::post('/kategori', [KategoriController::class, 'store'])->name('kategori.store');
+    Route::get('/kategori/{id}/edit', [KategoriController::class, 'edit'])->name('kategori.edit');
+    Route::put('/kategori/{id}', [KategoriController::class, 'update'])->name('kategori.update');
+    Route::delete('/kategori/{id}', [KategoriController::class, 'destroy'])->name('kategori.destroy');
 });
 
 // ================= AUTH =================

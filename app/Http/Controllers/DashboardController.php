@@ -37,14 +37,14 @@ class DashboardController extends Controller
         $user = Auth::user();
         return view('auth.management');
     }
-    // Tables untuk ADMIN
-    public function tables(){
-        $user = Auth::user();
-        return view('auth.tables');
-    }
+    // // Tables untuk ADMIN
+    // public function tables(){
+    //     $user = Auth::user();
+    //     return view('auth.tables');
+    // }
     // Kategori untuk ADMIN
-    public function kategori(){
-        $user = Auth::user();
-        return view('auth.kategori');
-    }
+    // public function kategori(){
+    //     $user = Auth::user();
+    //     return view('auth.kategori');
+    // }
 }

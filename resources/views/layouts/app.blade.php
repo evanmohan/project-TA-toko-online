@@ -18,7 +18,7 @@
 
 <body>
     <nav class="navbar navbar-dark bg-dark px-3">
-        <a href="{{ route('admin.dashboard') }}">Toko Online</a>
+        <a href="{{ route('user.dashboard') }}">Toko Online</a>
         @auth
             <form action="{{ route('logout') }}" method="POST" class="d-inline">
                 @csrf
