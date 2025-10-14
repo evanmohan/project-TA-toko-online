@@ -19,7 +19,7 @@ class KategoriController extends Controller
     // Menampilkan form tambah kategori
     public function create()
     {
-        return view('admin.kategori.create');
+        return view('admin.kategori.index');
     }
 
     // Menyimpan data kategori

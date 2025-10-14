@@ -40,16 +40,7 @@
                 <li class="nav-item mt-3">
                     <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Pages</h6>
                 </li>
-                {{-- <li class="nav-item">
-                    <a class="nav-link {{ str_contains(request()->url(), 'tables') == true ? 'active' : '' }}"
-                        href="{{ route('tables', ['page' => 'tables']) }}">
-                        <div
-                            class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
-                        </div>
-                        <span class="nav-link-text ms-1">Tables</span>
-                    </a>
-                </li> --}}
+
                 <li class="nav-item">
                     <a class="nav-link {{  str_contains(request()->url(), 'billing') == true ? 'active' : '' }}"
                         href="{{ route('billing', ['page' => 'billing']) }}">
@@ -71,13 +62,13 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ str_contains(request()->url(), 'user-management') == true ? 'active' : '' }}"
-                        href="{{ route('management', ['page' => 'user-management']) }}">
+                    <a class="nav-link {{ request()->routeIs('produk.index') ? 'active' : '' }}"
+                        href="{{ route('produk.index') }}">
                         <div
                             class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="ni ni-bullet-list-67 text-dark text-sm opacity-10"></i>
+                            <i class="ni ni-box-2 text-success text-sm opacity-10"></i>
                         </div>
-                        <span class="nav-link-text ms-1">User Management</span>
+                        <span class="nav-link-text ms-1">Products</span>
                     </a>
                 </li>
                 {{-- <li class="nav-item">
@@ -111,6 +102,16 @@
                             <i class="ni ni-single-02 text-dark text-sm opacity-10"></i>
                         </div>
                         <span class="nav-link-text ms-1">Profile</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ str_contains(request()->url(), 'user-management') == true ? 'active' : '' }}"
+                        href="{{ route('management', ['page' => 'user-management']) }}">
+                        <div
+                            class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="ni ni-bullet-list-67 text-dark text-sm opacity-10"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">User Management</span>
                     </a>
                 </li>
                 <li class="nav-item">

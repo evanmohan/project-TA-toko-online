@@ -9,30 +9,40 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $table = 'produk';
+    protected $table = 'products';
 
     protected $fillable = [
-        'kode_produk', 
-        'nama_produk', 
-        'deskripsi', 
-        'size', 
-        'satuan', 
-        'harga', 
-        'stok', 
-        'sisa_stok',   // perbaikan: pakai sisa_stok sesuai tabel
-        'image', 
-        'kategori_id'
+        'kode_produk',
+        'nama_produk',
+        'deskripsi',
+        'size',
+        'satuan',
+        'harga',
+        'stok',
+        'sisa_stok',
+        'image',
+        'kategori_id',
     ];
 
-    // Relasi ke kategori
+    // relasi ke kategori
     public function kategori()
     {
         return $this->belongsTo(Kategori::class, 'kategori_id');
     }
 
-    // Relasi ke detail pesanan
-    public function detailPesanan()
+    // buat kode produk otomatis
+    protected static function boot()
     {
-        return $this->hasMany(DetailPesanan::class, 'produk_id');
+        parent::boot();
+
+        static::creating(function ($product) {
+            $lastId = static::max('id') ?? 0;
+            $product->kode_produk = 'PRD-' . str_pad($lastId + 1, 4, '0', STR_PAD_LEFT);
+
+            // kalau sisa stok kosong, otomatis sama dengan stok
+            if ($product->sisa_stok === null) {
+                $product->sisa_stok = $product->stok;
+            }
+        });
     }
 }
