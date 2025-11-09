@@ -43,7 +43,7 @@
 
                 <li class="nav-item">
                     <a class="nav-link {{  str_contains(request()->url(), 'billing') == true ? 'active' : '' }}"
-                        href="{{ route('billing', ['page' => 'billing']) }}">
+                        href="{{ route('admin.billing', ['page' => 'billing']) }}">
                         <div
                             class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="ni ni-credit-card text-success text-sm opacity-10"></i>
@@ -53,7 +53,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ str_contains(request()->url(), 'kategori') == true ? 'active' : '' }}"
-                        href="{{ route('kategori', ['page' => 'kategori']) }}">
+                        href="{{ route('admin.kategori.index', ['page' => 'kategori']) }}">
                         <div
                             class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="ni ni-app text-info text-sm opacity-10"></i>
@@ -63,7 +63,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('produk.index') ? 'active' : '' }}"
-                        href="{{ route('produk.index') }}">
+                        href="{{ route('admin.produk.index') }}">
                         <div
                             class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="ni ni-box-2 text-success text-sm opacity-10"></i>
@@ -73,7 +73,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ Request::is('admin/ekspedisi*') ? 'active' : '' }}"
-                        href="{{ route('ekspedisi.index') }}">
+                        href="{{ route('admin.ekspedisi.index') }}">
                         <div
                             class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="ni ni-delivery-fast text-warning text-sm opacity-10"></i>
@@ -106,7 +106,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ Route::currentRouteName() == 'admin-profile' ? 'active' : '' }}"
-                        href="{{ route('profile') }}">
+                        href="{{ route('admin.profile') }}">
                         <div
                             class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="ni ni-single-02 text-dark text-sm opacity-10"></i>
@@ -116,7 +116,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ str_contains(request()->url(), 'user-management') == true ? 'active' : '' }}"
-                        href="{{ route('management', ['page' => 'user-management']) }}">
+                        href="{{ route('admin.management', ['page' => 'user-management']) }}">
                         <div
                             class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="ni ni-bullet-list-67 text-dark text-sm opacity-10"></i>

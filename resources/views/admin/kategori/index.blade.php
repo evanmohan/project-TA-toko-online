@@ -39,7 +39,7 @@
                                                 data-bs-target="#modalEditKategori{{ $kategori->id }}">Edit</button>
 
                                             <!-- Tombol hapus -->
-                                            <form action="{{ route('kategori.destroy', $kategori->id) }}" method="POST"
+                                            <form action="{{ route('admin.kategori.destroy', $kategori->id) }}" method="POST"
                                                 class="d-inline"
                                                 onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
                                                 @csrf
@@ -60,7 +60,7 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                         aria-label="Close"></button>
                                                 </div>
-                                                <form action="{{ route('kategori.update', $kategori->id) }}" method="POST">
+                                                <form action="{{ route('admin.kategori.update', $kategori->id) }}" method="POST">
                                                     @csrf
                                                     @method('PUT')
                                                     <div class="modal-body">
@@ -105,7 +105,7 @@
                     <h5 class="modal-title" id="tambahKategoriLabel">Tambah Kategori</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('kategori.store') }}" method="POST">
+                <form action="{{ route('admin.kategori.store') }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">

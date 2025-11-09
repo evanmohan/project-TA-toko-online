@@ -44,7 +44,7 @@
                                             </button>
 
                                             <!-- Tombol Hapus -->
-                                            <form action="{{ route('ekspedisi.destroy', $e->id) }}" method="POST"
+                                            <form action="{{ route('admin.ekspedisi.destroy', $e->id) }}" method="POST"
                                                 class="d-inline"
                                                 onsubmit="return confirm('Yakin ingin menghapus ekspedisi ini?')">
                                                 @csrf
@@ -66,7 +66,7 @@
                                                         aria-label="Close"></button>
                                                 </div>
 
-                                                <form action="{{ route('ekspedisi.update', $e->id) }}" method="POST">
+                                                <form action="{{ route('admin.ekspedisi.update', $e->id) }}" method="POST">
                                                     @csrf
                                                     @method('PUT')
                                                     <div class="modal-body pt-0">
@@ -111,7 +111,7 @@
     <div class="modal fade" id="modalTambahEkspedisi" tabindex="-1" aria-labelledby="tambahEkspedisiLabel"
         aria-hidden="true">
         <div class="modal-dialog">
-            <form action="{{ route('ekspedisi.store') }}" method="POST" class="modal-content">
+            <form action="{{ route('admin.ekspedisi.store') }}" method="POST" class="modal-content">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" id="tambahEkspedisiLabel">Tambah Ekspedisi</h5>

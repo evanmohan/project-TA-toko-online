@@ -44,7 +44,7 @@ class ProdukController extends Controller
             'kategori_id' => $request->kategori_id,
         ]);
 
-        return redirect()->route('produk.index')->with('success', 'Produk berhasil ditambahkan!');
+        return redirect()->route('admin.produk.store')->with('success', 'Produk berhasil ditambahkan!');
     }
 
     public function update(Request $request, string $id)
@@ -78,7 +78,7 @@ class ProdukController extends Controller
             'kategori_id' => $request->kategori_id,
         ]);
 
-        return redirect()->route('produk.index')->with('success', 'Produk berhasil diperbarui!');
+        return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil diperbarui!');
     }
 
     public function destroy(string $id)
@@ -91,6 +91,6 @@ class ProdukController extends Controller
 
         $produk->delete();
 
-        return redirect()->route('produk.index')->with('success', 'Produk berhasil dihapus!');
+        return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil dihapus!');
     }
 }
