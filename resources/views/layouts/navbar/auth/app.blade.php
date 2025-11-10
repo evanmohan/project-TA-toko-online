@@ -34,7 +34,10 @@
             <div class="min-height-300 bg-primary position-absolute w-100"></div>
 
             {{-- Sidebar --}}
+            @if (auth()->user()->role === 'admin')
+
             @include('layouts.navbar.auth.sidenav')
+            @endif
 
             {{-- Main content --}}
             <main class="main-content border-radius-lg">

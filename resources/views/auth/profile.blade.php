@@ -57,7 +57,7 @@
         <div class="row">
             <div class="col-md-8">
                 <div class="card">
-                    <form role="form" method="POST" action={{ route('profile') }} enctype="multipart/form-data">
+                    <form role="form" method="POST" action={{ route('admin.profile') }} enctype="multipart/form-data">
                         @csrf
                         <div class="card-header pb-0">
                             <div class="d-flex align-items-center">

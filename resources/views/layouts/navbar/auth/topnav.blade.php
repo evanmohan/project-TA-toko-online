@@ -21,12 +21,14 @@
                 <li class="nav-item d-flex align-items-center">
                     <form role="form" method="post" action="{{ route('logout') }}" id="logout-form">
                         @csrf
-                        <a href="{{ route('logout') }}"
+                        {{-- <a href="{{ route('logout') }}"
                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                             class="nav-link text-white font-weight-bold px-0">
                             <i class="fa fa-user me-sm-1"></i>
                             <span class="d-sm-inline d-none">Log out</span>
-                        </a>
+                        </a> --}}
+                        <button type="submit" class="nav-link text-white font-weight-bold px-0 btn btn-link">
+                            <i class="fa fa-user me-sm-1">logout</i>
                     </form>
                 </li>
                 <li class="nav-item d-xl-none ps-3 d-flex align-items-center">

@@ -16,8 +16,8 @@ class DashboardController extends Controller
     // Dashboard untuk USER
     public function user()
     {
-        $user = Auth::user();
-        return view('customer.dashboard', compact('user'));
+        // $user = Auth::user();
+        return back();
     }
 
     // Profile untuk ADMIN
