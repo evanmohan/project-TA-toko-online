@@ -24,7 +24,7 @@ class DashboardController extends Controller
     public function profile()
     {
         $user = Auth::user();
-        return view('auth.profile');
+        return view('admin.user.profile');
 
     }
     // Billing untuk ADMIN

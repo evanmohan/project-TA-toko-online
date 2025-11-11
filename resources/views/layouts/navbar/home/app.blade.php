@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +13,8 @@
             background-color: #fafafa;
             font-family: 'Poppins', sans-serif;
             margin: 0;
-            padding-top: 125px; /* agar konten tidak tertutup navbar */
+            padding-top: 125px;
+            /* agar konten tidak tertutup navbar */
         }
 
         :root {
@@ -30,7 +32,7 @@
             left: 0;
             width: 100%;
             z-index: 1000;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
         /* ====== TOP NAVBAR ====== */
@@ -38,7 +40,7 @@
             padding: 8px 40px;
             font-size: 14px;
             font-weight: 500;
-            text-shadow: 0 0 3px rgba(0,0,0,0.3);
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -47,7 +49,7 @@
         .top-navbar a {
             color: #fff;
             text-decoration: none;
-            margin:0 5px;
+            margin: 0 5px;
             font-weight: 600;
             letter-spacing: 0.3px;
             transition: 0.2s;
@@ -60,7 +62,7 @@
 
         .dropdown-toggle.text-white {
             font-weight: 600;
-            text-shadow: 0 0 3px rgba(0,0,0,0.3);
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
         }
 
         .dropdown-toggle.text-white:hover {
@@ -198,7 +200,7 @@
         }
 
         .copyright {
-            border-top: 1px solid rgba(255,255,255,0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
             margin-top: 20px;
             padding-top: 10px;
             font-size: 13px;
@@ -212,7 +214,7 @@
             transition: all 0.25s ease;
             border: none;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
         }
 
         .dropdown-menu.show {
@@ -226,6 +228,7 @@
                 opacity: 0;
                 transform: scale(0.95) translateY(-5px);
             }
+
             100% {
                 opacity: 1;
                 transform: scale(1) translateY(0);
@@ -239,6 +242,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- 🔹 NAVBAR GABUNG WARNA (FIXED) -->
@@ -254,8 +258,8 @@
 
             <div class="dropdown">
                 @auth
-                    <a class="dropdown-toggle text-white text-decoration-none d-flex align-items-center"
-                       href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="dropdown-toggle text-white text-decoration-none d-flex align-items-center" href="#"
+                        id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->username }}
                     </a>
 
@@ -263,7 +267,9 @@
                         <li>
                             <a href="#" class="dropdown-item"><i class="bi bi-pencil-square me-2"></i> Edit Profil</a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
@@ -281,10 +287,11 @@
         </div>
 
         <div class="main-navbar">
-            <div class="logo">
+            <a href="{{ route('home') }}" class="logo d-flex align-items-center text-decoration-none">
                 <img src="{{ asset('assets/images/logo.png') }}" alt="Logo">
-                <h4 class="m-0 fw-bold text-white">Second Store</h4>
-            </div>
+                <h4 class="m-0 fw-bold text-white ms-2">Second Store</h4>
+            </a>
+
 
             <!-- 🔍 SEARCH BAR -->
             <div class="search-bar">
@@ -293,7 +300,7 @@
             </div>
 
             <div class="icons">
-                <a href="#"><i class="bi bi-cart3"></i> Keranjang<span class="badge">2</span></a>
+                <a href="{{ route(name: 'cart.index') }}"><i class="bi bi-cart3"></i> Keranjang<span class="badge">2</span></a>
             </div>
         </div>
     </nav>
@@ -339,4 +346,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

@@ -31,9 +31,17 @@ class AuthController extends Controller
             if (Auth::attempt($credentials)) {
                 $request->session()->regenerate();
 
-                return Auth::user()->role === 'admin'
-                    ? redirect()->route('admin.dashboard')
-                    : redirect()->route('user.dashboard');
+                if (Auth::user()->role === 'admin') {
+                    return redirect()->route('admin.dashboard');
+                }
+
+                // 🔹 Jika ada redirect di query, arahkan ke sana
+                if ($request->has('redirect')) {
+                    return redirect()->to($request->query('redirect'));
+                }
+
+                // 🔹 Kalau tidak ada, arahkan ke halaman sebelumnya
+                return redirect()->back();
             }
 
             return back()->withErrors([
@@ -43,6 +51,8 @@ class AuthController extends Controller
             return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
     }
+
+
 
     /**
      * Tampilkan halaman register

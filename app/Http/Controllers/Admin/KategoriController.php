@@ -58,13 +58,13 @@ class KategoriController extends Controller
             'deskripsi' => $request->deskripsi,
         ]);
 
-        return redirect()->route('kategori')->with('success', 'Kategori berhasil diperbarui!');
+        return redirect()->route('admin.kategori.index')->with('success', 'Kategori berhasil diperbarui!');
     }
 
     // Hapus kategori
     public function destroy($id)
     {
         Kategori::findOrFail($id)->delete();
-        return redirect()->route('kategori')->with('success', 'Kategori berhasil dihapus!');
+        return redirect()->route('admin.kategori.index')->with('success', 'Kategori berhasil dihapus!');
     }
 }

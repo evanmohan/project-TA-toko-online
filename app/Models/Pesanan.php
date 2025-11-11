@@ -18,6 +18,7 @@ class Pesanan extends Model
         'no_hp',
         'subtotal',
         'harga_pengiriman',
+        'ekspedisi_id',
         'grand_total',
         'kode_unik',
         'status_bayar',

@@ -18,6 +18,10 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 
+            $table->unsignedBigInteger('ekspedisi_id');
+            $table->foreign('ekspedisi_id')->references('id')->on('ekspedisi')->onDelete('cascade');
+
+
             $table->string('kode_pesanan', 20)->unique();
             $table->text('alamat_pengiriman');
             $table->string('no_hp', 20)->nullable();

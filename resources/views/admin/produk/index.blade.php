@@ -47,6 +47,10 @@
                                         <td class="text-truncate" style="max-width: 150px;">{{ $p->deskripsi ?? '-' }}</td>
                                         <td class="text-center">{{ $p->created_at->format('d/m/Y') }}</td>
                                         <td class="text-center">
+                                            <!-- Tombol detail -->
+                                            <button class="btn btn-info btn-sm text-white" data-bs-toggle="modal"
+                                                data-bs-target="#modalDetailProduk{{ $p->id }}">Detail</button>
+
                                             <!-- Tombol edit -->
                                             <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modalEditProduk{{ $p->id }}">Edit</button>
@@ -61,6 +65,45 @@
                                             </form>
                                         </td>
                                     </tr>
+
+                                    <!-- Modal Detail Produk -->
+                                    <div class="modal fade" id="modalDetailProduk{{ $p->id }}" tabindex="-1"
+                                        aria-labelledby="detailProdukLabel{{ $p->id }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="detailProdukLabel{{ $p->id }}">
+                                                        Detail Produk: {{ $p->nama_produk }}
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-md-5 text-center">
+                                                            <img src="{{ $p->image ? asset('storage/'.$p->image) : asset('argon/assets/img/default-product.png') }}"
+                                                                alt="{{ $p->nama_produk }}"
+                                                                class="img-fluid rounded"
+                                                                style="max-height: 250px; object-fit: cover;">
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            <h5>{{ $p->nama_produk }}</h5>
+                                                            <p class="mb-1"><strong>Kategori:</strong> {{ $p->kategori->nama_kategori ?? '-' }}</p>
+                                                            <p class="mb-1"><strong>Ukuran:</strong> {{ $p->size ?? '-' }}</p>
+                                                            <p class="mb-1"><strong>Harga:</strong> Rp {{ number_format($p->harga, 0, ',', '.') }}</p>
+                                                            <p class="mb-1"><strong>Stok:</strong> {{ $p->stok }}</p>
+                                                            <p class="mb-2"><strong>Deskripsi:</strong></p>
+                                                            <p>{{ $p->deskripsi ?? 'Tidak ada deskripsi.' }}</p>
+                                                            <p class="text-muted small">Dibuat: {{ $p->created_at->format('d M Y, H:i') }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                     <!-- Modal Edit Produk -->
                                     <div class="modal fade" id="modalEditProduk{{ $p->id }}" tabindex="-1"

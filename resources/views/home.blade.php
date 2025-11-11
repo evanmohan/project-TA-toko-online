@@ -103,7 +103,7 @@
                         <h6 class="fw-semibold text-dark">{{ $product->nama_produk }}</h6>
                         <p class="text-muted small mb-1">{{ $product->kategori->nama_kategori ?? 'Tanpa Kategori' }}</p>
                         <p class="price mb-3">Rp {{ number_format($product->harga, 0, ',', '.') }}</p>
-                        <a href="{{ route('login') }}" class="btn btn-orange btn-sm w-100 mb-2">Lihat Detail</a>
+                        <a href="{{ route('produk.show', $product->id) }}" class="btn btn-orange btn-sm w-100 mb-2">Lihat Detail</a>
                         <a href="{{ route('login') }}" class="btn btn-outline-orange btn-sm w-100">Beli Sekarang</a>
                     </div>
                 </div>

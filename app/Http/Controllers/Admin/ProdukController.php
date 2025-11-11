@@ -44,7 +44,13 @@ class ProdukController extends Controller
             'kategori_id' => $request->kategori_id,
         ]);
 
-        return redirect()->route('admin.produk.store')->with('success', 'Produk berhasil ditambahkan!');
+        return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil ditambahkan!');
+    }
+
+    public function show(string $id)
+    {
+        $produk = Product::with('kategori')->findOrFail($id);
+        return view('showProduk', compact('produk'));
     }
 
     public function update(Request $request, string $id)

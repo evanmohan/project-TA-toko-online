@@ -4,62 +4,50 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class UserController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Tampilkan halaman edit profil user yang sedang login.
      */
-    public function index()
+    public function edit()
     {
-        //
+        $user = Auth::user(); // ambil data user yang sedang login
+        return view('admin.user.edit', compact('user'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Proses update profil user.
      */
-    public function create()
+    public function update(Request $request)
     {
-        //
-    }
+        $user = Auth::user();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        // Validasi input
+        $validated = $request->validate([
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'username' => 'required|string|max:50|unique:users,username,' . $user->id,
+            'no_hp' => 'nullable|string|max:20',
+            'alamat' => 'nullable|string|max:255',
+            'password' => 'nullable|min:6|confirmed',
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        // Update data
+        $user->email = $validated['email'];
+        $user->username = $validated['username'];
+        $user->no_hp = $validated['no_hp'] ?? $user->no_hp;
+        $user->alamat = $validated['alamat'] ?? $user->alamat;
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+        // Jika password diisi, ubah juga
+        if (!empty($validated['password'])) {
+            $user->password = Hash::make($validated['password']);
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        $user->save();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
     }
 }
