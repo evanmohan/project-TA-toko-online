@@ -7,7 +7,7 @@
     <title>Second Store</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
+    <script src="https://kit.fontawesome.com/0698b5b56f.js" crossorigin="anonymous"></script>
     <style>
         body {
             background-color: #fafafa;
@@ -22,6 +22,20 @@
             --dark-orange: #ff3300;
             --light-orange: #fff4ec;
         }
+
+        .hover-bg-light:hover {
+            background-color: #f8f9fa;
+        }
+
+        #searchResults a:hover {
+            background-color: #f8f9fa;
+        }
+
+        #searchResults img {
+            border-radius: 5px;
+        }
+
+
 
         /* ====== NAVBAR FIXED ====== */
         .navbar-wrapper {
@@ -294,13 +308,22 @@
 
 
             <!-- 🔍 SEARCH BAR -->
-            <div class="search-bar">
-                <input type="text" placeholder="Cari produk unggulan...">
-                <button type="submit"><i class="bi bi-search"></i></button>
+            <div class="search-bar position-relative">
+                <input type="text" id="searchInput" placeholder="Cari produk unggulan...">
+                <button type="button"><i class="bi bi-search"></i></button>
+
+                <!-- hasil pencarian muncul di sini -->
+                <div id="searchResults" class="position-absolute bg-white w-100 shadow-sm rounded mt-1"
+                    style="z-index: 2000; display:none; max-height:250px; overflow-y:auto;">
+                </div>
+
             </div>
 
+
+
             <div class="icons">
-                <a href="{{ route(name: 'cart.index') }}"><i class="bi bi-cart3"></i> Keranjang<span class="badge">2</span></a>
+                <a href="{{ route(name: 'keranjang.index') }}"><i class="bi bi-cart3"></i> Keranjang<span
+                        class="badge">2</span></a>
             </div>
         </div>
     </nav>
@@ -345,6 +368,54 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            const resultsDiv = document.getElementById('searchResults');
+
+            let timeout = null;
+
+            searchInput.addEventListener('keyup', function () {
+                clearTimeout(timeout);
+                const query = this.value.trim();
+
+                if (query.length < 2) {
+                    resultsDiv.style.display = 'none';
+                    resultsDiv.innerHTML = '';
+                    return;
+                }
+
+                timeout = setTimeout(() => {
+                    fetch(`/produk/live-search?q=${encodeURIComponent(query)}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.length === 0) {
+                                resultsDiv.innerHTML = '<div class="p-2 text-muted small">Tidak ada hasil</div>';
+                            } else {
+                                resultsDiv.innerHTML = data.map(item => `
+                            <a href="/produk/${item.id}" class="d-flex align-items-center text-decoration-none text-dark p-2 border-bottom hover-bg-light">
+                               <img src="${item.image ? '/storage/' + item.image : '/assets/images/default-product.png'}"
+                                <div>
+                                    <div class="fw-semibold">${item.nama_produk}</div>
+                                    <div class="text-muted small">Rp ${parseInt(item.harga).toLocaleString('id-ID')}</div>
+                                </div>
+                            </a>
+                        `).join('');
+                            }
+                            resultsDiv.style.display = 'block';
+                        });
+                }, 300); // delay 300ms biar ga terlalu sering request
+            });
+
+            // Sembunyikan hasil ketika klik di luar
+            document.addEventListener('click', function (e) {
+                if (!resultsDiv.contains(e.target) && e.target !== searchInput) {
+                    resultsDiv.style.display = 'none';
+                }
+            });
+        });
+    </script>
+
 </body>
 
 </html>

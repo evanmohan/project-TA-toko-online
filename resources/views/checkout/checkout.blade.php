@@ -1,4 +1,4 @@
-@extends('layouts.navbar.app')
+@extends('home.app')
 
 @section('content')
     <div class="container py-5">

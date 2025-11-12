@@ -7,8 +7,10 @@ use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\PembayaranController;
 use Illuminate\Support\Facades\Route;
 
@@ -73,17 +75,23 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/checkout', [PesananController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [PesananController::class, 'store'])->name('checkout.store');
 
-    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::get('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
-Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
-Route::get('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
+    Route::post('/keranjang/add/{product}', [KeranjangController::class, 'add'])->name('keranjang.add');
+    Route::post('/keranjang/update/{id}', [KeranjangController::class, 'update'])->name('keranjang.update');
+    Route::get('/keranjang/remove/{id}', [KeranjangController::class, 'remove'])->name('keranjang.remove');
+    Route::get('/keranjang/clear', [KeranjangController::class, 'clear'])->name('keranjang.clear');
 
-// CHECKOUT (PesananController sudah kamu punya)
-Route::get('/checkout', [App\Http\Controllers\PesananController::class, 'checkout'])->name('pesanan.checkout');
+    // Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    // Route::post('/checkout/beli', [CheckoutController::class, 'beliLangsung'])->name('checkout.beliLangsung');
+    // Route::post('/checkout/store', [CheckoutController::class, 'store'])->name('checkout.store');
+    // Route::get('/checkout/bayar/{id}', [CheckoutController::class, 'bayar'])->name('checkout.bayar');
+    // Route::post('/checkout/upload/{id}', [CheckoutController::class, 'uploadBukti'])->name('checkout.upload');
+    // CHECKOUT (PesananController sudah kamu punya)
+    Route::get('/checkout', [App\Http\Controllers\PesananController::class, 'checkout'])->name('pesanan.checkout');
 
-// PAYMENT
-Route::get('/payment/{id}', [PembayaranController::class, 'index'])->name('payment.index');
-Route::post('/payment/{id}', [PembayaranController::class, 'uploadProof'])->name('payment.upload');
+    // PAYMENT
+    Route::get('/payment/{id}', [PembayaranController::class, 'index'])->name('payment.index');
+    Route::post('/payment/{id}', [PembayaranController::class, 'uploadProof'])->name('payment.upload');
 });
 
 
@@ -92,6 +100,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // ===================== PRODUK DETAIL =====================
 Route::get('/produk/{id}', [ProdukController::class, 'show'])->name('produk.show');
-
+Route::get('/produk/search', [ProdukController::class, 'search'])->name('produk.search');
+Route::get('/produk/live-search', [ProdukController::class, 'liveSearch'])->name('produk.liveSearch');
 // ===================== RESET PASSWORD =====================
 Route::get('/reset-password', fn() => view('auth.reset-password'))->name('reset-password');

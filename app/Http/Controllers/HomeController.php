@@ -12,7 +12,7 @@ class HomeController extends Controller
         // Ambil produk yang aktif saja
         $products = Product::latest()->take(8)->get();
 
-        return view('home', compact('products'));
+        return view('home.home', compact('products'));
     }
 
 

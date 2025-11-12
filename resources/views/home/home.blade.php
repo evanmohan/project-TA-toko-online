@@ -1,4 +1,4 @@
-@extends('layouts.navbar.home.app')
+@extends('home.app')
 
 @section('content')
 <style>
@@ -90,6 +90,17 @@
         padding: 15px;
     }
 </style>
+
+@if(isset($query))
+    <h5 class="mb-3">
+        Hasil pencarian untuk:
+        <span class="text-orange fw-semibold">"{{ $query }}"</span>
+    </h5>
+
+    @if($produk->isEmpty())
+        <p class="text-muted">Tidak ada produk ditemukan.</p>
+    @endif
+@endif
 
 <!-- 🔹 PRODUK TERBARU -->
 <div class="container mt-4">

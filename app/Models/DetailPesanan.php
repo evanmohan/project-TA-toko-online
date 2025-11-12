@@ -11,7 +11,6 @@ class DetailPesanan extends Model
 
     protected $table = 'detail_pesanan';
 
-    // sesuai field di database
     protected $fillable = [
         'pesanan_id',
         'produk_id',
@@ -21,13 +20,13 @@ class DetailPesanan extends Model
         'total_harga',
     ];
 
-    // Relasi ke Pesanan
+    // 🔹 Relasi ke Pesanan
     public function pesanan()
     {
         return $this->belongsTo(Pesanan::class, 'pesanan_id');
     }
 
-    // Relasi ke Produk
+    // 🔹 Relasi ke Produk
     public function produk()
     {
         return $this->belongsTo(Product::class, 'produk_id');

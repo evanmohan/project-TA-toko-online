@@ -50,7 +50,7 @@ class ProdukController extends Controller
     public function show(string $id)
     {
         $produk = Product::with('kategori')->findOrFail($id);
-        return view('showProduk', compact('produk'));
+        return view('home.showProduk', compact('produk'));
     }
 
     public function update(Request $request, string $id)
@@ -98,5 +98,35 @@ class ProdukController extends Controller
         $produk->delete();
 
         return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil dihapus!');
+    }
+
+    /**
+     * 🔍 Pencarian produk (dipanggil dari search bar)
+     */
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+        $kategoris = Kategori::all();
+
+        $products = Product::with('kategori')
+            ->when($query, function ($q) use ($query) {
+                $q->where('nama_produk', 'like', '%' . $query . '%')
+                    ->orWhere('deskripsi', 'like', '%' . $query . '%');
+            })
+            ->latest()
+            ->paginate(12);
+
+        return view('admin.produk.index', compact('products', 'kategoris', 'query'));
+    }
+
+    public function liveSearch(Request $request)
+    {
+        $keyword = $request->get('q');
+
+        $results = Product::where('nama_produk', 'like', "%{$keyword}%")
+            ->take(5)
+            ->get(['id', 'nama_produk', 'harga', 'image']);
+
+        return response()->json($results);
     }
 }

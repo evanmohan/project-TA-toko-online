@@ -21,7 +21,7 @@ class PembayaranController extends Controller
     public function uploadProof(Request $request, $id)
     {
         $request->validate([
-            'bukti_pembayaran' => 'required|image|max:2048',
+            'bukti_pembayaran' => 'reqxuired|image|max:2048',
         ]);
 
         $pesanan = Pesanan::where('id', $id)

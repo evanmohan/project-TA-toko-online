@@ -10,7 +10,7 @@ class PesananController extends Controller
     {
         $cartItems = session('cart', []);
         $subtotal = collect($cartItems)->sum(fn($i) => $i['price'] * $i['quantity']);
-        return view('checkout', [
+        return view('checkout.checkout', [
             'cartItems' => $cartItems,
             'subtotal' => $subtotal,
             'ongkir' => 10000,
