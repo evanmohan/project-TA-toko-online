@@ -57,6 +57,12 @@
         transform: translateY(-2px);
     }
 
+    .btn-orange:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
     .btn-outline-orange {
         border: 2px solid var(--orange);
         color: var(--orange);
@@ -74,7 +80,7 @@
         transform: translateY(-2px);
     }
 
-    /* ===== POPUP STYLE (for dynamic inject) ===== */
+    /* ===== POPUP STYLE ===== */
     .cart-success-popup {
         position: fixed;
         top: 50%;
@@ -222,31 +228,43 @@
     const addToCartForm = document.getElementById('addToCartForm');
     const addBtn = addToCartForm.querySelector('.btn-orange');
 
-    addBtn.addEventListener('click', () => addToCartForm.requestSubmit());
-
     addToCartForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        const form = this;
-        const formData = new FormData(form);
 
-        const response = await fetch(form.action, {
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': formData.get('_token') },
-            body: formData
-        });
+        if (addBtn.disabled) return;
+        const originalText = addBtn.innerHTML;
+        addBtn.disabled = true;
+        addBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menambahkan...';
 
-        if (response.ok) {
-            showCartSuccess("{{ $produk->nama_produk }}");
+        const formData = new FormData(this);
+
+        try {
+            const response = await fetch(this.action, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': formData.get('_token') },
+                body: formData
+            });
+
+            if (response.ok) {
+                showCartSuccess("{{ $produk->nama_produk }}");
+            } else {
+                alert('Gagal menambahkan ke keranjang.');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Terjadi kesalahan. Silakan coba lagi.');
+        } finally {
+            // Apapun hasilnya, tombol kembali normal
+            addBtn.disabled = false;
+            addBtn.innerHTML = originalText;
         }
     });
 
     function showCartSuccess(productName) {
-        // Buat backdrop
         const backdrop = document.createElement('div');
         backdrop.className = 'popup-backdrop';
         document.body.appendChild(backdrop);
 
-        // Buat popup
         const popup = document.createElement('div');
         popup.className = 'cart-success-popup';
         popup.innerHTML = `
@@ -258,7 +276,6 @@
         `;
         document.body.appendChild(popup);
 
-        // Tutup otomatis
         setTimeout(() => closePopup(), 3000);
     }
 

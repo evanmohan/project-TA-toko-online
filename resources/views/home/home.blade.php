@@ -115,7 +115,10 @@
                         <p class="text-muted small mb-1">{{ $product->kategori->nama_kategori ?? 'Tanpa Kategori' }}</p>
                         <p class="price mb-3">Rp {{ number_format($product->harga, 0, ',', '.') }}</p>
                         <a href="{{ route('produk.show', $product->id) }}" class="btn btn-orange btn-sm w-100 mb-2">Lihat Detail</a>
-                        <a href="{{ route('login') }}" class="btn btn-outline-orange btn-sm w-100">Beli Sekarang</a>
+                        <form action="">
+                            @csrf
+                            <button class="btn btn-outline-orange btn-sm w-100">Beli Sekarang</button>
+                        </form>
                     </div>
                 </div>
             </div>

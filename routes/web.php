@@ -81,13 +81,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/keranjang/remove/{id}', [KeranjangController::class, 'remove'])->name('keranjang.remove');
     Route::get('/keranjang/clear', [KeranjangController::class, 'clear'])->name('keranjang.clear');
 
-    // Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-    // Route::post('/checkout/beli', [CheckoutController::class, 'beliLangsung'])->name('checkout.beliLangsung');
-    // Route::post('/checkout/store', [CheckoutController::class, 'store'])->name('checkout.store');
-    // Route::get('/checkout/bayar/{id}', [CheckoutController::class, 'bayar'])->name('checkout.bayar');
-    // Route::post('/checkout/upload/{id}', [CheckoutController::class, 'uploadBukti'])->name('checkout.upload');
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout/beli', [CheckoutController::class, 'beliLangsung'])->name('checkout.beliLangsung');
+    Route::post('/checkout/store', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/checkout/bayar/{id}', [CheckoutController::class, 'bayar'])->name('checkout.bayar');
+    Route::post('/checkout/upload/{id}', [CheckoutController::class, 'uploadBukti'])->name('checkout.upload');
     // CHECKOUT (PesananController sudah kamu punya)
-    Route::get('/checkout', [App\Http\Controllers\PesananController::class, 'checkout'])->name('pesanan.checkout');
+    // Route::get('/checkout', [App\Http\Controllers\PesananController::class, 'checkout'])->name('pesanan.checkout');
 
     // PAYMENT
     Route::get('/payment/{id}', [PembayaranController::class, 'index'])->name('payment.index');
