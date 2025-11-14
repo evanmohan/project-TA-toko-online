@@ -26,6 +26,7 @@
                                     <th>Kode Ekspedisi</th>
                                     <th>Nama Ekspedisi</th>
                                     <th>Deskripsi</th>
+                                    <th>Ongkir</th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -36,14 +37,14 @@
                                         <td>{{ $e->kode_ekspedisi ?? '-' }}</td>
                                         <td>{{ $e->nama }}</td>
                                         <td>{{ $e->deskripsi ?? '-' }}</td>
+                                        <td>Rp {{ number_format($e->ongkir, 0, ',', '.') }}</td>
+
                                         <td class="text-center">
-                                            <!-- Tombol Edit -->
                                             <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modalEditEkspedisi{{ $e->id }}">
                                                 Edit
                                             </button>
 
-                                            <!-- Tombol Hapus -->
                                             <form action="{{ route('admin.ekspedisi.destroy', $e->id) }}" method="POST"
                                                 class="d-inline"
                                                 onsubmit="return confirm('Yakin ingin menghapus ekspedisi ini?')">
@@ -60,10 +61,11 @@
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content shadow-sm border-0" style="border-radius: 12px;">
                                                 <div class="modal-header border-0 pb-0">
-                                                    <h5 class="modal-title fw-bold" id="editEkspedisiLabel{{ $e->id }}"
+                                                    <h5 class="modal-title fw-bold"
+                                                        id="editEkspedisiLabel{{ $e->id }}"
                                                         style="color:#1f2d3d;">Edit Ekspedisi</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
+                                                    <button type="button" class="btn-close"
+                                                        data-bs-dismiss="modal"></button>
                                                 </div>
 
                                                 <form action="{{ route('admin.ekspedisi.update', $e->id) }}" method="POST">
@@ -78,8 +80,14 @@
 
                                                         <div class="mb-3">
                                                             <label class="form-label fw-semibold">Deskripsi</label>
-                                                            <textarea name="deskripsi" class="form-control shadow-sm" rows="3"
-                                                                placeholder="Masukkan deskripsi ekspedisi">{{ $e->deskripsi }}</textarea>
+                                                            <textarea name="deskripsi" class="form-control shadow-sm" rows="3">{{ $e->deskripsi }}</textarea>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-semibold">Ongkir (Rp)</label>
+                                                            <input type="number" name="ongkir"
+                                                                class="form-control shadow-sm"
+                                                                value="{{ $e->ongkir }}" required>
                                                         </div>
                                                     </div>
 
@@ -90,13 +98,14 @@
                                                             style="background-color:#f65f42; border-radius: 8px;">Simpan</button>
                                                     </div>
                                                 </form>
+
                                             </div>
                                         </div>
                                     </div>
 
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center text-muted py-4">Belum ada ekspedisi.</td>
+                                        <td colspan="6" class="text-center text-muted py-4">Belum ada ekspedisi.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -118,15 +127,24 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
+
                     <div class="mb-3">
                         <label class="form-label">Nama Ekspedisi</label>
                         <input type="text" name="nama" class="form-control" required>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label">Deskripsi</label>
                         <textarea name="deskripsi" class="form-control"></textarea>
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Ongkir (Rp)</label>
+                        <input type="number" name="ongkir" class="form-control" required>
+                    </div>
+
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn" style="background-color:#f65f42; color:white;">Simpan</button>

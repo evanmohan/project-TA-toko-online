@@ -6,7 +6,6 @@ use App\Http\Controllers\PesananController;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
@@ -31,21 +30,21 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-
 // ===================== ADMIN =====================
 Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+
     Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
 
     Route::get('/profile/edit', [UserController::class, 'edit'])->name('user.edit');
     Route::put('/profile/update', [UserController::class, 'update'])->name('user.update');
-    // ✅ Produk CRUD (otomatis: index, create, store, show, edit, update, destroy)
 
+    // Produk CRUD
     Route::get('/produk', [ProdukController::class, 'index'])->name('produk.index');
     Route::post('/produk', [ProdukController::class, 'store'])->name('produk.store');
     Route::put('/produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
     Route::delete('/produk/{id}', [ProdukController::class, 'destroy'])->name('produk.destroy');
 
-    // ✅ Kategori CRUD (manual routes)
+    // Kategori CRUD
     Route::get('/kategori', [KategoriController::class, 'index'])->name('kategori.index');
     Route::get('/kategori/create', [KategoriController::class, 'create'])->name('kategori.create');
     Route::post('/kategori', [KategoriController::class, 'store'])->name('kategori.store');
@@ -53,17 +52,13 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::put('/kategori/{id}', [KategoriController::class, 'update'])->name('kategori.update');
     Route::delete('/kategori/{id}', [KategoriController::class, 'destroy'])->name('kategori.destroy');
 
-    // ✅ Pesanan & User
-    // Route::resource('pesanan', PesananController::class)->only(['index', 'show', 'update']);
-    // Route::resource('user', UserController::class)->only(['index', 'destroy']);
-
-    // ✅ Ekspedisi
+    // Ekspedisi
     Route::get('/ekspedisi', [EkspedisiController::class, 'index'])->name('ekspedisi.index');
     Route::post('/ekspedisi', [EkspedisiController::class, 'store'])->name('ekspedisi.store');
     Route::put('/ekspedisi/{id}', [EkspedisiController::class, 'update'])->name('ekspedisi.update');
     Route::delete('/ekspedisi/{id}', [EkspedisiController::class, 'destroy'])->name('ekspedisi.destroy');
 
-    // ✅ Halaman tambahan admin
+    // Halaman tambahan admin
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
     Route::get('/billing', [DashboardController::class, 'billing'])->name('billing');
     Route::get('/management', [DashboardController::class, 'management'])->name('management');
@@ -72,27 +67,42 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
 
 // ===================== USER =====================
 Route::middleware(['auth'])->group(function () {
-    Route::get('/checkout', [PesananController::class, 'index'])->name('checkout.index');
-    Route::post('/checkout', [PesananController::class, 'store'])->name('checkout.store');
 
+    // ================= CHECKOUT =================
+    Route::post('/checkout/single', [CheckoutController::class, 'checkoutSingle'])
+        ->name('checkout.single');
+
+    Route::post('/checkout/cart', [CheckoutController::class, 'checkoutCart'])
+        ->name('checkout.cart');
+
+    Route::post('/checkout/buy-now/{id}', [CheckoutController::class, 'buyNow'])
+        ->name('checkout.buy-now');
+
+    // HALAMAN CHECKOUT PAKAI SATU ROUTE SAJA
+    Route::get('/checkout', [CheckoutController::class, 'page'])
+        ->name('checkout.page');
+
+    // PROSES CHECKOUT
+    Route::post('/checkout/submit', [CheckoutController::class, 'store'])
+        ->name('checkout.store');
+
+    Route::post('/checkout/from-cart', [CheckoutController::class, 'checkoutCart'])->name('checkout.fromCart');
+
+
+
+
+    // ================= KERANJANG =================
     Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
     Route::post('/keranjang/add/{product}', [KeranjangController::class, 'add'])->name('keranjang.add');
     Route::post('/keranjang/update/{id}', [KeranjangController::class, 'update'])->name('keranjang.update');
     Route::get('/keranjang/remove/{id}', [KeranjangController::class, 'remove'])->name('keranjang.remove');
     Route::get('/keranjang/clear', [KeranjangController::class, 'clear'])->name('keranjang.clear');
 
-    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-    Route::post('/checkout/beli', [CheckoutController::class, 'beliLangsung'])->name('checkout.beliLangsung');
-    Route::post('/checkout/store', [CheckoutController::class, 'store'])->name('checkout.store');
-    Route::get('/checkout/bayar/{id}', [CheckoutController::class, 'bayar'])->name('checkout.bayar');
-    Route::post('/checkout/upload/{id}', [CheckoutController::class, 'uploadBukti'])->name('checkout.upload');
-    // CHECKOUT (PesananController sudah kamu punya)
-    // Route::get('/checkout', [App\Http\Controllers\PesananController::class, 'checkout'])->name('pesanan.checkout');
-
-    // PAYMENT
-    Route::get('/payment/{id}', [PembayaranController::class, 'index'])->name('payment.index');
+    // ================= PAYMENT =================
+    Route::get('/payment/{id}',  [PembayaranController::class, 'index'])->name('payment.index');
     Route::post('/payment/{id}', [PembayaranController::class, 'uploadProof'])->name('payment.upload');
 });
+
 
 
 // ===================== HOME PAGE =====================
@@ -102,5 +112,6 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/produk/{id}', [ProdukController::class, 'show'])->name('produk.show');
 Route::get('/produk/search', [ProdukController::class, 'search'])->name('produk.search');
 Route::get('/produk/live-search', [ProdukController::class, 'liveSearch'])->name('produk.liveSearch');
+
 // ===================== RESET PASSWORD =====================
 Route::get('/reset-password', fn() => view('auth.reset-password'))->name('reset-password');

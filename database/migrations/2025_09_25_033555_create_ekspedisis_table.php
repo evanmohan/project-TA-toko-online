@@ -13,6 +13,10 @@ return new class extends Migration
             $table->string('kode_ekspedisi', 20)->unique()->nullable();
             $table->string('nama', 100);
             $table->text('deskripsi')->nullable();
+
+            // 🔥 Tambahan kolom ongkir
+            $table->integer('ongkir')->default(0);
+
             $table->timestamps();
         });
     }

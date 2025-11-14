@@ -1,42 +1,37 @@
 @extends('home.app')
 
 @section('content')
-<div class="container mt-4">
-    <h3>Checkout</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Produk</th>
-                <th>Qty</th>
-                <th>Subtotal</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($keranjang as $item)
-            <tr>
-                <td>{{ $item->product->nama_produk }}</td>
-                <td>{{ $item->qty }}</td>
-                <td>Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div class="container mt-4">
+        <h2>Checkout Page</h2>
 
-    <h5>Total: <strong>Rp {{ number_format($total, 0, ',', '.') }}</strong></h5>
+        @foreach($items as $i)
+            <p>{{ $i->product->nama_produk }} x {{ $i->qty }} = Rp {{ number_format($i->subtotal) }}</p>
+        @endforeach
 
-    <form action="{{ route('checkout.store') }}" method="POST">
-        @csrf
-        <div class="form-group mt-3">
-            <label>Pilih Ekspedisi</label>
-            <select class="form-control" name="ekspedisi" required>
-                <option value="">-- Pilih --</option>
-                @foreach ($ekspedisi as $e)
-                    <option value="{{ $e->nama }}">{{ $e->nama }}</option>
-                @endforeach
+        <p>Total Produk: Rp {{ number_format($total_produk) }}</p>
+
+        <form method="POST" action="{{ route('checkout.process') }}">
+            @csrf
+
+            <input type="text" name="nama" placeholder="Nama" required>
+            <input type="text" name="telepon" placeholder="Telepon" required>
+            <textarea name="alamat" placeholder="Alamat" required></textarea>
+
+            <input type="text" name="provinsi" placeholder="Provinsi" required>
+            <input type="text" name="kota" placeholder="Kota" required>
+
+            <textarea name="catatan" placeholder="Catatan (opsional)"></textarea>
+
+            <select name="metode_pembayaran" required>
+                <option value="COD">COD</option>
+                <option value="Transfer Bank">Transfer Bank</option>
+                <option value="E-wallet">E-wallet</option>
             </select>
-        </div>
 
-        <button type="submit" class="btn btn-success mt-3">Pesan Sekarang</button>
-    </form>
-</div>
+            <input type="number" name="ongkir" min="0" placeholder="Ongkir" required>
+
+            <button type="submit">Proses Pesanan</button>
+        </form>
+
+    </div>
 @endsection

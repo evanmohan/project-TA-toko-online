@@ -25,17 +25,15 @@ class EkspedisiController extends Controller
         $request->validate([
             'nama' => 'required|string|max:100',
             'deskripsi' => 'nullable|string',
+            'ongkir' => 'required|integer|min:0',
         ]);
 
-        // Simpan data awal (tanpa kode_ekspedisi dulu)
+        // Simpan data awal
         $ekspedisi = Ekspedisi::create([
             'nama' => $request->nama,
             'deskripsi' => $request->deskripsi,
+            'ongkir' => $request->ongkir,
         ]);
-
-        // Update kode ekspedisi berdasarkan ID
-        $ekspedisi->kode_ekspedisi = 'EXP' . str_pad($ekspedisi->id, 3, '0', STR_PAD_LEFT);
-        $ekspedisi->saveQuietly();
 
         return redirect()->back()->with('success', 'Ekspedisi berhasil ditambahkan.');
     }
@@ -48,12 +46,15 @@ class EkspedisiController extends Controller
         $request->validate([
             'nama' => 'required|string|max:100',
             'deskripsi' => 'nullable|string',
+            'ongkir' => 'required|integer|min:0',
         ]);
 
         $ekspedisi = Ekspedisi::findOrFail($id);
+
         $ekspedisi->update([
             'nama' => $request->nama,
             'deskripsi' => $request->deskripsi,
+            'ongkir' => $request->ongkir,
         ]);
 
         return redirect()->back()->with('success', 'Data ekspedisi berhasil diperbarui.');

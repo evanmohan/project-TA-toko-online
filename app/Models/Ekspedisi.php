@@ -15,6 +15,7 @@ class Ekspedisi extends Model
         'kode_ekspedisi',
         'nama',
         'deskripsi',
+        'ongkir',
     ];
 
     public static function boot()
