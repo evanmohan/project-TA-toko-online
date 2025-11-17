@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Admin\EkspedisiController;
 use App\Http\Controllers\Admin\KategoriController;
-use App\Http\Controllers\PesananController;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
@@ -99,8 +98,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/keranjang/clear', [KeranjangController::class, 'clear'])->name('keranjang.clear');
 
     // ================= PAYMENT =================
-    Route::get('/payment/{id}',  [PembayaranController::class, 'index'])->name('payment.index');
+    Route::get('/payments', [PembayaranController::class, 'list'])->name('payment.index');
+
+    Route::get('/payment/{id}',  [PembayaranController::class, 'index'])->name('payment.bayar');
     Route::post('/payment/{id}', [PembayaranController::class, 'uploadProof'])->name('payment.upload');
+
+
 });
 
 

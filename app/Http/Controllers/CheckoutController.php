@@ -36,35 +36,41 @@ class CheckoutController extends Controller
     // =============================
     // 2. CHECKOUT DARI KERANJANG
     // =============================
-    public function checkoutCart(Request $request)
-    {
-        $selected = json_decode($request->items, true);
+public function checkoutCart(Request $request)
+{
+    $selected = json_decode($request->items, true);
 
-        if (!is_array($selected) || count($selected) == 0) {
-            return redirect()->route('keranjang.index')->with('error', 'Tidak ada produk yang dipilih.');
-        }
-
-        $ids = collect($selected)->pluck('id');
-
-        $cart = Keranjang::whereIn('id', $ids)->with('product')->get();
-
-        $items = $cart->map(function ($c) use ($selected) {
-            $match = collect($selected)->firstWhere('id', $c->id);
-
-            return [
-                'product_id'     => $c->product_id,
-                'nama_produk'    => $c->product->nama_produk,
-                'qty'            => $match['qty'],
-                'harga_satuan'   => $c->harga_satuan,
-                'subtotal'       => $match['qty'] * $c->harga_satuan,
-                'image'          => $c->product->image,
-            ];
-        })->toArray();
-
-        session(['checkout_items' => $items]);
-
-        return redirect()->route('checkout.page');
+    if (!is_array($selected) || count($selected) == 0) {
+        return redirect()->route('keranjang.index')->with('error', 'Tidak ada produk yang dipilih.');
     }
+
+    $ids = collect($selected)->pluck('id');
+
+    $cartItems = Keranjang::whereIn('id', $ids)->with('product')->get();
+
+    $items = [];
+
+    foreach ($cartItems as $cart) {
+        $match = collect($selected)->firstWhere('id', $cart->id);
+
+        $qty = $match['qty'];
+
+        $items[] = [
+            'product_id'     => $cart->product_id,
+            'nama_produk'    => $cart->product->nama_produk,
+            'qty'            => $qty,
+            'harga_satuan'   => $cart->harga_satuan,
+            'subtotal'       => $qty * $cart->harga_satuan,
+            'image'          => $cart->product->image,
+        ];
+    }
+
+    // SIMPAN SAMA PERSIS FORMAT BUY NOW
+    session(['checkout_items' => $items]);
+
+    return redirect()->route('checkout.page');
+}
+
 
 
 
@@ -98,7 +104,7 @@ class CheckoutController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'metode_pengiriman' => 'required|exists:ekspedisis,id',
+            'metode_pengiriman' => 'required|exists:ekspedisi,id',
             'metode_pembayaran' => 'required',
             'ongkir' => 'required|numeric'
         ]);
@@ -153,7 +159,7 @@ class CheckoutController extends Controller
 
         session()->forget('checkout_items');
 
-        return redirect()->route('home')->with('success', 'Pesanan berhasil dibuat!');
+        return redirect()->route('payment.index', $order->id)->with('success', 'Pesanan berhasil dibuat!');
     }
 
 

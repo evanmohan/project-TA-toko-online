@@ -80,12 +80,34 @@
             transform: translateY(-2px);
         }
 
+        /* ===== STYLE SIZE SELECTOR SHOPEE ===== */
+        .size-option {
+            padding: 8px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.25s ease;
+            user-select: none;
+        }
+
+        .size-option:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        .size-option.active {
+            border-color: var(--orange);
+            background: var(--orange);
+            color: #fff;
+        }
+
         /* ===== POPUP STYLE ===== */
         .cart-success-popup {
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) scale(1);
+            transform: translate(-50%, -50%);
             background: #ffffff;
             border-radius: 18px;
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
@@ -115,27 +137,13 @@
         }
 
         @keyframes pop {
-            0% {
-                transform: scale(0);
-                opacity: 0;
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         @keyframes fadeIn {
-            0% {
-                opacity: 0;
-                transform: translate(-50%, -45%) scale(0.95);
-            }
-
-            100% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-            }
+            0% { opacity: 0; transform: translate(-50%, -45%) scale(0.95); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
         .cart-success-popup h4 {
@@ -178,10 +186,6 @@
             cursor: pointer;
         }
 
-        .cart-success-popup .close-btn:hover {
-            color: #000;
-        }
-
         .popup-backdrop {
             position: fixed;
             top: 0;
@@ -194,13 +198,8 @@
         }
 
         @keyframes fadeInBackdrop {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 
@@ -214,33 +213,65 @@
 
                 <div class="col-md-7 product-info">
                     <h3>{{ $produk->nama_produk }}</h3>
-                    <p class="text-muted mb-1">Kategori: <strong>{{ $produk->kategori->nama_kategori ?? '-' }}</strong></p>
-                    <p>Ukuran: {{ $produk->size ?? '-' }}</p>
+                    <p class="text-muted mb-1">Kategori:
+                        <strong>{{ $produk->kategori->nama_kategori ?? '-' }}</strong>
+                    </p>
+
                     <p class="price">Rp {{ number_format($produk->harga, 0, ',', '.') }}</p>
+
                     <p class="mt-3">{{ $produk->deskripsi ?? 'Tidak ada deskripsi.' }}</p>
 
-                    <form id="addToCartForm" action="{{ route('keranjang.add', $produk->id) }}" method="POST">
+                    {{-- ======================= SIZE SELECTOR ======================= --}}
+                    <div class="mb-3">
+                        <label class="fw-semibold d-block mb-2">Pilih Ukuran</label>
+
+                        <div class="size-selector d-flex gap-2 flex-wrap">
+                            @foreach(['S', 'M', 'L', 'XL', 'XXL'] as $size)
+                                <div class="size-option" data-size="{{ $size }}">
+                                    {{ $size }}
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <input type="hidden" name="size" id="selectedSize">
+                    </div>
+                    {{-- ============================================================= --}}
+
+                    <form id="addToCartForm" action="{{ route('keranjang.add', parameters: $produk->id) }}" method="POST">
                         @csrf
+
                         <div class="row align-items-center">
                             <div class="col-4">
                                 <label for="qty" class="form-label fw-semibold">Jumlah</label>
-                                <input type="number" name="qty" id="qty" class="form-control" min="1"
-                                    max="{{ $produk->stok }}" value="1">
+                                <input type="number" name="qty" id="qty"
+                                       class="form-control" min="1"
+                                       max="{{ $produk->stok }}" value="1">
                             </div>
                         </div>
                     </form>
 
                     <div class="mt-4 d-flex gap-2">
-                        <button form="addToCartForm" class="btn-orange w-100">Tambah ke Keranjang</button>
+                        <button id="addToCartBtn" form="addToCartForm"
+                                class="btn-orange w-100">
+                            Tambah ke Keranjang
+                        </button>
 
-                        <form action="{{ route('checkout.buy-now', $produk->id) }}" method="POST" class="w-100">
+                        <form action="{{ route('checkout.buy-now', $produk->id) }}"
+                              method="POST" class="w-100">
                             @csrf
                             <input type="hidden" name="qty" value="1" id="buyNowQty">
-                            <button type="submit" class="btn-outline-orange w-100">Beli Sekarang</button>
+                            <input type="hidden" name="size" id="buyNowSize">
+
+                            <button type="submit"
+                                    class="btn-outline-orange w-100">
+                                Beli Sekarang
+                            </button>
                         </form>
                     </div>
 
-                    <p class="text-muted small mt-4">Stok tersedia: {{ $produk->stok }}</p>
+                    <p class="text-muted small mt-4">
+                        Stok tersedia: {{ $produk->stok }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -250,12 +281,44 @@
 
     <script>
         const addToCartForm = document.getElementById('addToCartForm');
-        const addBtn = addToCartForm.querySelector('.btn-orange');
+        const addBtn = document.getElementById('addToCartBtn');
 
+        // ======================================================
+        //                     SIZE SELECTOR
+        // ======================================================
+        const sizeOptions = document.querySelectorAll('.size-option');
+        const selectedSizeInput = document.getElementById('selectedSize');
+        const buyNowSize = document.getElementById('buyNowSize');
+
+        // tombol dinonaktifkan sebelum pilih ukuran
+        addBtn.disabled = true;
+        document.querySelector('.btn-outline-orange').disabled = true;
+
+        sizeOptions.forEach(option => {
+            option.addEventListener('click', function () {
+
+                sizeOptions.forEach(o => o.classList.remove('active'));
+                this.classList.add('active');
+
+                selectedSizeInput.value = this.dataset.size;
+                buyNowSize.value = this.dataset.size;
+
+                addBtn.disabled = false;
+                document.querySelector('.btn-outline-orange').disabled = false;
+            });
+        });
+
+        // ======================================================
+        //                    ADD TO CART
+        // ======================================================
         addToCartForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            if (addBtn.disabled) return;
+            if (!selectedSizeInput.value) {
+                alert("Pilih ukuran dulu!");
+                return;
+            }
+
             const originalText = addBtn.innerHTML;
             addBtn.disabled = true;
             addBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menambahkan...';
@@ -275,15 +338,16 @@
                     alert('Gagal menambahkan ke keranjang.');
                 }
             } catch (error) {
-                console.error(error);
                 alert('Terjadi kesalahan. Silakan coba lagi.');
             } finally {
-                // Apapun hasilnya, tombol kembali normal
                 addBtn.disabled = false;
                 addBtn.innerHTML = originalText;
             }
         });
 
+        // ======================================================
+        //                  POPUP SUCCESS
+        // ======================================================
         function showCartSuccess(productName) {
             const backdrop = document.createElement('div');
             backdrop.className = 'popup-backdrop';
@@ -292,27 +356,24 @@
             const popup = document.createElement('div');
             popup.className = 'cart-success-popup';
             popup.innerHTML = `
-                            <button class="close-btn" onclick="closePopup()">×</button>
-                            <div class="success-icon"><i class="fas fa-check"></i></div>
-                            <h4>Berhasil Ditambahkan!</h4>
-                            <p>${productName} berhasil dimasukkan ke keranjang.</p>
-                            <a href="{{ route('keranjang.index') }}" class="btn-green">Lihat Keranjang</a>
-                        `;
+                <button class="close-btn" onclick="closePopup()">×</button>
+                <div class="success-icon"><i class="fas fa-check"></i></div>
+                <h4>Berhasil Ditambahkan!</h4>
+                <p>${productName} berhasil dimasukkan ke keranjang.</p>
+                <a href="{{ route('keranjang.index') }}" class="btn-green">Lihat Keranjang</a>
+            `;
             document.body.appendChild(popup);
 
             setTimeout(() => closePopup(), 3000);
         }
 
         function closePopup() {
-            const popup = document.querySelector('.cart-success-popup');
-            const backdrop = document.querySelector('.popup-backdrop');
-            if (popup) popup.remove();
-            if (backdrop) backdrop.remove();
+            document.querySelector('.cart-success-popup')?.remove();
+            document.querySelector('.popup-backdrop')?.remove();
         }
 
         document.getElementById("qty").addEventListener("input", function () {
-            document.getElementById("buy-now-qty").value = this.value;
+            document.getElementById("buyNowQty").value = this.value;
         });
-
     </script>
 @endsection

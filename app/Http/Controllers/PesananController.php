@@ -2,24 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Order;
+use Illuminate\Support\Facades\Auth;
 
 class PesananController extends Controller
 {
     public function index()
     {
-        $cartItems = session('cart', []);
-        $subtotal = collect($cartItems)->sum(fn($i) => $i['price'] * $i['quantity']);
-        return view('checkout.checkout', [
-            'cartItems' => $cartItems,
-            'subtotal' => $subtotal,
-            'ongkir' => 10000,
-        ]);
-    }
+        // Ambil semua pesanan milik user
+        $orders = Order::where('user_id', Auth::id())
+            ->latest()
+            ->get();
 
-    public function store(Request $request)
-    {
-        // proses simpan order ke database
-        return redirect()->route('home')->with('success', 'Pesanan kamu berhasil diproses!');
+        return view('payment.index', compact('orders'));
     }
 }

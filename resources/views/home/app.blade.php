@@ -14,7 +14,6 @@
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding-top: 125px;
-            /* agar konten tidak tertutup navbar */
         }
 
         :root {
@@ -35,9 +34,6 @@
             border-radius: 5px;
         }
 
-
-
-        /* ====== NAVBAR FIXED ====== */
         .navbar-wrapper {
             background: linear-gradient(90deg, var(--orange), var(--dark-orange));
             color: white;
@@ -49,7 +45,6 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
-        /* ====== TOP NAVBAR ====== */
         .top-navbar {
             padding: 8px 40px;
             font-size: 14px;
@@ -83,7 +78,6 @@
             color: #ffebcc;
         }
 
-        /* ====== MAIN NAVBAR ====== */
         .main-navbar {
             padding: 15px 60px;
             display: flex;
@@ -92,17 +86,11 @@
             gap: 50px;
         }
 
-        .main-navbar .logo {
-            display: flex;
-            align-items: center;
-        }
-
         .main-navbar .logo img {
             height: 50px;
             margin-right: 10px;
         }
 
-        /* ====== SEARCH BAR ====== */
         .main-navbar .search-bar {
             flex-grow: 1;
             max-width: 650px;
@@ -120,11 +108,6 @@
             outline: none;
             font-size: 14px;
             color: #333;
-            border-radius: 5px 0 0 5px;
-        }
-
-        .main-navbar .search-bar input::placeholder {
-            color: #888;
         }
 
         .main-navbar .search-bar button {
@@ -139,16 +122,6 @@
             border-radius: 0 5px 5px 0;
             cursor: pointer;
             transition: 0.2s;
-        }
-
-        .main-navbar .search-bar button:hover {
-            background-color: var(--dark-orange);
-        }
-
-        /* ====== ICONS ====== */
-        .main-navbar .icons {
-            display: flex;
-            align-items: center;
         }
 
         .main-navbar .icons a {
@@ -167,7 +140,6 @@
             background-color: #dc3545;
         }
 
-        /* ====== CATEGORY BAR ====== */
         .category-bar {
             background: linear-gradient(90deg, var(--orange), var(--dark-orange));
             padding: 10px 60px;
@@ -181,11 +153,6 @@
             font-weight: 500;
         }
 
-        .category-bar a:hover {
-            text-decoration: underline;
-        }
-
-        /* ====== FOOTER ====== */
         footer {
             background: linear-gradient(90deg, var(--orange), var(--dark-orange));
             color: white;
@@ -204,7 +171,6 @@
             color: white;
             text-decoration: none;
             margin-bottom: 6px;
-            font-size: 14px;
             opacity: 0.9;
         }
 
@@ -221,7 +187,6 @@
             text-align: center;
         }
 
-        /* ====== DROPDOWN ANIMATION ====== */
         .dropdown-menu {
             opacity: 0;
             transform: translateY(-10px);
@@ -254,12 +219,33 @@
             color: var(--dark-orange);
             transition: 0.2s;
         }
+
+        .icons .icon-link {
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: 0.25s ease;
+        }
+
+        .icons .icon-link:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .icons .icon-link i {
+            font-size: 18px;
+        }
+
+        .icons .badge {
+            background-color: #dc3545;
+            font-size: 10px;
+            padding: 3px 6px;
+            border-radius: 50%;
+        }
     </style>
 </head>
-
+y
 <body>
 
-    <!-- 🔹 NAVBAR GABUNG WARNA (FIXED) -->
     <nav class="navbar-wrapper">
         <div class="top-navbar">
             <div>
@@ -277,19 +263,16 @@
                         <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->username }}
                     </a>
 
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li>
-                            <a href="#" class="dropdown-item"><i class="bi bi-pencil-square me-2"></i> Edit Profil</a>
-                        </li>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a href="#" class="dropdown-item"><i class="bi bi-pencil-square me-2"></i> Edit Profil</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
-                                <button type="submit" class="dropdown-item text-danger">
-                                    <i class="bi bi-box-arrow-right me-2"></i> Logout
-                                </button>
+                                <button type="submit" class="dropdown-item text-danger"><i
+                                        class="bi bi-box-arrow-right me-2"></i> Logout</button>
                             </form>
                         </li>
                     </ul>
@@ -306,25 +289,33 @@
                 <h4 class="m-0 fw-bold text-white ms-2">Second Store</h4>
             </a>
 
-
-            <!-- 🔍 SEARCH BAR -->
             <div class="search-bar position-relative">
                 <input type="text" id="searchInput" placeholder="Cari produk unggulan...">
                 <button type="button"><i class="bi bi-search"></i></button>
 
-                <!-- hasil pencarian muncul di sini -->
                 <div id="searchResults" class="position-absolute bg-white w-100 shadow-sm rounded mt-1"
-                    style="z-index: 2000; display:none; max-height:250px; overflow-y:auto;">
-                </div>
+                    style="z-index: 2000; display:none; max-height:250px; overflow-y:auto;"></div>
+            </div>
+
+            <div class="icons d-flex align-items-center gap-4">
+
+                <!-- 🔹 Tombol Keranjang -->
+                <a href="{{ route(name: 'keranjang.index') }}"
+                    class="text-white text-decoration-none position-relative d-flex align-items-center fw-semibold icon-link">
+                    <i class="bi bi-cart3 me-1 fs-5"></i>
+                    <span>Keranjang</span>
+                    <span class="badge">{{ $cartCount ?? 2 }}</span>
+                </a>
+
+                <!-- 🔹 Tombol Riwayat Pesanan -->
+                <a href="{{ route('payment.index') }}"
+                    class="text-white text-decoration-none position-relative d-flex align-items-center fw-semibold icon-link">
+                    <i class="bi bi-clock-history me-1 fs-5"></i>
+                    <span>Riwayat</span>
+                </a>
 
             </div>
 
-
-
-            <div class="icons">
-                <a href="{{ route(name: 'keranjang.index') }}"><i class="bi bi-cart3"></i> Keranjang<span
-                        class="badge">2</span></a>
-            </div>
         </div>
     </nav>
 
@@ -332,7 +323,6 @@
         @yield('content')
     </main>
 
-    <!-- 🔹 FOOTER -->
     <footer>
         <div class="container">
             <div class="row text-start">
@@ -342,18 +332,21 @@
                     <a href="#">Kebijakan Privasi</a>
                     <a href="#">Syarat & Ketentuan</a>
                 </div>
+
                 <div class="col-md-3 mb-3">
                     <h6>LAYANAN PELANGGAN</h6>
                     <a href="#">Hubungi Kami</a>
                     <a href="#">Pengembalian Barang</a>
                     <a href="#">Bantuan</a>
                 </div>
+
                 <div class="col-md-3 mb-3">
                     <h6>EKSTRA</h6>
                     <a href="#">Promo Spesial</a>
                     <a href="#">Diskon Hari Ini</a>
                     <a href="#">Voucher</a>
                 </div>
+
                 <div class="col-md-3 mb-3">
                     <h6>AKUN SAYA</h6>
                     <a href="#">Akun Saya</a>
@@ -361,6 +354,7 @@
                     <a href="#">Riwayat Belanja</a>
                 </div>
             </div>
+
             <div class="copyright">
                 &copy; {{ date('Y') }} Second Store. Semua hak cipta dilindungi.
             </div>
@@ -368,11 +362,11 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.getElementById('searchInput');
             const resultsDiv = document.getElementById('searchResults');
-
             let timeout = null;
 
             searchInput.addEventListener('keyup', function () {
@@ -393,21 +387,21 @@
                                 resultsDiv.innerHTML = '<div class="p-2 text-muted small">Tidak ada hasil</div>';
                             } else {
                                 resultsDiv.innerHTML = data.map(item => `
-                            <a href="/produk/${item.id}" class="d-flex align-items-center text-decoration-none text-dark p-2 border-bottom hover-bg-light">
-                               <img src="${item.image ? '/storage/' + item.image : '/assets/images/default-product.png'}"
-                                <div>
-                                    <div class="fw-semibold">${item.nama_produk}</div>
-                                    <div class="text-muted small">Rp ${parseInt(item.harga).toLocaleString('id-ID')}</div>
-                                </div>
-                            </a>
-                        `).join('');
+                                    <a href="/produk/${item.id}" class="d-flex align-items-center text-decoration-none text-dark p-2 border-bottom hover-bg-light">
+                                        <img src="${item.image ? '/storage/' + item.image : '/assets/images/default-product.png'}"
+                                            width="50" height="50" class="me-2">
+                                        <div>
+                                            <div class="fw-semibold">${item.nama_produk}</div>
+                                            <div class="text-muted small">Rp ${parseInt(item.harga).toLocaleString('id-ID')}</div>
+                                        </div>
+                                    </a>
+                                `).join('');
                             }
                             resultsDiv.style.display = 'block';
                         });
-                }, 300); // delay 300ms biar ga terlalu sering request
+                }, 300);
             });
 
-            // Sembunyikan hasil ketika klik di luar
             document.addEventListener('click', function (e) {
                 if (!resultsDiv.contains(e.target) && e.target !== searchInput) {
                     resultsDiv.style.display = 'none';

@@ -1,4 +1,4 @@
-@extends('home.app')
+{{-- @extends('home.app')
 
 @section('content')
     <div class="container mt-4">
@@ -34,4 +34,4 @@
         </form>
 
     </div>
-@endsection
+@endsection --}}

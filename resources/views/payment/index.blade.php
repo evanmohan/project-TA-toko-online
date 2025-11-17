@@ -1,32 +1,74 @@
 @extends('home.app')
 
 @section('content')
-<div class="container py-5">
-    <h3 class="fw-bold mb-4">💰 Pembayaran Pesanan</h3>
+<style>
+    body {
+        background-color: #f5f7fa;
+        font-family: 'Poppins', sans-serif;
+    }
 
-    <div class="card">
-        <div class="card-body">
-            <p><strong>Kode Pesanan:</strong> {{ $pesanan->kode_pesanan }}</p>
-            <p><strong>Total Bayar:</strong> Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</p>
-            <p><strong>Status Pembayaran:</strong> {{ $pesanan->status_pembayaran }}</p>
+    .payment-container {
+        margin-top: 40px;
+    }
 
-            <hr>
+    .payment-box {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
 
-            <h5>Transfer ke Rekening Berikut:</h5>
-            <ul>
-                <li>Bank BCA - 1234567890 a.n Second Store</li>
-                <li>Bank Mandiri - 9876543210 a.n Second Store</li>
-            </ul>
+    .payment-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
 
-            <form action="{{ route('payment.upload', $pesanan->id) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="mb-3">
-                    <label class="form-label">Upload Bukti Pembayaran</label>
-                    <input type="file" name="bukti_pembayaran" class="form-control" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Kirim Bukti</button>
-            </form>
+    .badge {
+        padding: 6px 10px;
+        border-radius: 6px;
+    }
+
+    .badge-success { background: #28a745; color: #fff; }
+    .badge-warning { background: #ffc107; }
+    .badge-danger  { background: #dc3545; color: #fff; }
+</style>
+
+<div class="container payment-container">
+    <h2 class="mb-4">Riwayat Pembayaran</h2>
+
+    @if($orders->count() == 0)
+        <div class="alert alert-info">
+            Belum ada pembayaran yang dilakukan.
         </div>
-    </div>
+    @endif
+
+    @foreach($orders as $order)
+        <div class="payment-box">
+            <div class="payment-title">
+                Payment / Order #{{ $order->id }}
+            </div>
+
+            <p><strong>Total Bayar:</strong> Rp {{ number_format($order->total_price, 0, ',', '.') }}</p>
+
+            <p><strong>Status:</strong>
+                @if($order->status == 'paid')
+                    <span class="badge badge-success">Sudah Dibayar</span>
+                @elseif($order->status == 'pending')
+                    <span class="badge badge-warning">Menunggu Pembayaran</span>
+                @else
+                    <span class="badge badge-danger">{{ ucfirst($order->status) }}</span>
+                @endif
+            </p>
+
+            <p><strong>Tanggal:</strong> {{ $order->created_at->format('d M Y H:i') }}</p>
+
+            @if($order->status == 'pending')
+                <a href="{{ route('payment.bayar', $order->id) }}" class="btn btn-primary mt-3">Bayar Sekarang</a>
+            @endif
+        </div>
+    @endforeach
 </div>
+
 @endsection

@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use Illuminate\Http\Request;
-use App\Models\Pesanan;
+// use App\Models\Pesanan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -11,11 +12,11 @@ class PembayaranController extends Controller
 {
     public function index($id)
     {
-        $pesanan = Pesanan::where('id', $id)
+        $pesanan = Order::where('id', $id)
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        return view('payment.index', compact('pesanan'));
+        return view('payment.bayar', compact('pesanan'));
     }
 
     public function uploadProof(Request $request, $id)
@@ -24,7 +25,7 @@ class PembayaranController extends Controller
             'bukti_pembayaran' => 'reqxuired|image|max:2048',
         ]);
 
-        $pesanan = Pesanan::where('id', $id)
+        $pesanan = Order::where('id', $id)
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
@@ -37,6 +38,16 @@ class PembayaranController extends Controller
             'status_pembayaran' => 'PAID',
         ]);
 
-        return redirect()->route('orders.index')->with('success', 'Bukti pembayaran berhasil diupload!');
+        return redirect()->route('payment.index')->with('success', 'Bukti pembayaran berhasil diupload!');
+    }
+
+    public function list()
+    {
+        // Ambil semua pesanan milik user
+        $orders = Order::where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('payment.index', compact('orders'));
     }
 }
