@@ -1,34 +1,210 @@
 @extends('home.app')
 
 @section('content')
-<div class="container mt-4">
-    <h3>Pembayaran Pesanan</h3>
-    <p><strong>Kode Pesanan:</strong> {{ $pesanan->kode_pesanan }}</p>
-    <p><strong>Total Bayar:</strong> Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</p>
-    <p><strong>Ekspedisi:</strong> {{ $pesanan->ekspedisi }}</p>
-    <p><strong>Status:</strong>
-        <span class="badge bg-{{ $pesanan->status_pembayaran == 'PAID' ? 'success' : 'danger' }}">
-            {{ $pesanan->status_pembayaran }}
-        </span>
-    </p>
 
-    <div class="mt-4">
-        <h5>Silakan transfer ke:</h5>
-        <p>Bank BCA - 1234567890 a.n. Toko Laravel</p>
+<style>
+    body {
+        background-color: #f5f7fa;
+        font-family: 'Poppins', sans-serif;
+    }
 
-        @if(!$pesanan->bukti_pembayaran)
-        {{-- <form action="{{ route('checkout.upload', $pesanan->id) }}" method="POST" enctype="multipart/form-data"> --}}
-            @csrf
-            <div class="form-group mt-3">
-                <label>Upload Bukti Pembayaran</label>
-                <input type="file" name="bukti_pembayaran" class="form-control" required>
+    .payment-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        border: 1px solid #eee;
+    }
+
+    .payment-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #222;
+    }
+
+    .label-box {
+        background: #f8f9fc;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid #e4e7ec;
+        margin-bottom: 10px;
+    }
+
+    .bank-box {
+        background: #fff8e6;
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid #ffd28a;
+        color: #8a5200;
+    }
+
+    .upload-box {
+        border: 2px dashed #d0d0d0;
+        padding: 25px;
+        border-radius: 12px;
+        background: #fafafa;
+        transition: 0.3s;
+    }
+
+    .upload-box:hover {
+        border-color: #ff6d00;
+        background: #fff5ec;
+    }
+
+    .btn-pay {
+        background: #ff6d00;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        color: white;
+        transition: 0.2s;
+    }
+
+    .btn-pay:disabled {
+        background: #c4c4c4 !important;
+        cursor: not-allowed;
+    }
+
+    .btn-pay:hover:not(:disabled) {
+        background: #e55f00;
+    }
+
+    .btn-cancel-pay {
+        border: 1px solid #dc3545;
+        color: #dc3545;
+        font-weight: 600;
+        padding: 6px 15px;
+        border-radius: 8px;
+        background: white;
+    }
+
+    .btn-cancel-pay:hover {
+        background: #ffeaea;
+    }
+</style>
+
+<div class="container mt-4 mb-5">
+    <div class="payment-card">
+
+        <!-- HEADER -->
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="payment-title">Pembayaran Pesanan</h4>
+
+            @if(!$pesanan->pembayaran)
+                <button class="btn-cancel-pay"
+                        data-bs-toggle="modal"
+                        data-bs-target="#batalModal">
+                    Batal Pembayaran
+                </button>
+            @endif
+        </div>
+
+        <!-- INFO PESANAN -->
+        <div class="mt-3">
+            <div class="label-box">
+                <strong>Kode Order:</strong> {{ $pesanan->kode_order }}
             </div>
-            <button type="submit" class="btn btn-primary mt-3">Sudah Bayar</button>
-        {{-- </form> --}}
+
+            <div class="label-box">
+                <strong>Total Bayar:</strong>
+                <span class="text-danger fw-bold">
+                    Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}
+                </span>
+            </div>
+
+            <div class="label-box">
+                <strong>Metode Pengiriman:</strong> {{ $pesanan->metode_pengiriman }}
+            </div>
+
+            <div class="label-box">
+                <strong>Status Pembayaran:</strong>
+                <span class="badge bg-{{ $pesanan->pembayaran ? 'success' : 'danger' }}">
+                    {{ $pesanan->pembayaran->status ?? 'NOT PAID' }}
+                </span>
+            </div>
+        </div>
+
+        <!-- REKENING -->
+        <div class="bank-box mt-4">
+            <h6 class="fw-bold mb-1">Transfer ke:</h6>
+            <p class="mb-0">BANK BCA - <strong>1234567890</strong></p>
+            <p class="mb-0">a.n. <strong>Toko Laravel</strong></p>
+        </div>
+
+        <!-- FORM UPLOAD JIKA BELUM BAYAR -->
+        @if(!$pesanan->pembayaran)
+
+            <form action="{{ route('payment.upload', $pesanan->id) }}"
+                  method="POST" enctype="multipart/form-data" class="mt-4">
+                @csrf
+
+                <div class="upload-box text-center">
+                    <i class="bi bi-cloud-upload fs-1 text-secondary"></i>
+                    <p class="mt-2">Upload Bukti Pembayaran</p>
+
+                    <input type="file" name="foto_bukti" id="foto_bukti"
+                           class="form-control mt-2" required onchange="enablePayButton()">
+                </div>
+
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{{ route('payment.index') }}" class="btn btn-secondary w-50">Kembali</a>
+
+                    <button type="submit"
+                            id="btnSudahBayar"
+                            class="btn-pay w-50"
+                            disabled>
+                        Sudah Bayar
+                    </button>
+                </div>
+            </form>
+
         @else
-        <p class="text-success mt-3">Bukti pembayaran sudah dikirim. Menunggu verifikasi admin.</p>
-        <img src="{{ asset('storage/' . $pesanan->bukti_pembayaran) }}" alt="Bukti" class="img-fluid mt-3" width="300">
+            <!-- JIKA SUDAH UPLOAD -->
+            <div class="alert alert-success mt-4">
+                Bukti pembayaran telah dikirim! Menunggu verifikasi admin.
+            </div>
+
+            <img src="{{ asset('uploads/bukti/' . $pesanan->pembayaran->foto_bukti) }}"
+                 class="img-fluid mt-3 rounded shadow"
+                 width="320">
         @endif
+
     </div>
 </div>
+
+<!-- MODAL BATAL -->
+<div class="modal fade" id="batalModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px;">
+            <div class="modal-header">
+                <h5 class="modal-title">Konfirmasi Pembatalan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <p>Yakin ingin membatalkan pembayaran?</p>
+                <p class="text-danger fw-bold">Tindakan ini tidak dapat dibatalkan.</p>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+
+                <form action="{{ route('payment.cancel', $pesanan->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-danger">Ya, Batalkan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function enablePayButton() {
+        const file = document.getElementById('foto_bukti');
+        const btn = document.getElementById('btnSudahBayar');
+        if (file.files.length > 0) btn.disabled = false;
+    }
+</script>
+
 @endsection

@@ -8,12 +8,18 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Keranjang;
+use App\Models\PaymentMethod;
+use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
     // =============================
     // 1. CHECKOUT BELI SEKARANG
     // =============================
+    private function generateKodeOrder()
+    {
+        return 'ORD-' . strtoupper(uniqid());
+    }
     public function checkoutSingle(Request $request)
     {
         $product = Product::findOrFail($request->product_id);
@@ -36,40 +42,40 @@ class CheckoutController extends Controller
     // =============================
     // 2. CHECKOUT DARI KERANJANG
     // =============================
-public function checkoutCart(Request $request)
-{
-    $selected = json_decode($request->items, true);
+    public function checkoutCart(Request $request)
+    {
+        $selected = json_decode($request->items, true);
 
-    if (!is_array($selected) || count($selected) == 0) {
-        return redirect()->route('keranjang.index')->with('error', 'Tidak ada produk yang dipilih.');
+        if (!is_array($selected) || count($selected) == 0) {
+            return redirect()->route('keranjang.index')->with('error', 'Tidak ada produk yang dipilih.');
+        }
+
+        $ids = collect($selected)->pluck('id');
+
+        $cartItems = Keranjang::whereIn('id', $ids)->with('product')->get();
+
+        $items = [];
+
+        foreach ($cartItems as $cart) {
+            $match = collect($selected)->firstWhere('id', $cart->id);
+
+            $qty = $match['qty'];
+
+            $items[] = [
+                'product_id'     => $cart->product_id,
+                'nama_produk'    => $cart->product->nama_produk,
+                'qty'            => $qty,
+                'harga_satuan'   => $cart->harga_satuan,
+                'subtotal'       => $qty * $cart->harga_satuan,
+                'image'          => $cart->product->image,
+            ];
+        }
+
+        // SIMPAN SAMA PERSIS FORMAT BUY NOW
+        session(['checkout_items' => $items]);
+
+        return redirect()->route('checkout.page');
     }
-
-    $ids = collect($selected)->pluck('id');
-
-    $cartItems = Keranjang::whereIn('id', $ids)->with('product')->get();
-
-    $items = [];
-
-    foreach ($cartItems as $cart) {
-        $match = collect($selected)->firstWhere('id', $cart->id);
-
-        $qty = $match['qty'];
-
-        $items[] = [
-            'product_id'     => $cart->product_id,
-            'nama_produk'    => $cart->product->nama_produk,
-            'qty'            => $qty,
-            'harga_satuan'   => $cart->harga_satuan,
-            'subtotal'       => $qty * $cart->harga_satuan,
-            'image'          => $cart->product->image,
-        ];
-    }
-
-    // SIMPAN SAMA PERSIS FORMAT BUY NOW
-    session(['checkout_items' => $items]);
-
-    return redirect()->route('checkout.page');
-}
 
 
 
@@ -88,13 +94,20 @@ public function checkoutCart(Request $request)
         $items = collect($checkout);
         $ekspedisi = Ekspedisi::all();
 
+        // ➕ AMBIL METODE PEMBAYARAN YANG AKTIF
+        $paymentMethods = PaymentMethod::where('aktif', 1)->get();
+
         return view('checkout.checkout', [
             'items'        => $items,
             'total_barang' => $items->sum('qty'),
             'total_harga'  => $items->sum(fn($i) => $i['subtotal']),
             'ekspedisi'    => $ekspedisi,
+
+            // ➕ KIRIM PAYMENT METHODS KE VIEW
+            'paymentMethods' => $paymentMethods
         ]);
     }
+
 
 
 
@@ -105,7 +118,7 @@ public function checkoutCart(Request $request)
     {
         $request->validate([
             'metode_pengiriman' => 'required|exists:ekspedisi,id',
-            'metode_pembayaran' => 'required',
+            'metode_pembayaran' => 'required|exists:payment_methods,id',
             'ongkir' => 'required|numeric'
         ]);
 
@@ -115,7 +128,8 @@ public function checkoutCart(Request $request)
             return redirect()->back()->with('error', 'Checkout gagal, tidak ada item.');
         }
 
-        $exp = Ekspedisi::find($request->metode_pengiriman);
+        $exp = Ekspedisi::findOrFail($request->metode_pengiriman);
+        $paymentMethod = PaymentMethod::findOrFail($request->metode_pembayaran);
 
         $items = $cart->map(function ($i) {
             return [
@@ -123,7 +137,7 @@ public function checkoutCart(Request $request)
                 'qty'        => $i['qty'],
                 'harga'      => $i['harga_satuan'],
                 'subtotal'   => $i['subtotal'],
-                'image'      => $i['image'], // tetap ikut agar tidak error
+                'image'      => $i['image'],
             ];
         });
 
@@ -144,7 +158,9 @@ public function checkoutCart(Request $request)
             'total_bayar'       => $total_bayar,
 
             'metode_pengiriman' => $exp->nama,
-            'metode_pembayaran' => $request->metode_pembayaran,
+            'metode_pembayaran' => $paymentMethod->nama_metode, // ✔ simpan nama metode
+
+            'kode_order' => $this->generateKodeOrder(),
         ]);
 
         foreach ($items as $item) {

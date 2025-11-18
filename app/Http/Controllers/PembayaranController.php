@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BuktiPembayaran;
 use App\Models\Order;
 use Illuminate\Http\Request;
 // use App\Models\Pesanan;
@@ -50,4 +51,51 @@ class PembayaranController extends Controller
 
         return view('payment.index', compact('orders'));
     }
+    public function cancel($id)
+    {
+        $order = Order::where('user_id', Auth::id())->findOrFail($id);
+        $order->status = 'cancelled';
+        $order->save();
+
+        return redirect()->back()->with('success', 'Pesanan berhasil dibatalkan.');
+    }
+
+    public function uploadForm($orderId)
+    {
+        $order = Order::findOrFail($orderId);
+
+        return view('payment.upload', compact('order'));
+    }
+
+    // PROSES UPLOAD
+    public function uploadSubmit(Request $request, $orderId)
+    {
+        $request->validate([
+            'nama_pengirim' => 'required|string',
+            'nominal'       => 'required|numeric',
+            'bank_pengirim' => 'required|string',
+            'foto_bukti'    => 'required|image|mimes:jpg,jpeg,png|max:5000',
+        ]);
+
+        $order = Order::findOrFail($orderId);
+
+        // Simpan foto bukti
+        $file = $request->file('foto_bukti');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $file->move(public_path('uploads/bukti'), $filename);
+
+        // Simpan ke database bukti pembayaran
+        BuktiPembayaran::create([
+            'order_id'      => $order->id,
+            'nama_pengirim' => $request->nama_pengirim,
+            'nominal'       => $request->nominal,
+            'bank_pengirim' => $request->bank_pengirim,
+            'foto_bukti'    => $filename,
+            'status'        => 'PENDING'
+        ]);
+
+        return redirect()->route('payment.index')
+            ->with('success', 'Bukti pembayaran berhasil dikirim! Menunggu verifikasi admin.');
+    }
+
 }

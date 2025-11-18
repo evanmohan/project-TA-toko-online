@@ -20,7 +20,8 @@ class CreateOrdersTable extends Migration
             $table->integer('total_bayar');
             $table->string('metode_pengiriman');
             $table->string('metode_pembayaran');
-            $table->string('status')->default('pending');
+            $table->string('kode_order')->unique();
+            $table->enum('status', ['NOT PAID', 'PAID'])->default('NOT PAID');
             $table->timestamps();
         });
     }

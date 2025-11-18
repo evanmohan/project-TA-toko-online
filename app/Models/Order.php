@@ -17,6 +17,7 @@ class Order extends Model
         'total_bayar',
         'metode_pengiriman',
         'metode_pembayaran',
+        'kode_order',
         'status'
     ];
 

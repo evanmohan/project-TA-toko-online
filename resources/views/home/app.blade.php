@@ -220,20 +220,25 @@
             transition: 0.2s;
         }
 
-        .icons .icon-link {
-            padding: 6px 10px;
-            border-radius: 8px;
-            transition: 0.25s ease;
+        /* Perbaikan agar icon dan teks sejajar */
+        .icon-link {
+            display: flex !important;
+            align-items: center !important;
+            gap: 5px;
         }
 
-        .icons .icon-link:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-1px);
-        }
-
-        .icons .icon-link i {
+        .icon-link i {
+            display: flex;
+            align-items: center;
             font-size: 18px;
         }
+
+        .icon-link span {
+            display: flex;
+            align-items: center;
+            font-size: 15px;
+        }
+
 
         .icons .badge {
             background-color: #dc3545;
@@ -243,7 +248,8 @@
         }
     </style>
 </head>
-y
+
+
 <body>
 
     <nav class="navbar-wrapper">
@@ -300,11 +306,13 @@ y
             <div class="icons d-flex align-items-center gap-4">
 
                 <!-- 🔹 Tombol Keranjang -->
-                <a href="{{ route(name: 'keranjang.index') }}"
+                <a href="{{ route('keranjang.index') }}"
                     class="text-white text-decoration-none position-relative d-flex align-items-center fw-semibold icon-link">
                     <i class="bi bi-cart3 me-1 fs-5"></i>
                     <span>Keranjang</span>
-                    <span class="badge">{{ $cartCount ?? 2 }}</span>
+                    @if(isset($cartCount) && $cartCount > 0)
+                        <span class="badge">{{ $cartCount }}</span>
+                    @endif
                 </a>
 
                 <!-- 🔹 Tombol Riwayat Pesanan -->

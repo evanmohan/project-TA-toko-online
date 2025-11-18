@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\EkspedisiController;
 use App\Http\Controllers\Admin\KategoriController;
+use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
@@ -61,6 +62,12 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
     Route::get('/billing', [DashboardController::class, 'billing'])->name('billing');
     Route::get('/management', [DashboardController::class, 'management'])->name('management');
+
+    // Metode Pembayaran (Admin)
+    Route::get('/payment-method', [PaymentMethodController::class, 'index'])->name('payment.index');
+    Route::post('/payment-method', [PaymentMethodController::class, 'store'])->name('payment.store');
+    Route::put('/payment-method/{id}', [PaymentMethodController::class, 'update'])->name('payment.update');
+    Route::delete('/payment-method/{id}', [PaymentMethodController::class, 'destroy'])->name('payment.destroy');
 });
 
 
@@ -87,9 +94,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/checkout/from-cart', [CheckoutController::class, 'checkoutCart'])->name('checkout.fromCart');
 
-
-
-
     // ================= KERANJANG =================
     Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
     Route::post('/keranjang/add/{product}', [KeranjangController::class, 'add'])->name('keranjang.add');
@@ -102,8 +106,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/payment/{id}',  [PembayaranController::class, 'index'])->name('payment.bayar');
     Route::post('/payment/{id}', [PembayaranController::class, 'uploadProof'])->name('payment.upload');
+    Route::post('/payment/cancel/{id}', [PembayaranController::class, 'cancel'])->name('payment.cancel');
 
 
+    Route::get('/pesanan', [App\Http\Controllers\RiwayatPesananController::class, 'index'])
+        ->name('pesanan.index')
+        ->middleware('auth');
 });
 
 
