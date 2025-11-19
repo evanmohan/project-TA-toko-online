@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\BuktiPembayaranController;
 use App\Http\Controllers\Admin\EkspedisiController;
 use App\Http\Controllers\Admin\KategoriController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\UserController;
@@ -68,6 +70,28 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::post('/payment-method', [PaymentMethodController::class, 'store'])->name('payment.store');
     Route::put('/payment-method/{id}', [PaymentMethodController::class, 'update'])->name('payment.update');
     Route::delete('/payment-method/{id}', [PaymentMethodController::class, 'destroy'])->name('payment.destroy');
+
+    // Bukti Pembayaran
+    Route::get('/bukti-pembayaran', [BuktiPembayaranController::class, 'index'])
+        ->name('bukti.index');
+
+    // Detail
+    Route::get('/bukti-pembayaran/{id}', [BuktiPembayaranController::class, 'show'])
+        ->name('bukti.show');
+
+    // Approve
+    Route::post('/bukti-pembayaran/{id}/approve', [BuktiPembayaranController::class, 'approve'])
+        ->name('bukti.approve');
+
+    // Reject
+    Route::post('/bukti-pembayaran/{id}/reject', [BuktiPembayaranController::class, 'reject'])
+        ->name('bukti.reject');
+
+    // Delete
+    Route::delete('/bukti-pembayaran/{id}', [BuktiPembayaranController::class, 'destroy'])
+        ->name('bukti.destroy');
+
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
 });
 
 
@@ -103,9 +127,11 @@ Route::middleware(['auth'])->group(function () {
 
     // ================= PAYMENT =================
     Route::get('/payments', [PembayaranController::class, 'list'])->name('payment.index');
+    // Route::get('/payment/{id}', [PembayaranController::class, 'show'])->name('payment.show');
+    Route::get('/payment/{id}',  [PembayaranController::class, 'bayar'])->name('payment.bayar');
+    Route::post('/payment/upload/{orderId}', [PembayaranController::class, 'uploadBukti'])
+        ->name('payment.upload');
 
-    Route::get('/payment/{id}',  [PembayaranController::class, 'index'])->name('payment.bayar');
-    Route::post('/payment/{id}', [PembayaranController::class, 'uploadProof'])->name('payment.upload');
     Route::post('/payment/cancel/{id}', [PembayaranController::class, 'cancel'])->name('payment.cancel');
 
 

@@ -8,12 +8,19 @@ class BuktiPembayaran extends Model
 {
     protected $fillable = [
         'kode_order',
+        'order_id',
         'bukti_pembayaran',
         'status',
     ];
 
-    public function order()
+    public function pesanan()
     {
         return $this->belongsTo(Order::class);
     }
+
+    public function order()
+{
+    return $this->belongsTo(Order::class, 'order_id');
+}
+
 }

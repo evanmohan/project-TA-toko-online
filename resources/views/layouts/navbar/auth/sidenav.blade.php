@@ -92,6 +92,30 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link {{ Str::startsWith(Route::currentRouteName(), 'admin.bukti') ? 'active' : '' }}"
+                        href="{{ route('admin.bukti.index') }}">
+
+                        <div
+                            class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="ni ni-single-copy-04 text-info text-sm opacity-10"></i>
+                        </div>
+
+                        <span class="nav-link-text ms-1">Bukti Pembayaran</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ Route::currentRouteName() == 'admin.orders.index' ? 'active' : '' }}"
+                        href="{{ route('admin.orders.index') }}">
+                        <div
+                            class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="ni ni-bullet-list-67 text-primary text-sm opacity-10"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">Manajemen Order</span>
+                    </a>
+                </li>
+
                 {{-- <li class="nav-item">
                     {{-- <a class="nav-link {{ Route::currentRouteName() == 'virtual-reality' ? 'active' : '' }}"
                         href="{{ route('virtual-reality') }}"> --}}

@@ -173,8 +173,24 @@ class CheckoutController extends Controller
             ]);
         }
 
-        session()->forget('checkout_items');
+        // CEK TIPE METODE PEMBAYARAN (TRANSFER / COD)
+        if ($paymentMethod->tipe === 'BANK') {
 
+            // → Masuk ke halaman bayar (upload bukti transfer)
+            session()->forget('checkout_items');
+            return redirect()->route('payment.bayar', $order->id);
+        } elseif ($paymentMethod->tipe === 'cod') {
+
+            // → Langsung tandai order COD tanpa upload bukti
+            $order->status_pembayaran = 'COD';
+            $order->save();
+
+            session()->forget('checkout_items');
+            return redirect()->route('payment.index')->with('success', 'Pesanan COD berhasil dibuat!');
+        }
+
+
+        session()->forget('checkout_items');
         return redirect()->route('payment.index', $order->id)->with('success', 'Pesanan berhasil dibuat!');
     }
 

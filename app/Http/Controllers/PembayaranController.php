@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\BuktiPembayaran;
 use App\Models\Order;
 use Illuminate\Http\Request;
-// use App\Models\Pesanan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class PembayaranController extends Controller
 {
-    public function index($id)
+    // =========================
+    // HALAMAN BAYAR
+    // =========================
+    public function bayar($id)
     {
         $pesanan = Order::where('id', $id)
             ->where('user_id', Auth::id())
@@ -20,82 +22,80 @@ class PembayaranController extends Controller
         return view('payment.bayar', compact('pesanan'));
     }
 
-    public function uploadProof(Request $request, $id)
-    {
-        $request->validate([
-            'bukti_pembayaran' => 'reqxuired|image|max:2048',
-        ]);
-
-        $pesanan = Order::where('id', $id)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
-
-        $file = $request->file('bukti_pembayaran');
-        $filename = Str::random(10) . '.' . $file->getClientOriginalExtension();
-        $file->move(public_path('uploads/bukti_pembayaran'), $filename);
-
-        $pesanan->update([
-            'bukti_pembayaran' => $filename,
-            'status_pembayaran' => 'PAID',
-        ]);
-
-        return redirect()->route('payment.index')->with('success', 'Bukti pembayaran berhasil diupload!');
-    }
-
+    // =========================
+    // LIST PEMBAYARAN
+    // =========================
     public function list()
     {
-        // Ambil semua pesanan milik user
         $orders = Order::where('user_id', Auth::id())
             ->orderBy('created_at', 'desc')
             ->get();
 
         return view('payment.index', compact('orders'));
     }
+
+    // =========================
+    // BATALKAN PEMBAYARAN
+    // =========================
     public function cancel($id)
     {
-        $order = Order::where('user_id', Auth::id())->findOrFail($id);
-        $order->status = 'cancelled';
+        $order = Order::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        if ($order->status === 'PAID') {
+            return redirect()->back()->with('error', 'Pesanan yang sudah dibayar tidak dapat dibatalkan.');
+        }
+
+        $order->status = 'CANCELLED';
         $order->save();
 
         return redirect()->back()->with('success', 'Pesanan berhasil dibatalkan.');
     }
 
-    public function uploadForm($orderId)
-    {
-        $order = Order::findOrFail($orderId);
-
-        return view('payment.upload', compact('order'));
-    }
-
-    // PROSES UPLOAD
-    public function uploadSubmit(Request $request, $orderId)
+    // =========================
+    // UPLOAD BUKTI PEMBAYARAN
+    // =========================
+    public function uploadBukti(Request $request, $orderId)
     {
         $request->validate([
-            'nama_pengirim' => 'required|string',
-            'nominal'       => 'required|numeric',
-            'bank_pengirim' => 'required|string',
-            'foto_bukti'    => 'required|image|mimes:jpg,jpeg,png|max:5000',
+            'bukti_pembayaran' => 'required|image|mimes:jpg,jpeg,png|max:5120',
         ]);
 
-        $order = Order::findOrFail($orderId);
+        // Cek pesanan milik user
+        $order = Order::where('id', $orderId)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
 
-        // Simpan foto bukti
-        $file = $request->file('foto_bukti');
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $file->move(public_path('uploads/bukti'), $filename);
+        if (! $request->hasFile('bukti_pembayaran')) {
+            return redirect()->back()->with('error', 'File bukti tidak ditemukan.');
+        }
 
-        // Simpan ke database bukti pembayaran
-        BuktiPembayaran::create([
-            'order_id'      => $order->id,
-            'nama_pengirim' => $request->nama_pengirim,
-            'nominal'       => $request->nominal,
-            'bank_pengirim' => $request->bank_pengirim,
-            'foto_bukti'    => $filename,
-            'status'        => 'PENDING'
-        ]);
+        // Upload file
+        $file = $request->file('bukti_pembayaran');
+        $filename = time() . '_' . Str::random(6) . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
 
-        return redirect()->route('payment.index')
-            ->with('success', 'Bukti pembayaran berhasil dikirim! Menunggu verifikasi admin.');
+        $destination = public_path('uploads/bukti');
+        if (! file_exists($destination)) {
+            mkdir($destination, 0755, true);
+        }
+
+        $file->move($destination, $filename);
+
+        // SIMPAN KE TABLE bukti_pembayarans (FIX ERROR)
+        BuktiPembayaran::updateOrCreate(
+            ['order_id' => $order->id],   // kondisi pencarian
+            [
+                'order_id' => $order->id, // 🔥 WAJIB — FIX ERROR 1364
+                'bukti_pembayaran' => $filename,
+                'status' => 'PENDING',
+            ]
+        );
+
+        // Update status order
+        $order->status = 'PAID';
+        $order->save();
+
+        return redirect()->route('payment.index')->with('success', 'Bukti pembayaran berhasil dikirim.');
     }
-
 }

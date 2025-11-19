@@ -119,6 +119,10 @@
 
                     @if($order->status == 'PAID')
                         <span class="status-badge badge-paid">Sudah Dibayar</span>
+
+                    @elseif($order->status == 'CANCELED')
+                        <span class="status-badge" style="background:#dc3545; color:white;">Dibatalkan</span>
+
                     @else
                         <span class="status-badge badge-pending">Belum Dibayar</span>
                     @endif
@@ -146,14 +150,11 @@
                 @if($order->status == 'NOT PAID')
                     <div class="mt-3 d-flex gap-2 justify-content-end">
 
-                        <a href="{{ route('payment.bayar', $order->id) }}"
-                           class="btn-tokped-pay">
+                        <a href="{{ route('payment.bayar', $order->id) }}" class="btn-tokped-pay">
                             Bayar Sekarang
                         </a>
 
-                        <button class="btn-tokped-cancel"
-                                data-bs-toggle="modal"
-                                data-bs-target="#cancelModal-{{ $order->id }}">
+                        <button class="btn-tokped-cancel" data-bs-toggle="modal" data-bs-target="#cancelModal-{{ $order->id }}">
                             Batal Pemesanan
                         </button>
 

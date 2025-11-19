@@ -21,7 +21,7 @@ class CreateOrdersTable extends Migration
             $table->string('metode_pengiriman');
             $table->string('metode_pembayaran');
             $table->string('kode_order')->unique();
-            $table->enum('status', ['NOT PAID', 'PAID'])->default('NOT PAID');
+            $table->enum('status', ['CANCELLED','NOT PAID', 'PAID'])->default('NOT PAID');
             $table->timestamps();
         });
     }
