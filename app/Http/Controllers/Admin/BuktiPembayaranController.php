@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\BuktiPembayaran;
+use App\Models\LaporanPesanan;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
@@ -18,25 +19,46 @@ class BuktiPembayaranController extends Controller
         return view('admin.bukti_pembayaran.index', compact('list'));
     }
 
-    public function show($id)
-    {
-        $bukti = BuktiPembayaran::with('order')->findOrFail($id);
-        return view('admin.bukti_pembayaran.show', compact('bukti'));
-    }
-
     public function approve($id)
     {
         $bukti = BuktiPembayaran::findOrFail($id);
-
         $bukti->status = 'VALID';
         $bukti->save();
 
-        $order = Order::find($bukti->order_id);
+        // Update status order menjadi PAID
+        $order = $bukti->order;
         $order->status = 'PAID';
         $order->save();
 
-        return back()->with('success', 'Bukti pembayaran diterima.');
+        // Hitung total item
+        $totalItem = $order->items->sum('qty');
+
+        // Simpan Laporan
+        LaporanPesanan::create([
+            'order_id'       => $order->id,
+            'kode_order'     => $order->kode_order,
+            'nama_pembeli'   => $order->nama,
+            'telepon'        => $order->telepon,
+            'alamat'         => $order->alamat,
+            'total_item'     => $totalItem,
+            'total_bayar'    => $order->total_bayar,
+            'ongkir'         => $order->ongkir,
+            'ekspedisi'      => $order->metode_pengiriman,
+            'tanggal_validasi' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Bukti pembayaran telah divalidasi dan laporan pesanan dibuat.');
     }
+
+    public function show($id)
+    {
+        // Ambil bukti + relasi order
+        $bukti = BuktiPembayaran::with('order')->findOrFail($id);
+
+        return view('admin.bukti_pembayaran.show', compact('bukti'));
+    }
+
+
 
     public function reject($id)
     {
@@ -46,7 +68,7 @@ class BuktiPembayaranController extends Controller
         $bukti->save();
 
         $order = Order::find($bukti->order_id);
-        $order->status = ' NOTPAID';
+        $order->status = ' NOT PAID';
         $order->save();
 
         return back()->with('error', 'Bukti pembayaran ditolak.');

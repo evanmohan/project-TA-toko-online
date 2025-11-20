@@ -4,15 +4,21 @@
 <div class="container mt-4">
 
     <div class="card">
-        <div class="card-header">
-            <h5>Detail Bukti Pembayaran</h5>
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Detail Bukti Pembayaran</h5>
+
+            <!-- TOMBOL KEMBALI -->
+            <a href="{{ route('admin.bukti.index') }}" class="btn btn-secondary btn-sm">
+                ← Kembali
+            </a>
         </div>
 
         <div class="card-body">
 
             <p><strong>Order ID:</strong> #{{ $bukti->order_id }}</p>
-            <p><strong>Status:</strong>
 
+            <p><strong>Status:</strong>
                 @if($bukti->status == 'PENDING')
                     <span class="badge bg-warning">PENDING</span>
                 @elseif($bukti->status == 'VALID')
@@ -20,7 +26,6 @@
                 @else
                     <span class="badge bg-danger">INVALID</span>
                 @endif
-
             </p>
 
             <hr>

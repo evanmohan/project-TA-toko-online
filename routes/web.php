@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\BuktiPembayaranController;
 use App\Http\Controllers\Admin\EkspedisiController;
 use App\Http\Controllers\Admin\KategoriController;
+use App\Http\Controllers\Admin\LaporanPesananController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Admin\ProdukController;
@@ -92,6 +93,8 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
         ->name('bukti.destroy');
 
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+
+    Route::get('/laporan', [LaporanPesananController::class, 'index'])->name('laporan.index');
 });
 
 
