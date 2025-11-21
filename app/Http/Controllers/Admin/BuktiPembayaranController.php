@@ -30,6 +30,20 @@ class BuktiPembayaranController extends Controller
         $order->status = 'PAID';
         $order->save();
 
+        // ============================
+        //  🔥 PENGURANGAN STOK PRODUK
+        // ============================
+        foreach ($order->items as $item) {
+            $produk = $item->product; // pastikan relasi 'product' ada di OrderItem
+            if ($produk) {
+                $produk->stok = $produk->stok - $item->qty;
+                if ($produk->stok < 0) {
+                    $produk->stok = 0; // cegah stok minus
+                }
+                $produk->save();
+            }
+        }
+
         // Hitung total item
         $totalItem = $order->items->sum('qty');
 
@@ -47,7 +61,7 @@ class BuktiPembayaranController extends Controller
             'tanggal_validasi' => now(),
         ]);
 
-        return redirect()->back()->with('success', 'Bukti pembayaran telah divalidasi dan laporan pesanan dibuat.');
+        return redirect()->back()->with('success', 'Bukti pembayaran telah divalidasi, stok berkurang, dan laporan pesanan dibuat.');
     }
 
     public function show($id)

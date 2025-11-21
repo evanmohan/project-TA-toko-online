@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Iklan;
+use App\Models\Kategori;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -9,10 +11,11 @@ class HomeController extends Controller
 {
     public function index()
     {
-        // Ambil produk yang aktif saja
-        $products = Product::latest()->take(8)->get();
+        $iklans = Iklan::where('status', 'ACTIVE')->get();
+        $products = Product::latest()->get();
+        $kategori = Kategori::all();
 
-        return view('home.home', compact('products'));
+        return view('home.home', compact('iklans', 'products', 'kategori'));
     }
 
 

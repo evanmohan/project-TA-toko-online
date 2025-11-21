@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\BuktiPembayaranController;
 use App\Http\Controllers\Admin\EkspedisiController;
+use App\Http\Controllers\Admin\IklanController;
 use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\LaporanPesananController;
 use App\Http\Controllers\Admin\OrderController;
@@ -95,6 +96,21 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
 
     Route::get('/laporan', [LaporanPesananController::class, 'index'])->name('laporan.index');
+
+    Route::get('/laporan/harian', [LaporanPesananController::class, 'harian'])->name('laporan.harian');
+
+    Route::get('/laporan/bulanan', [LaporanPesananController::class, 'bulanan'])->name('laporan.bulanan');
+
+    Route::get('/iklan', [App\Http\Controllers\Admin\IklanController::class, 'index'])
+        ->name('iklan.index');
+
+    // Simpan iklan baru
+    Route::post('/iklan', [App\Http\Controllers\Admin\IklanController::class, 'store'])
+        ->name('iklan.store');
+
+    // Hapus iklan
+    Route::delete('/iklan/{id}', [App\Http\Controllers\Admin\IklanController::class, 'destroy'])
+        ->name('iklan.destroy');
 });
 
 

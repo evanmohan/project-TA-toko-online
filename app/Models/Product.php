@@ -45,4 +45,9 @@ class Product extends Model
             }
         });
     }
+    public function iklan()
+{
+    return $this->hasMany(Iklan::class, 'produk_id');
+}
+
 }

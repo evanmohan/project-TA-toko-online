@@ -1,45 +1,100 @@
 @extends('layouts.navbar.auth.app', ['class' => 'g-sidenav-show bg-gray-100'])
 
 @section('content')
-<div class="card">
-    <div class="card-header">
-        <h5>Laporan Pesanan</h5>
+
+<div class="container">
+
+    {{-- ========================== --}}
+    {{--  SELECT MODE LAPORAN      --}}
+    {{-- ========================== --}}
+    <div class="card mb-3">
+        <div class="card-header">
+            <form method="GET" class="row g-2">
+
+                <div class="col-md-4">
+                    <select name="mode" class="form-control" onchange="this.form.submit()">
+                        <option value="harian"  {{ $mode == 'harian' ? 'selected' : '' }}>Laporan Harian</option>
+                        <option value="bulanan" {{ $mode == 'bulanan' ? 'selected' : '' }}>Laporan Bulanan</option>
+                    </select>
+                </div>
+
+                {{-- inject parameter lainnya agar tidak hilang --}}
+                @if ($mode == 'harian')
+                    <input type="hidden" name="tanggal" value="{{ $tanggal }}">
+                @else
+                    <input type="hidden" name="bulan"  value="{{ $bulan }}">
+                    <input type="hidden" name="tahun"  value="{{ $tahun }}">
+                @endif
+
+            </form>
+        </div>
     </div>
 
-    <div class="card-body table-responsive">
 
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Kode Order</th>
-                    <th>Pembeli</th>
-                    <th>Total Item</th>
-                    <th>Total Bayar</th>
-                    <th>Ongkir</th>
-                    <th>Ekspedisi</th>
-                    <th>Tanggal Validasi</th>
-                </tr>
-            </thead>
+    {{-- ========================== --}}
+    {{--        TAMPIL HARIAN       --}}
+    {{-- ========================== --}}
+    @if ($mode == 'harian')
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>Laporan Harian</h5>
 
-            <tbody>
-                @forelse ($laporan as $row)
-                    <tr>
-                        <td>#{{ $row->kode_order }}</td>
-                        <td>{{ $row->nama_pembeli }}</td>
-                        <td>{{ $row->total_item }}</td>
-                        <td>Rp {{ number_format($row->total_bayar, 0, ',', '.') }}</td>
-                        <td>Rp {{ number_format($row->ongkir, 0, ',', '.') }}</td>
-                        <td>{{ $row->ekspedisi }}</td>
-                        <td>{{ $row->tanggal_validasi }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" class="text-center py-3 text-muted">Belum ada laporan.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+            <form method="GET" class="d-flex">
+                <input type="hidden" name="mode" value="harian">
+                <input type="date" name="tanggal" class="form-control"
+                       value="{{ $tanggal }}" onchange="this.form.submit()">
+            </form>
+        </div>
 
+        <div class="card-body table-responsive">
+            @include('admin.laporan.table', ['list' => $harian])
+        </div>
     </div>
+    @endif
+
+
+    {{-- ========================== --}}
+    {{--        TAMPIL BULANAN      --}}
+    {{-- ========================== --}}
+    @if ($mode == 'bulanan')
+    <div class="card">
+        <div class="card-header">
+            <h5>Laporan Bulanan</h5>
+
+            <form method="GET" class="row g-2 mt-2">
+
+                <input type="hidden" name="mode" value="bulanan">
+
+                <div class="col-md-4">
+                    <select name="bulan" class="form-control" onchange="this.form.submit()">
+                        @foreach(range(1,12) as $b)
+                            <option value="{{ sprintf('%02d',$b) }}"
+                                {{ $bulan == sprintf('%02d',$b) ? 'selected' : '' }}>
+                                {{ DateTime::createFromFormat('!m', $b)->format('F') }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <select name="tahun" class="form-control" onchange="this.form.submit()">
+                        @foreach(range(date('Y') - 5, date('Y')) as $t)
+                            <option value="{{ $t }}" {{ $tahun == $t ? 'selected' : '' }}>
+                                {{ $t }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="card-body table-responsive">
+            @include('admin.laporan.table', ['list' => $bulanan])
+        </div>
+    </div>
+    @endif
+
 </div>
+
 @endsection

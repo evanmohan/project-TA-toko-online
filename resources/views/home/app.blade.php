@@ -13,7 +13,7 @@
             background-color: #fafafa;
             font-family: 'Poppins', sans-serif;
             margin: 0;
-            padding-top: 125px;
+            padding-top: 116px;
         }
 
         :root {
@@ -327,7 +327,8 @@
         </div>
     </nav>
 
-    <main class="py-4">
+    <main class="">
+
         @yield('content')
     </main>
 
