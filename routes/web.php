@@ -14,6 +14,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KeranjangController;
+use App\Http\Controllers\admin\LaporanController;
 use App\Http\Controllers\PembayaranController;
 use Illuminate\Support\Facades\Route;
 
@@ -111,6 +112,11 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
     // Hapus iklan
     Route::delete('/iklan/{id}', [App\Http\Controllers\Admin\IklanController::class, 'destroy'])
         ->name('iklan.destroy');
+
+    Route::get('/laporan/export', [LaporanController::class, 'export'])
+        ->name('laporan.export');
+
+    // Route::get('laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
 });
 
 

@@ -41,7 +41,7 @@
                     <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Pages</h6>
                 </li>
 
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link {{  str_contains(request()->url(), 'billing') == true ? 'active' : '' }}"
                         href="{{ route('admin.billing', ['page' => 'billing']) }}">
                         <div
@@ -50,7 +50,7 @@
                         </div>
                         <span class="nav-link-text ms-1">Billing</span>
                     </a>
-                </li>
+                </li> --}}
                 <li class="nav-item">
                     <a class="nav-link {{ str_contains(request()->url(), 'kategori') == true ? 'active' : '' }}"
                         href="{{ route('admin.kategori.index', ['page' => 'kategori']) }}">
@@ -123,7 +123,7 @@
                             class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="ni ni-single-copy-04 text-warning text-sm opacity-10"></i>
                         </div>
-                        <span class="nav-link-text ms-1">Laporan Pesanan</span>
+                        <span class="nav-link-text ms-1">Laporan Perjualan</span>
                     </a>
                 </li>
 

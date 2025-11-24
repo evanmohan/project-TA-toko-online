@@ -16,6 +16,7 @@ class Kategori extends Model
         // 'kode_kategori',
         'nama_kategori',
         'deskripsi',
+        'image',
     ];
 
     // Relasi ke Produk (1 kategori punya banyak produk)

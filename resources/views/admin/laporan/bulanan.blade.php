@@ -1,4 +1,4 @@
-@extends('layouts.navbar.auth.app', ['class' => 'g-sidenav-show bg-gray-100'])
+{{-- @extends('layouts.navbar.auth.app', ['class' => 'g-sidenav-show bg-gray-100'])
 
 @section('content')
 
@@ -64,4 +64,4 @@
     </div>
 </div>
 
-@endsection
+@endsection --}}

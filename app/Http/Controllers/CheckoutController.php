@@ -14,12 +14,16 @@ use Illuminate\Support\Str;
 class CheckoutController extends Controller
 {
     // =============================
-    // 1. CHECKOUT BELI SEKARANG
+    // 1. GENERATE KODE ORDER
     // =============================
     private function generateKodeOrder()
     {
         return 'ORD-' . strtoupper(uniqid());
     }
+
+    // =============================
+    // 2. CHECKOUT BELI SEKARANG
+    // =============================
     public function checkoutSingle(Request $request)
     {
         $product = Product::findOrFail($request->product_id);
@@ -40,7 +44,7 @@ class CheckoutController extends Controller
     }
 
     // =============================
-    // 2. CHECKOUT DARI KERANJANG
+    // 3. CHECKOUT DARI KERANJANG
     // =============================
     public function checkoutCart(Request $request)
     {
@@ -71,17 +75,13 @@ class CheckoutController extends Controller
             ];
         }
 
-        // SIMPAN SAMA PERSIS FORMAT BUY NOW
         session(['checkout_items' => $items]);
 
         return redirect()->route('checkout.page');
     }
 
-
-
-
     // =============================
-    // 3. HALAMAN CHECKOUT
+    // 4. HALAMAN CHECKOUT
     // =============================
     public function page()
     {
@@ -93,8 +93,6 @@ class CheckoutController extends Controller
 
         $items = collect($checkout);
         $ekspedisi = Ekspedisi::all();
-
-        // ➕ AMBIL METODE PEMBAYARAN YANG AKTIF
         $paymentMethods = PaymentMethod::where('aktif', 1)->get();
 
         return view('checkout.checkout', [
@@ -102,17 +100,12 @@ class CheckoutController extends Controller
             'total_barang' => $items->sum('qty'),
             'total_harga'  => $items->sum(fn($i) => $i['subtotal']),
             'ekspedisi'    => $ekspedisi,
-
-            // ➕ KIRIM PAYMENT METHODS KE VIEW
             'paymentMethods' => $paymentMethods
         ]);
     }
 
-
-
-
     // =============================
-    // 4. PROSES CHECKOUT (SAVE ORDER)
+    // 5. PROSES CHECKOUT (SAVE ORDER)
     // =============================
     public function store(Request $request)
     {
@@ -158,9 +151,8 @@ class CheckoutController extends Controller
             'total_bayar'       => $total_bayar,
 
             'metode_pengiriman' => $exp->nama,
-            'metode_pembayaran' => $paymentMethod->nama_metode, // ✔ simpan nama metode
-
-            'kode_order' => $this->generateKodeOrder(),
+            'metode_pembayaran' => $paymentMethod->nama_metode,
+            'kode_order'        => $this->generateKodeOrder(),
         ]);
 
         foreach ($items as $item) {
@@ -173,36 +165,37 @@ class CheckoutController extends Controller
             ]);
         }
 
-        // CEK TIPE METODE PEMBAYARAN (TRANSFER / COD)
+        // =========================
+        // HAPUS ITEM KERANJANG YANG DI-CHECKOUT
+        // =========================
+        Keranjang::where('user_id', auth()->id())
+            ->whereIn('product_id', $items->pluck('product_id'))
+            ->delete();
+
+        // =========================
+        // HANDLE METODE PEMBAYARAN
+        // =========================
+        session()->forget('checkout_items');
+
         if ($paymentMethod->tipe === 'BANK') {
-
-            // → Masuk ke halaman bayar (upload bukti transfer)
-            session()->forget('checkout_items');
             return redirect()->route('payment.bayar', $order->id);
-        } elseif ($paymentMethod->tipe === 'cod') {
+        }
 
-            // → Langsung tandai order COD tanpa upload bukti
+        if ($paymentMethod->tipe === 'cod') {
             $order->status_pembayaran = 'COD';
             $order->save();
-
-            session()->forget('checkout_items');
             return redirect()->route('payment.index')->with('success', 'Pesanan COD berhasil dibuat!');
         }
 
-
-        session()->forget('checkout_items');
-        return redirect()->route('payment.index', $order->id)->with('success', 'Pesanan berhasil dibuat!');
+        return redirect()->route('payment.index')->with('success', 'Pesanan berhasil dibuat!');
     }
 
-
-
     // =============================
-    // 5. BUY NOW (ALTERNATIF)
+    // 6. BUY NOW (ALTERNATIF)
     // =============================
     public function buyNow(Request $request, $id)
     {
         $product = Product::findOrFail($id);
-
         $qty = $request->qty ?? 1;
 
         session([
@@ -221,9 +214,8 @@ class CheckoutController extends Controller
         return redirect()->route('checkout.page');
     }
 
-
     // =============================
-    // 6. CHECKOUT DARI KERANJANG (ALTERNATIF)
+    // 7. CHECKOUT DARI KERANJANG (ALTERNATIF)
     // =============================
     public function fromCart(Request $request)
     {
@@ -264,9 +256,8 @@ class CheckoutController extends Controller
         return redirect()->route('checkout.page');
     }
 
-
     // =============================
-    // 7. VIEW CHECKOUT
+    // 8. VIEW CHECKOUT
     // =============================
     public function view()
     {
@@ -284,3 +275,4 @@ class CheckoutController extends Controller
         ]);
     }
 }
+

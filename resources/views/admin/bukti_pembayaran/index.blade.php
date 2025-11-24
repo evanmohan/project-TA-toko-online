@@ -25,7 +25,7 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Order</th>
+                                <th>Kode Order</th>
                                 <th>Status</th>
                                 <th class="text-center">Aksi</th>
                             </tr>
@@ -35,7 +35,11 @@
                             @forelse ($list as $b)
                                 <tr>
                                     <td>{{ $b->id }}</td>
-                                    <td>#{{ $b->order_id }}</td>
+
+                                    {{-- Tampilkan kode order --}}
+                                    <td>#
+                                        {{ $b->order->kode_order ?? '-' }}
+                                    </td>
 
                                     <td>
                                         @if ($b->status == 'PENDING')
@@ -49,13 +53,13 @@
 
                                     <td class="text-center">
 
-                                        {{-- Tombol Detail selalu tampil --}}
+                                        {{-- Detail --}}
                                         <a href="{{ route('admin.bukti.show', $b->id) }}"
                                            class="btn btn-primary btn-sm">
                                             Detail
                                         </a>
 
-                                        {{-- Tombol Hapus — masih diperbolehkan --}}
+                                        {{-- Hapus --}}
                                         <form action="{{ route('admin.bukti.destroy', $b->id) }}"
                                             method="POST" class="d-inline"
                                             onsubmit="return confirm('Hapus bukti ini?')">

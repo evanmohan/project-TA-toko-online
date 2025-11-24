@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class KategoriController extends Controller
 {
@@ -16,22 +16,29 @@ class KategoriController extends Controller
         return view('admin.kategori.index', compact('kategoris'));
     }
 
-    // Menampilkan form tambah kategori
+    // Menampilkan form create (tidak digunakan tapi tetap ada)
     public function create()
     {
         return view('admin.kategori.index');
     }
 
-    // Menyimpan data kategori
+    // Simpan kategori baru
     public function store(Request $request)
     {
         $request->validate([
-            // 'kode_kategori' => 'required|unique:kategoris,kode_kategori',
             'nama_kategori' => 'required',
             'deskripsi' => 'nullable',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        Kategori::create($request->all());
+        $data = $request->only(['nama_kategori', 'deskripsi']);
+
+        // Upload image jika ada
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('kategori', 'public');
+        }
+
+        Kategori::create($data);
 
         return redirect('/admin/kategori')->with('success', 'Kategori berhasil ditambahkan!');
     }
@@ -42,21 +49,33 @@ class KategoriController extends Controller
         return view('admin.kategori.index', compact('kategoris'));
     }
 
-
+    // Update kategori
     public function update(Request $request, $id)
     {
         $kategori = Kategori::findOrFail($id);
 
         $request->validate([
-            // 'kode_kategori' => 'required|unique:kategoris,kode_kategori,' . $kategori->id,
             'nama_kategori' => 'required',
+            'deskripsi' => 'nullable',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        $kategori->update([
-            // 'kode_kategori' => $request->kode_kategori,
+        $data = [
             'nama_kategori' => $request->nama_kategori,
             'deskripsi' => $request->deskripsi,
-        ]);
+        ];
+
+        // Jika upload image baru
+        if ($request->hasFile('image')) {
+            // Hapus image lama
+            if ($kategori->image) {
+                Storage::disk('public')->delete($kategori->image);
+            }
+
+            $data['image'] = $request->file('image')->store('kategori', 'public');
+        }
+
+        $kategori->update($data);
 
         return redirect()->route('admin.kategori.index')->with('success', 'Kategori berhasil diperbarui!');
     }
@@ -64,7 +83,14 @@ class KategoriController extends Controller
     // Hapus kategori
     public function destroy($id)
     {
-        Kategori::findOrFail($id)->delete();
+        $kategori = Kategori::findOrFail($id);
+
+        if ($kategori->image) {
+            Storage::disk('public')->delete($kategori->image);
+        }
+
+        $kategori->delete();
+
         return redirect()->route('admin.kategori.index')->with('success', 'Kategori berhasil dihapus!');
     }
 }

@@ -52,16 +52,8 @@
             width: 100%;
         }
 
-        .btn-orange:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-
-        .btn-orange:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
+        .btn-orange:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-orange:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
 
         .btn-outline-orange {
             border: 2px solid var(--orange);
@@ -80,7 +72,6 @@
             transform: translateY(-2px);
         }
 
-        /* ===== STYLE SIZE SELECTOR SHOPEE ===== */
         .size-option {
             padding: 8px 15px;
             border: 2px solid #ddd;
@@ -91,18 +82,9 @@
             user-select: none;
         }
 
-        .size-option:hover {
-            border-color: var(--orange);
-            color: var(--orange);
-        }
+        .size-option:hover { border-color: var(--orange); color: var(--orange); }
+        .size-option.active { border-color: var(--orange); background: var(--orange); color: #fff; }
 
-        .size-option.active {
-            border-color: var(--orange);
-            background: var(--orange);
-            color: #fff;
-        }
-
-        /* ===== POPUP STYLE ===== */
         .cart-success-popup {
             position: fixed;
             top: 50%;
@@ -116,7 +98,6 @@
             padding: 28px 24px;
             text-align: center;
             z-index: 9999;
-            animation: fadeIn 0.35s ease;
         }
 
         .cart-success-popup .success-icon {
@@ -128,64 +109,9 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto 16px auto;
-            animation: pop 0.4s ease;
         }
 
-        .cart-success-popup .success-icon i {
-            color: #fff;
-            font-size: 32px;
-        }
-
-        @keyframes pop {
-            0% { transform: scale(0); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: translate(-50%, -45%) scale(0.95); }
-            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        }
-
-        .cart-success-popup h4 {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 6px;
-        }
-
-        .cart-success-popup p {
-            color: #666;
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-        }
-
-        .cart-success-popup .btn-green {
-            background-color: var(--green);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            padding: 10px 20px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .cart-success-popup .btn-green:hover {
-            background-color: #04a95d;
-            transform: translateY(-2px);
-        }
-
-        .cart-success-popup .close-btn {
-            position: absolute;
-            top: 12px;
-            right: 16px;
-            background: none;
-            border: none;
-            font-size: 1.4rem;
-            color: #999;
-            cursor: pointer;
-        }
-
+        .cart-success-popup .success-icon i { color: #fff; font-size: 32px; }
         .popup-backdrop {
             position: fixed;
             top: 0;
@@ -194,12 +120,6 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.3);
             z-index: 9998;
-            animation: fadeInBackdrop 0.3s ease;
-        }
-
-        @keyframes fadeInBackdrop {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
     </style>
 
@@ -221,7 +141,6 @@
 
                     <p class="mt-3">{{ $produk->deskripsi ?? 'Tidak ada deskripsi.' }}</p>
 
-                    {{-- ======================= SIZE SELECTOR ======================= --}}
                     <div class="mb-3">
                         <label class="fw-semibold d-block mb-2">Pilih Ukuran</label>
 
@@ -235,9 +154,8 @@
 
                         <input type="hidden" name="size" id="selectedSize">
                     </div>
-                    {{-- ============================================================= --}}
 
-                    <form id="addToCartForm" action="{{ route('keranjang.add', parameters: $produk->id) }}" method="POST">
+                    <form id="addToCartForm" action="{{ route('keranjang.add', $produk->id) }}" method="POST">
                         @csrf
 
                         <div class="row align-items-center">
@@ -283,14 +201,10 @@
         const addToCartForm = document.getElementById('addToCartForm');
         const addBtn = document.getElementById('addToCartBtn');
 
-        // ======================================================
-        //                     SIZE SELECTOR
-        // ======================================================
         const sizeOptions = document.querySelectorAll('.size-option');
         const selectedSizeInput = document.getElementById('selectedSize');
         const buyNowSize = document.getElementById('buyNowSize');
 
-        // tombol dinonaktifkan sebelum pilih ukuran
         addBtn.disabled = true;
         document.querySelector('.btn-outline-orange').disabled = true;
 
@@ -309,8 +223,20 @@
         });
 
         // ======================================================
-        //                    ADD TO CART
+        //            PERBAIKAN: HANDLE USER LOGIN
         // ======================================================
+
+        @guest
+        addBtn.addEventListener('click', () => {
+            window.location.href = "{{ route('login') }}";
+        });
+
+        document.querySelector('.btn-outline-orange').addEventListener('click', () => {
+            window.location.href = "{{ route('login') }}";
+        });
+        @endguest
+
+        @auth
         addToCartForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
@@ -344,10 +270,8 @@
                 addBtn.innerHTML = originalText;
             }
         });
+        @endauth
 
-        // ======================================================
-        //                  POPUP SUCCESS
-        // ======================================================
         function showCartSuccess(productName) {
             const backdrop = document.createElement('div');
             backdrop.className = 'popup-backdrop';
@@ -356,7 +280,6 @@
             const popup = document.createElement('div');
             popup.className = 'cart-success-popup';
             popup.innerHTML = `
-                <button class="close-btn" onclick="closePopup()">×</button>
                 <div class="success-icon"><i class="fas fa-check"></i></div>
                 <h4>Berhasil Ditambahkan!</h4>
                 <p>${productName} berhasil dimasukkan ke keranjang.</p>
@@ -364,12 +287,10 @@
             `;
             document.body.appendChild(popup);
 
-            setTimeout(() => closePopup(), 3000);
-        }
-
-        function closePopup() {
-            document.querySelector('.cart-success-popup')?.remove();
-            document.querySelector('.popup-backdrop')?.remove();
+            setTimeout(() => {
+                popup.remove();
+                backdrop.remove();
+            }, 2800);
         }
 
         document.getElementById("qty").addEventListener("input", function () {

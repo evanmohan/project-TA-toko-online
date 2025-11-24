@@ -220,7 +220,6 @@
             transition: 0.2s;
         }
 
-        /* Perbaikan agar icon dan teks sejajar */
         .icon-link {
             display: flex !important;
             align-items: center !important;
@@ -239,7 +238,6 @@
             font-size: 15px;
         }
 
-
         .icons .badge {
             background-color: #dc3545;
             font-size: 10px;
@@ -248,7 +246,6 @@
         }
     </style>
 </head>
-
 
 <body>
 
@@ -277,8 +274,7 @@
                         <li>
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
-                                <button type="submit" class="dropdown-item text-danger"><i
-                                        class="bi bi-box-arrow-right me-2"></i> Logout</button>
+                                <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i> Logout</button>
                             </form>
                         </li>
                     </ul>
@@ -305,7 +301,7 @@
 
             <div class="icons d-flex align-items-center gap-4">
 
-                <!-- 🔹 Tombol Keranjang -->
+                <!-- Tombol Keranjang -->
                 <a href="{{ route('keranjang.index') }}"
                     class="text-white text-decoration-none position-relative d-flex align-items-center fw-semibold icon-link">
                     <i class="bi bi-cart3 me-1 fs-5"></i>
@@ -315,12 +311,14 @@
                     @endif
                 </a>
 
-                <!-- 🔹 Tombol Riwayat Pesanan -->
+                <!-- Tombol Riwayat (Hanya muncul jika login) -->
+                @auth
                 <a href="{{ route('payment.index') }}"
                     class="text-white text-decoration-none position-relative d-flex align-items-center fw-semibold icon-link">
                     <i class="bi bi-clock-history me-1 fs-5"></i>
                     <span>Riwayat</span>
                 </a>
+                @endauth
 
             </div>
 
@@ -328,7 +326,6 @@
     </nav>
 
     <main class="">
-
         @yield('content')
     </main>
 
