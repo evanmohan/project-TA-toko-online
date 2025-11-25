@@ -80,19 +80,19 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
 
     // Detail
     Route::get('/bukti-pembayaran/{id}', [BuktiPembayaranController::class, 'show'])
-        ->name('bukti.show');
+    ->name('bukti.show');
 
     // Approve
     Route::post('/bukti-pembayaran/{id}/approve', [BuktiPembayaranController::class, 'approve'])
-        ->name('bukti.approve');
+    ->name('bukti.approve');
 
     // Reject
     Route::post('/bukti-pembayaran/{id}/reject', [BuktiPembayaranController::class, 'reject'])
-        ->name('bukti.reject');
+    ->name('bukti.reject');
 
     // Delete
     Route::delete('/bukti-pembayaran/{id}', [BuktiPembayaranController::class, 'destroy'])
-        ->name('bukti.destroy');
+    ->name('bukti.destroy');
 
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
 
@@ -105,15 +105,15 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::get('/iklan', [App\Http\Controllers\Admin\IklanController::class, 'index'])
         ->name('iklan.index');
 
-    // Simpan iklan baru
+        // Simpan iklan baru
     Route::post('/iklan', [App\Http\Controllers\Admin\IklanController::class, 'store'])
         ->name('iklan.store');
 
-    // Hapus iklan
-    Route::delete('/iklan/{id}', [App\Http\Controllers\Admin\IklanController::class, 'destroy'])
+        // Hapus iklan
+        Route::delete('/iklan/{id}', [App\Http\Controllers\Admin\IklanController::class, 'destroy'])
         ->name('iklan.destroy');
 
-    Route::get('/laporan/export', [LaporanController::class, 'export'])
+        Route::get('/laporan/export', [LaporanController::class, 'export'])
         ->name('laporan.export');
 
     // Route::get('laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
@@ -123,22 +123,25 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
 // ===================== USER =====================
 Route::middleware(['auth'])->group(function () {
 
+
+    Route::get('/search', [HomeController::class, 'search'])->name('product.search');
+
     // ================= CHECKOUT =================
     Route::post('/checkout/single', [CheckoutController::class, 'checkoutSingle'])
-        ->name('checkout.single');
+    ->name('checkout.single');
 
     Route::post('/checkout/cart', [CheckoutController::class, 'checkoutCart'])
-        ->name('checkout.cart');
+    ->name('checkout.cart');
 
     Route::post('/checkout/buy-now/{id}', [CheckoutController::class, 'buyNow'])
-        ->name('checkout.buy-now');
+    ->name('checkout.buy-now');
 
     // HALAMAN CHECKOUT PAKAI SATU ROUTE SAJA
     Route::get('/checkout', [CheckoutController::class, 'page'])
         ->name('checkout.page');
 
-    // PROSES CHECKOUT
-    Route::post('/checkout/submit', [CheckoutController::class, 'store'])
+        // PROSES CHECKOUT
+        Route::post('/checkout/submit', [CheckoutController::class, 'store'])
         ->name('checkout.store');
 
     Route::post('/checkout/from-cart', [CheckoutController::class, 'checkoutCart'])->name('checkout.fromCart');
@@ -172,8 +175,6 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // ===================== PRODUK DETAIL =====================
 Route::get('/produk/{id}', [ProdukController::class, 'show'])->name('produk.show');
-Route::get('/produk/search', [ProdukController::class, 'search'])->name('produk.search');
-Route::get('/produk/live-search', [ProdukController::class, 'liveSearch'])->name('produk.liveSearch');
 
 // ===================== RESET PASSWORD =====================
 Route::get('/reset-password', fn() => view('auth.reset-password'))->name('reset-password');

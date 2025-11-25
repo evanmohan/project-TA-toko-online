@@ -4,101 +4,154 @@
 
     <style>
         :root {
-            --blue: #0b5ed7;
-            --blue-dark: #063e91;
-            --light-gray: #f5f5f5;
-            --orange: #ff6600;
+            --blue: #0D6EFD;
+            /* Primary */
+            --blue-dark: #1A325B;
+            /* Deep Blue */
+            --blue-soft: #5A8DEE;
+            /* Secondary */
+            --light-gray: #F8F9FB;
+            /* Background */
+            --soft-gray: #DDE1E7;
+            /* Border */
+            --text-dark: #2C2C2C;
         }
 
         body {
             background: var(--light-gray);
             font-family: 'Poppins', sans-serif;
+            color: var(--text-dark);
         }
 
-        /* ================ HERO CAROUSEL STYLE ================ */
+        /* ============================================================
+           🔵 FULL BACKGROUND WRAPPER
+        ============================================================ */
+        .hero-bg-full {
+            background: linear-gradient(135deg, #0D6EFD, #1A325B);
+        }
+
+        .carousel-wrapper {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .hero-slides-container {
+            display: flex;
+            width: 100%;
+            transition: .6s ease-in-out;
+        }
+
+        .hero-slide {
+            min-width: 100%;
+        }
+
         .hero-banner {
             position: relative;
-            background: linear-gradient(135deg, #0b5ed7, #063e91);
-            border-radius: 20px;
+            background: linear-gradient(135deg, #0D6EFD, #1A325B);
+            height: 525px;
             overflow: hidden;
-            height: 420px;
             color: white;
-            padding: 40px;
         }
 
         .hero-text h1 {
-            font-size: 45px;
+            font-size: 50px;
             font-weight: 800;
             margin-bottom: 10px;
-            line-height: 1.1;
         }
 
-        .hero-text p {
-            font-size: 18px;
-            opacity: .9;
+        .hero-text small {
+            font-size: 15px;
         }
 
         .hero-price {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: bold;
-            color: #ffe600;
+            color: #FFE600;
+            /* tetap cocok sebagai highlight */
         }
 
-        .hero-img-left,
         .hero-img-right {
             position: absolute;
-            width: 320px;
+            right: 150px;
             top: 50%;
+            width: 360px;
             transform: translateY(-50%);
-        }
-
-        .hero-img-left {
-            left: 5%;
-        }
-
-        .hero-img-right {
-            right: 5%;
         }
 
         .hero-indicators {
             position: absolute;
-            bottom: 20px;
+            bottom: 75px;
             left: 50%;
             transform: translateX(-50%);
+            display: flex;
         }
 
         .hero-indicators span {
-            width: 10px;
-            height: 10px;
-            display: inline-block;
+            width: 12px;
+            height: 12px;
             background: white;
             border-radius: 50%;
+            opacity: .4;
             margin: 0 4px;
-            opacity: .5;
             cursor: pointer;
         }
 
         .hero-indicators span.active {
             opacity: 1;
-            background: #ffe600;
+            background: #FFE600;
         }
 
-        /* ================= CATEGORY ================= */
+        /* Arrow buttons */
+        .hero-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: white;
+            color: var(--blue);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 5;
+        }
+
+        .hero-arrow:hover {
+            background: #e9e9e9c2;
+        }
+
+        .arrow-left {
+            left: 20px;
+        }
+
+        .arrow-right {
+            right: 20px;
+        }
+
+
+        /* ============================================================
+            CATEGORY STYLING
+        ============================================================ */
         .category-wrapper {
             background: white;
             padding: 20px 0;
-            border-radius: 20px;
-            margin-top: -50px;
+            border-radius: 10px;
+            margin-top: -75px;
             margin-bottom: 30px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
             position: relative;
             z-index: 10;
         }
 
         .category-box {
             text-align: center;
-            padding: 12px;
-            transition: 0.3s;
+            padding: 10px;
+            transition: .3s;
             border-radius: 12px;
         }
 
@@ -108,23 +161,29 @@
         }
 
         .category-box img {
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
         }
 
-        /* PRODUCTS */
+        .image-product {
+            border-radius: 15px 15px 0 0;
+        }
+
+
+        /* ============================================================
+            PRODUCT CARD STYLING
+        ============================================================ */
         .product-card {
             border-radius: 15px;
             background: white;
-            border: 1px solid #eee;
-            overflow: hidden;
-            transition: 0.3s;
+            border: 1px solid var(--soft-gray);
+            transition: .3s;
         }
 
         .product-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
             border-color: var(--blue);
+            box-shadow: 0 6px 16px rgba(13, 110, 253, 0.15);
         }
 
         .product-card img {
@@ -142,49 +201,85 @@
         .section-title {
             font-size: 22px;
             font-weight: 700;
-            border-left: 5px solid var(--blue);
+            border-left: 6px solid var(--blue);
             padding-left: 12px;
+            color: var(--blue-dark);
+        }
+
+        /* BUTTON RECOLOR */
+        .btn-primary {
+            background-color: var(--blue);
+            border-color: var(--blue);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--blue-soft);
+            border-color: var(--blue-soft);
+        }
+
+        .btn-outline-secondary {
+            border-color: var(--blue-dark);
+            color: var(--blue-dark);
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--blue-dark);
+            color: white;
         }
     </style>
 
 
+
     {{-- ========================================================= --}}
-    {{-- 🔥 HERO BANNER (MIRIP GAMBAR) --}}
+    {{-- 🔵 HERO CAROUSEL --}}
     {{-- ========================================================= --}}
     @if(count($iklans) > 0)
-        <div class="container mb-4">
-            <div class="hero-banner position-relative">
+        <div class="hero-bg-full">
 
-                {{-- TEXT --}}
-                <div class="hero-text position-absolute"
-                    style="top: 50%; left: 50px; transform: translateY(-50%); max-width: 420px;">
-                    <small>DualSense Wireless Controller</small>
+            <div class="position-relative mb-4">
 
-                    <h1>Bring Gaming<br>Worlds To Life</h1>
-
-                    <p>Starting at</p>
-                    <div class="hero-price">$449.99</div>
-
-                    <a href="#" class="btn btn-light mt-3 px-4 py-2 fw-semibold">
-                        Shop Now →
-                    </a>
+                {{-- ARROW LEFT --}}
+                <div class="hero-arrow arrow-left" onclick="prevSlide()">
+                    ❮
                 </div>
 
-                {{-- GAMBAR KIRI --}}
-                @if(isset($iklans[0]))
-                    <img src="{{ asset('storage/' . $iklans[0]->gambar) }}" class="hero-img-right">
-                @endif
+                {{-- ARROW RIGHT --}}
+                <div class="hero-arrow arrow-right" onclick="nextSlide()">
+                    ❯
+                </div>
 
-                {{-- GAMBAR KANAN --}}
-                {{-- @if(isset($iklans[1]))
-                <img src="{{ asset('storage/' . $iklans[1]->gambar) }}" class="hero-img-right">
-                @endif --}}
+                <div class="carousel-wrapper">
+                    <div class="hero-slides-container" id="heroSlides">
 
-                {{-- DOTS --}}
-                <div class="hero-indicators">
-                    @foreach($iklans as $i => $d)
-                        <span class="{{ $i === 0 ? 'active' : '' }}"></span>
-                    @endforeach
+                        @foreach($iklans as $ads)
+                            <div class="hero-slide">
+                                <div class="hero-banner">
+
+                                    {{-- TEXT --}}
+                                    <div class="hero-text position-absolute"
+                                        style="top: 50%; left: 150px; transform: translateY(-50%); max-width: 420px;">
+                                        <small>Selamat Datang Di Second Store🤙</small>
+                                        <h1>Pilih Barang<br>Yang & Bagus</h1>
+                                        <div class="hero-price">Kepoin Barang Kita😊👌</div>
+                                        <a href="#" class="btn btn-light mt-3 px-4 py-2 fw-semibold">Shop Now →</a>
+                                    </div>
+
+                                    {{-- GAMBAR --}}
+                                    <img src="{{ asset('storage/' . $ads->gambar) }}" class="hero-img-right">
+
+                                </div>
+                            </div>
+                        @endforeach
+
+                    </div>
+
+                    {{-- DOTS --}}
+                    <div class="hero-indicators" id="heroDots">
+                        @foreach($iklans as $index => $d)
+                            <span onclick="goToSlide({{ $index }})" class="{{ $index === 0 ? 'active' : '' }}"></span>
+                        @endforeach
+                    </div>
+
                 </div>
 
             </div>
@@ -194,30 +289,28 @@
 
 
     {{-- ========================================================= --}}
-    {{-- 🔥 CATEGORY SECTION --}}
+    {{-- 🔵 CATEGORY --}}
     {{-- ========================================================= --}}
     <div class="container category-wrapper">
         <div class="row text-center justify-content-center">
-
             @foreach ($kategori as $cat)
                 <div class="col-3 col-md-1 mb-3">
                     <a href="{{ route('home', $cat->id) }}" class="text-decoration-none text-dark">
                         <div class="category-box">
                             <img src="{{ $cat->image ? asset('storage/' . $cat->image) : 'https://via.placeholder.com/120' }}"
-                                style="width: 60px; height: 60px; object-fit: cover; border-radius: 12px;">
+                                style="width:60px; height:60px; border-radius:12px; object-fit:cover;">
                             <p class="fw-semibold small mt-2">{{ $cat->nama_kategori }}</p>
                         </div>
                     </a>
                 </div>
             @endforeach
-
         </div>
     </div>
 
 
 
     {{-- ========================================================= --}}
-    {{-- 🔥 PRODUK TERBARU --}}
+    {{-- 🔵 PRODUK TERBARU --}}
     {{-- ========================================================= --}}
     <div class="container mt-4">
         <h4 class="section-title">Produk Terbaru</h4>
@@ -226,8 +319,8 @@
             @forelse ($products as $product)
                 <div class="col-6 col-md-3 mb-4">
                     <div class="product-card h-100">
-                        <img
-                            src="{{ $product->image ? asset('storage/' . $product->image) : asset('argon/assets/img/default-product.png') }}">
+                        <img src="{{ $product->image ? asset('storage/' . $product->image) : asset('argon/assets/img/default-product.png') }}"
+                            class="image-product">
 
                         <div class="p-3 text-center">
                             <h6 class="fw-semibold">{{ $product->nama_produk }}</h6>
@@ -250,5 +343,38 @@
             @endforelse
         </div>
     </div>
+
+
+
+    {{-- ========================================================= --}}
+    {{-- 🔵 JAVASCRIPT CAROUSEL --}}
+    {{-- ========================================================= --}}
+    <script>
+        let index = 0;
+        const slides = document.querySelectorAll(".hero-slide");
+        const container = document.getElementById("heroSlides");
+        const dots = document.querySelectorAll("#heroDots span");
+
+        function goToSlide(i) {
+            index = i;
+            container.style.transform = "translateX(" + (-index * 100) + "%)";
+            dots.forEach(d => d.classList.remove("active"));
+            dots[index].classList.add("active");
+        }
+
+        function nextSlide() {
+            index = (index + 1) % slides.length;
+            goToSlide(index);
+        }
+
+        function prevSlide() {
+            index = (index - 1 + slides.length) % slides.length;
+            goToSlide(index);
+        }
+
+        setInterval(() => {
+            nextSlide();
+        }, 4000);
+    </script>
 
 @endsection

@@ -5,38 +5,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Second Store</title>
+
+    <!-- BOOTSTRAP -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/0698b5b56f.js" crossorigin="anonymous"></script>
+
     <style>
         body {
             background-color: #fafafa;
             font-family: 'Poppins', sans-serif;
             margin: 0;
-            padding-top: 116px;
+            padding-top: 100px;
+            color: #212529 !important;
         }
 
         :root {
-            --orange: #ff6600;
-            --dark-orange: #ff3300;
-            --light-orange: #fff4ec;
+            --grey: #6c757d;
+            --dark-grey: #495057;
+            --light-grey: #e9ecef;
         }
 
-        .hover-bg-light:hover {
-            background-color: #f8f9fa;
-        }
-
-        #searchResults a:hover {
-            background-color: #f8f9fa;
-        }
-
-        #searchResults img {
-            border-radius: 5px;
-        }
-
+        /* ===========================
+           NAVBAR WRAPPER
+        ============================ */
         .navbar-wrapper {
-            background: linear-gradient(90deg, var(--orange), var(--dark-orange));
-            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(90deg, var(--grey), var(--dark-grey));
+            color: #212529 !important;
             position: fixed;
             top: 0;
             left: 0;
@@ -45,212 +43,204 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
+        /* ===========================
+           TOP NAVBAR
+        ============================ */
         .top-navbar {
-            padding: 8px 40px;
-            font-size: 14px;
-            font-weight: 500;
-            text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            padding: 8px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-size: 14px;
         }
 
         .top-navbar a {
-            color: #fff;
-            text-decoration: none;
-            margin: 0 5px;
+            color: #212529 !important;
             font-weight: 600;
-            letter-spacing: 0.3px;
-            transition: 0.2s;
+            text-decoration: none;
         }
 
         .top-navbar a:hover {
-            color: #ffebcc;
-            text-decoration: underline;
+            color: #000 !important;
         }
 
-        .dropdown-toggle.text-white {
-            font-weight: 600;
-            text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
-        }
-
-        .dropdown-toggle.text-white:hover {
-            color: #ffebcc;
-        }
-
+        /* ===========================
+           MAIN NAVBAR
+        ============================ */
         .main-navbar {
-            padding: 15px 60px;
+            padding: 12px 30px;
             display: flex;
-            align-items: center;
             justify-content: center;
-            gap: 50px;
+            /* Tengah */
+            align-items: center;
+            gap: 25px;
+
+            max-width: 1200px;
+            /* Batasi lebar agar tidak melebar ke seluruh layar */
+            /* margin: 0 auto; */
+            /* MENENGAHKAN NAVBAR */
+            width: 100%;
         }
+
 
         .main-navbar .logo img {
-            height: 50px;
-            margin-right: 10px;
+            height: 45px;
+        }
+
+        .main-navbar .logo h4 {
+            color: #212529 !important;
+            margin: 0;
+            font-weight: bold;
         }
 
         .main-navbar .search-bar {
-            flex-grow: 1;
-            max-width: 650px;
+            flex: 1;
+            max-width: 550px;
             position: relative;
-            border-radius: 5px;
-            overflow: hidden;
-            box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
         }
 
         .main-navbar .search-bar input {
             width: 100%;
-            padding: 10px 15px;
-            border: none;
-            outline: none;
-            font-size: 14px;
-            color: #333;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
         }
 
         .main-navbar .search-bar button {
             position: absolute;
-            right: 0;
-            top: 0;
-            height: 100%;
-            width: 50px;
+            right: 3px;
+            top: 3px;
+            bottom: 3px;
+            width: 45px;
             border: none;
-            background-color: var(--orange);
-            color: #fff;
-            border-radius: 0 5px 5px 0;
-            cursor: pointer;
-            transition: 0.2s;
+            background: var(--grey);
+            color: #212529 !important;
+            border-radius: 6px;
         }
 
-        .main-navbar .icons a {
-            color: #fff;
+        .icons a {
+            color: #212529 !important;
+            font-weight: 600;
             text-decoration: none;
-            font-size: 16px;
             position: relative;
-            font-weight: 500;
-        }
-
-        .main-navbar .icons a .badge {
-            font-size: 10px;
-            position: absolute;
-            top: -5px;
-            right: -10px;
-            background-color: #dc3545;
-        }
-
-        .category-bar {
-            background: linear-gradient(90deg, var(--orange), var(--dark-orange));
-            padding: 10px 60px;
-        }
-
-        .category-bar a {
-            color: white;
-            font-size: 14px;
-            margin-right: 25px;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        footer {
-            background: linear-gradient(90deg, var(--orange), var(--dark-orange));
-            color: white;
-            padding: 40px 0 20px;
-            margin-top: 60px;
-        }
-
-        footer h6 {
-            font-weight: 700;
-            font-size: 15px;
-            margin-bottom: 15px;
-        }
-
-        footer a {
-            display: block;
-            color: white;
-            text-decoration: none;
-            margin-bottom: 6px;
-            opacity: 0.9;
-        }
-
-        footer a:hover {
-            opacity: 1;
-            text-decoration: underline;
-        }
-
-        .copyright {
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-            margin-top: 20px;
-            padding-top: 10px;
-            font-size: 13px;
-            text-align: center;
-        }
-
-        .dropdown-menu {
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 0.25s ease;
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .dropdown-menu.show {
-            opacity: 1;
-            transform: translateY(0);
-            animation: popupFade 0.25s ease;
-        }
-
-        @keyframes popupFade {
-            0% {
-                opacity: 0;
-                transform: scale(0.95) translateY(-5px);
-            }
-
-            100% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        .dropdown-item:hover {
-            background: var(--light-orange);
-            color: var(--dark-orange);
-            transition: 0.2s;
-        }
-
-        .icon-link {
-            display: flex !important;
-            align-items: center !important;
-            gap: 5px;
-        }
-
-        .icon-link i {
-            display: flex;
-            align-items: center;
-            font-size: 18px;
-        }
-
-        .icon-link span {
-            display: flex;
-            align-items: center;
-            font-size: 15px;
         }
 
         .icons .badge {
-            background-color: #dc3545;
-            font-size: 10px;
-            padding: 3px 6px;
-            border-radius: 50%;
+            background: red;
+            position: absolute;
+            top: -5px;
+            right: -10px;
+        }
+
+        /* ===========================
+           FOOTER
+        ============================ */
+        footer {
+            margin-top: 50px;
+            background: linear-gradient(90deg, var(--grey), var(--dark-grey));
+            color: #212529 !important;
+            padding: 40px 0;
+        }
+
+        footer a {
+            color: #212529 !important;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: #000 !important;
+        }
+
+
+        /* ============================================================
+           RESPONSIVE SHOPEE-LIKE NAVBAR
+        ============================================================ */
+
+        /* Tablet */
+        @media (max-width: 992px) {
+            .main-navbar {
+                flex-direction: column;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .main-navbar .search-bar {
+                max-width: 100%;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .top-navbar {
+                flex-direction: column;
+                text-align: center;
+                gap: 6px;
+            }
+
+            .top-navbar div:first-child {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 5px;
+            }
+
+            .main-navbar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+
+            .main-navbar .logo {
+                justify-content: center;
+            }
+
+            .main-navbar .search-bar {
+                width: 100%;
+                max-width: 100% !important;
+            }
+
+            .main-navbar .icons {
+                justify-content: center;
+                gap: 25px;
+            }
+
+            .icons .badge {
+                top: -7px;
+                right: -12px;
+            }
+        }
+
+
+        /* Extra small */
+        @media (max-width: 480px) {
+            .top-navbar {
+                font-size: 12px;
+                padding: 5px 10px;
+            }
+
+            .main-navbar .logo h4 {
+                font-size: 16px;
+            }
+
+            .main-navbar .search-bar input {
+                font-size: 13px;
+            }
+
+            .icon-link span {
+                font-size: 13px;
+            }
         }
     </style>
 </head>
 
 <body>
 
+    <!-- NAVBAR -->
     <nav class="navbar-wrapper">
-        <div class="top-navbar">
+        <!-- TOP NAVBAR -->
+        <div class="top-navbar container">
             <div>
                 <a href="#"><i class="bi bi-info-circle me-1"></i>Tentang Kami</a>
                 <span>|</span>
@@ -261,113 +251,112 @@
 
             <div class="dropdown">
                 @auth
-                    <a class="dropdown-toggle text-white text-decoration-none d-flex align-items-center" href="#"
-                        id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="dropdown-toggle text-dark text-decoration-none d-flex align-items-center" href="#"
+                        id="userDropdown" role="button" data-bs-toggle="dropdown">
                         <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->username }}
                     </a>
 
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a href="#" class="dropdown-item"><i class="bi bi-pencil-square me-2"></i> Edit Profil</a></li>
+                        <li><a href="#" class="dropdown-item">Edit Profil</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <form action="{{ route('logout') }}" method="POST">
-                                @csrf
-                                <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i> Logout</button>
+                            <form action="{{ route('logout') }}" method="POST">@csrf
+                                <button class="dropdown-item text-danger">Logout</button>
                             </form>
                         </li>
                     </ul>
+
                 @else
-                    <a href="{{ route('login') }}" class="text-white text-decoration-none">Masuk</a> |
-                    <a href="{{ route('register') }}" class="text-white text-decoration-none">Daftar</a>
+                    <a href="{{ route('login') }}">Masuk</a> |
+                    <a href="{{ route('register') }}">Daftar</a>
                 @endauth
             </div>
         </div>
 
-        <div class="main-navbar">
-            <a href="{{ route('home') }}" class="logo d-flex align-items-center text-decoration-none">
+        <!-- MAIN NAVBAR -->
+        <div class="main-navbar container">
+
+            <a href="{{ route('home') }}" class="logo d-flex align-items-center gap-2 text-decoration-none">
                 <img src="{{ asset('assets/images/logo.png') }}" alt="Logo">
-                <h4 class="m-0 fw-bold text-white ms-2">Second Store</h4>
+                <h4>Second Store</h4>
             </a>
 
             <div class="search-bar position-relative">
-                <input type="text" id="searchInput" placeholder="Cari produk unggulan...">
-                <button type="button"><i class="bi bi-search"></i></button>
-
-                <div id="searchResults" class="position-absolute bg-white w-100 shadow-sm rounded mt-1"
-                    style="z-index: 2000; display:none; max-height:250px; overflow-y:auto;"></div>
+                <form action="{{ route('product.search') }}" method="GET" class="search-bar position-relative">
+                    <input type="text" name="search" placeholder="Cari produk..." required>
+                    <button type="submit"><i class="bi bi-search"></i></button>
+                </form>
+                
             </div>
 
             <div class="icons d-flex align-items-center gap-4">
-
-                <!-- Tombol Keranjang -->
-                <a href="{{ route('keranjang.index') }}"
-                    class="text-white text-decoration-none position-relative d-flex align-items-center fw-semibold icon-link">
-                    <i class="bi bi-cart3 me-1 fs-5"></i>
+                <a href="{{ route('keranjang.index') }}" class="icon-link">
+                    <i class="bi bi-cart3 fs-5"></i>
                     <span>Keranjang</span>
                     @if(isset($cartCount) && $cartCount > 0)
                         <span class="badge">{{ $cartCount }}</span>
                     @endif
                 </a>
 
-                <!-- Tombol Riwayat (Hanya muncul jika login) -->
                 @auth
-                <a href="{{ route('payment.index') }}"
-                    class="text-white text-decoration-none position-relative d-flex align-items-center fw-semibold icon-link">
-                    <i class="bi bi-clock-history me-1 fs-5"></i>
-                    <span>Riwayat</span>
-                </a>
+                    <a href="{{ route('payment.index') }}" class="icon-link">
+                        <i class="bi bi-clock-history fs-5"></i>
+                        <span>Riwayat</span>
+                    </a>
                 @endauth
-
             </div>
 
         </div>
     </nav>
 
-    <main class="">
+    <!-- CONTENT -->
+    <main>
         @yield('content')
     </main>
 
+    <!-- FOOTER -->
     <footer>
         <div class="container">
             <div class="row text-start">
                 <div class="col-md-3 mb-3">
                     <h6>INFORMASI</h6>
-                    <a href="#">Tentang Kami</a>
-                    <a href="#">Kebijakan Privasi</a>
+                    <a href="#">Tentang Kami</a><br>
+                    <a href="#">Kebijakan Privasi</a><br>
                     <a href="#">Syarat & Ketentuan</a>
                 </div>
 
                 <div class="col-md-3 mb-3">
-                    <h6>LAYANAN PELANGGAN</h6>
-                    <a href="#">Hubungi Kami</a>
-                    <a href="#">Pengembalian Barang</a>
+                    <h6>LAYANAN</h6>
+                    <a href="#">Hubungi Kami</a><br>
+                    <a href="#">Pengembalian Barang</a><br>
                     <a href="#">Bantuan</a>
                 </div>
 
                 <div class="col-md-3 mb-3">
                     <h6>EKSTRA</h6>
-                    <a href="#">Promo Spesial</a>
-                    <a href="#">Diskon Hari Ini</a>
+                    <a href="#">Promo</a><br>
+                    <a href="#">Diskon</a><br>
                     <a href="#">Voucher</a>
                 </div>
 
                 <div class="col-md-3 mb-3">
-                    <h6>AKUN SAYA</h6>
-                    <a href="#">Akun Saya</a>
-                    <a href="#">Keranjang</a>
+                    <h6>AKUN</h6>
+                    <a href="#">Akun Saya</a><br>
+                    <a href="#">Keranjang</a><br>
                     <a href="#">Riwayat Belanja</a>
                 </div>
             </div>
 
-            <div class="copyright">
-                &copy; {{ date('Y') }} Second Store. Semua hak cipta dilindungi.
+            <div class="text-center mt-4">
+                &copy; {{ date('Y') }} Second Store
             </div>
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -393,16 +382,19 @@
                                 resultsDiv.innerHTML = '<div class="p-2 text-muted small">Tidak ada hasil</div>';
                             } else {
                                 resultsDiv.innerHTML = data.map(item => `
-                                    <a href="/produk/${item.id}" class="d-flex align-items-center text-decoration-none text-dark p-2 border-bottom hover-bg-light">
-                                        <img src="${item.image ? '/storage/' + item.image : '/assets/images/default-product.png'}"
-                                            width="50" height="50" class="me-2">
-                                        <div>
-                                            <div class="fw-semibold">${item.nama_produk}</div>
-                                            <div class="text-muted small">Rp ${parseInt(item.harga).toLocaleString('id-ID')}</div>
-                                        </div>
-                                    </a>
-                                `).join('');
+                            <a href="/produk/${item.id}" class="d-flex align-items-center text-decoration-none text-dark p-2 border-bottom">
+                                <img src="${item.image ? '/storage/' + item.image : '/assets/images/default-product.png'}"
+                                     width="50" height="50" class="me-2" style="object-fit:cover;">
+                                <div>
+                                    <div class="fw-semibold">${item.nama_produk}</div>
+                                    <div class="text-muted small">
+                                        Rp ${parseInt(item.harga).toLocaleString('id-ID')}
+                                    </div>
+                                </div>
+                            </a>
+                        `).join('');
                             }
+
                             resultsDiv.style.display = 'block';
                         });
                 }, 300);
@@ -415,6 +407,7 @@
             });
         });
     </script>
+
 
 </body>
 

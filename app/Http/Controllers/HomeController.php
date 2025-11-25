@@ -9,13 +9,42 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $iklans = Iklan::where('status', 'ACTIVE')->get();
-        $products = Product::latest()->get();
-        $kategori = Kategori::all();
+        // $iklans = Iklan::where('status', 'ACTIVE')->get();
+        // $products = Product::latest()->get();
+        // $kategori = Kategori::all();
 
-        return view('home.home', compact('iklans', 'products', 'kategori'));
+        $search = $request->search;
+
+        $products = Product::when($search, function ($q) use ($search) {
+            return $q->where('nama_produk', 'like', "%{$search}%");
+        })
+            ->latest()
+            ->get();
+
+
+        // kirim semua data lain juga
+        return view('home.home', [
+            'kategori' => Kategori::all(),
+            'products' => $products,
+            'iklans'   => Iklan::all(),
+        ]);
+
+        // return view('home.home', compact('iklans', 'products', 'kategori'));
+    }
+
+
+    public function search(Request $request)
+    {
+        $keyword = $request->search;
+
+        $products = Product::where('nama_produk', 'like', "%{$keyword}%")
+            ->orWhere('deskripsi', 'like', "%{$keyword}%")
+            ->latest()
+            ->paginate(12); // tampil per 12 item
+
+        return view('home.search', compact('products', 'keyword'));
     }
 
 

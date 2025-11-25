@@ -105,7 +105,7 @@
     </style>
 
     <div class="container payment-container">
-        <h2 class="mb-4">Riwayat Pembayaran</h2>
+        <h2 class="my-5">Riwayat Pembayaran</h2>
 
         @if($orders->count() == 0)
             <div class="alert alert-info">Belum ada pembayaran.</div>
