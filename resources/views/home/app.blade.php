@@ -262,10 +262,20 @@
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <form action="{{ route('logout') }}" method="POST">@csrf
-                                <button class="dropdown-item text-danger">Logout</button>
+                            <a href="{{ route('favorit.index') }}" class="dropdown-item">
+                                <i class="bi bi-heart me-2 text-danger"></i>Favorit Anda
+                            </a>
+                        </li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST" class="m-0 p-0">
+                                @csrf
+                                <button class="dropdown-item text-danger d-flex align-items-center gap-2">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    Logout
+                                </button>
                             </form>
                         </li>
+
                     </ul>
 
                 @else
@@ -288,7 +298,7 @@
                     <input type="text" name="search" placeholder="Cari produk..." required>
                     <button type="submit"><i class="bi bi-search"></i></button>
                 </form>
-                
+
             </div>
 
             <div class="icons d-flex align-items-center gap-4">

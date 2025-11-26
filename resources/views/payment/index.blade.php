@@ -107,10 +107,28 @@
     <div class="container payment-container">
         <h2 class="my-5">Riwayat Pembayaran</h2>
 
+        {{-- EMPTY STATE --}}
         @if($orders->count() == 0)
-            <div class="alert alert-info">Belum ada pembayaran.</div>
+            <div class="text-center my-5">
+                <img src="{{ asset('assets/images/riwayat.png') }}" alt="Empty" style="max-width:150px; opacity:.8;">
+
+                <h3 class="mt-4" style="font-weight:700; color:#333;">
+                    Riwayat Pembayaran Kosong
+                </h3>
+
+                <p style="color:#666; font-size:15px;">
+                    Belum ada transaksi pembayaran yang tercatat.
+                </p>
+
+                <a href="{{ route('home') }}"
+                   class="btn btn-success px-4 py-2"
+                   style="border-radius:10px; font-weight:600;">
+                    Mulai Belanja
+                </a>
+            </div>
         @endif
 
+        {{-- ORDER LIST --}}
         @foreach($orders as $order)
             <div class="order-card">
 
@@ -131,7 +149,6 @@
                 <p><strong>Total Bayar:</strong> Rp {{ number_format($order->total_bayar, 0, ',', '.') }}</p>
                 <p><strong>Tanggal:</strong> {{ $order->created_at->format('d M Y - H:i') }}</p>
 
-                <!-- DETAIL PRODUK -->
                 <button class="collapse-btn" data-bs-toggle="collapse" data-bs-target="#detail-{{ $order->id }}">
                     Lihat Detail Produk ▼
                 </button>
@@ -146,7 +163,6 @@
                     @endforeach
                 </div>
 
-                <!-- TOMBOL AKSI HANYA JIKA BELUM DIBAYAR -->
                 @if($order->status == 'NOT PAID')
                     <div class="mt-3 d-flex gap-2 justify-content-end">
 
@@ -163,7 +179,7 @@
 
             </div>
 
-            <!-- MODAL PEMBATALAN -->
+            {{-- MODAL PEMBATALAN --}}
             <div class="modal fade" id="cancelModal-{{ $order->id }}" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content" style="border-radius: 12px;">

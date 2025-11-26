@@ -52,8 +52,16 @@
             width: 100%;
         }
 
-        .btn-orange:hover { opacity: 0.9; transform: translateY(-2px); }
-        .btn-orange:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        .btn-orange:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-orange:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
 
         .btn-outline-orange {
             border: 2px solid var(--orange);
@@ -82,44 +90,127 @@
             user-select: none;
         }
 
-        .size-option:hover { border-color: var(--orange); color: var(--orange); }
-        .size-option.active { border-color: var(--orange); background: var(--orange); color: #fff; }
-
-        .cart-success-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #ffffff;
-            border-radius: 18px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-            width: 90%;
-            max-width: 420px;
-            padding: 28px 24px;
-            text-align: center;
-            z-index: 9999;
+        .size-option:hover {
+            border-color: var(--orange);
+            color: var(--orange);
         }
 
-        .cart-success-popup .success-icon {
-            width: 70px;
-            height: 70px;
-            background: var(--green);
+        .size-option.active {
+            border-color: var(--orange);
+            background: var(--orange);
+            color: #fff;
+        }
+
+        /* -----------------------------------------
+           ❤️ FAVORIT SHOPEE STYLE
+        ----------------------------------------- */
+        .favorite-btn {
+            position: relative;
+            font-size: 30px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 16px auto;
+            cursor: pointer;
+            transition: .25s ease;
+            user-select: none;
+            background: #fff;
         }
 
-        .cart-success-popup .success-icon i { color: #fff; font-size: 32px; }
-        .popup-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 9998;
+        .favorite-btn i {
+            font-size: 28px;
+            color: #ccc;
+            transition: .25s ease;
+        }
+
+        .favorite-btn.active i {
+            color: #ff3d3d;
+        }
+
+        .favorite-btn:hover {
+            box-shadow: 0 0 12px rgba(255, 61, 61, 0.5);
+            transform: scale(1.15);
+        }
+
+        .favorite-btn[data-tooltip]::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: -32px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transition: .2s ease;
+            white-space: nowrap;
+        }
+
+        .favorite-btn:hover::after {
+            opacity: 1;
+        }
+
+        /* Burst animation */
+        .burst {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            pointer-events: none;
+        }
+
+        .burst span {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #ff3d3d;
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        .burst span:nth-child(1) {
+            --x: 20px;
+            --y: -5px;
+        }
+
+        .burst span:nth-child(2) {
+            --x: -20px;
+            --y: -5px;
+        }
+
+        .burst span:nth-child(3) {
+            --x: 0;
+            --y: -25px;
+        }
+
+        .burst span:nth-child(4) {
+            --x: 15px;
+            --y: 20px;
+        }
+
+        .burst span:nth-child(5) {
+            --x: -15px;
+            --y: 20px;
+        }
+
+        @keyframes burstAnim {
+            0% {
+                transform: scale(0.2) translate(0, 0);
+                opacity: 1;
+            }
+
+            80% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.5) translate(var(--x), var(--y));
+                opacity: 0;
+            }
         }
     </style>
 
@@ -161,140 +252,130 @@
                         <div class="row align-items-center">
                             <div class="col-4">
                                 <label for="qty" class="form-label fw-semibold">Jumlah</label>
-                                <input type="number" name="qty" id="qty"
-                                       class="form-control" min="1"
-                                       max="{{ $produk->stok }}" value="1">
+                                <div class="d-flex gap-4">
+
+                                    <input type="number" name="qty" id="qty" class="form-control" min="1"
+                                        max="{{ $produk->stok }}" value="1">
+                                    {{-- ❤️ TOMBOL FAVORIT SHOPEE --}}
+                                    <div class="col-2 d-flex justify-content-center align-items-end pb-1">
+                                        @auth
+                                            @php
+                                                $isFavorit = auth()->user()->favorits->contains('produk_id', $produk->id);
+                                               @endphp
+                                            <span id="favoriteBtn" class="favorite-btn {{ $isFavorit ? 'active' : '' }}"
+                                                data-tooltip="{{ $isFavorit ? 'Hapus dari Favorit' : 'Tambahkan ke Favorit' }}">
+                                                <i class="{{ $isFavorit ? 'fas' : 'far' }} fa-heart"></i>
+                                                <div class="burst">
+                                                    <span></span><span></span><span></span><span></span><span></span>
+                                                </div>
+                                            </span>
+                                        @else
+                                            <a href="{{ route('login') }}" class="favorite-btn">
+                                                <i class="far fa-heart"></i>
+                                            </a>
+                                        @endauth
+                                    </div>
+                                </div>
                             </div>
+
                         </div>
                     </form>
 
                     <div class="mt-4 d-flex gap-2">
-                        <button id="addToCartBtn" form="addToCartForm"
-                                class="btn-orange w-100">
+                        <button id="addToCartBtn" form="addToCartForm" class="btn-orange w-100">
                             Tambah ke Keranjang
                         </button>
 
-                        <form action="{{ route('checkout.buy-now', $produk->id) }}"
-                              method="POST" class="w-100">
+                        <form action="{{ route('checkout.buy-now', $produk->id) }}" method="POST" class="w-100">
                             @csrf
                             <input type="hidden" name="qty" value="1" id="buyNowQty">
                             <input type="hidden" name="size" id="buyNowSize">
 
-                            <button type="submit"
-                                    class="btn-outline-orange w-100">
+                            <button type="submit" class="btn-outline-orange w-100">
                                 Beli Sekarang
                             </button>
                         </form>
                     </div>
 
-                    <p class="text-muted small mt-4">
-                        Stok tersedia: {{ $produk->stok }}
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
+                    <script src="https://kit.fontawesome.com/a2e0e6ad45.js" crossorigin="anonymous"></script>
 
-    <script src="https://kit.fontawesome.com/a2e0e6ad45.js" crossorigin="anonymous"></script>
+                    <script>
+                        /* -------------------------------
+                           SIZE SELECT
+                        ------------------------------- */
+                        const sizeOptions = document.querySelectorAll('.size-option');
+                        const selectedSizeInput = document.getElementById('selectedSize');
+                        const buyNowSize = document.getElementById('buyNowSize');
+                        const addBtn = document.getElementById('addToCartBtn');
 
-    <script>
-        const addToCartForm = document.getElementById('addToCartForm');
-        const addBtn = document.getElementById('addToCartBtn');
+                        addBtn.disabled = true;
+                        document.querySelector('.btn-outline-orange').disabled = true;
 
-        const sizeOptions = document.querySelectorAll('.size-option');
-        const selectedSizeInput = document.getElementById('selectedSize');
-        const buyNowSize = document.getElementById('buyNowSize');
+                        sizeOptions.forEach(option => {
+                            option.addEventListener('click', function () {
+                                sizeOptions.forEach(o => o.classList.remove('active'));
+                                this.classList.add('active');
 
-        addBtn.disabled = true;
-        document.querySelector('.btn-outline-orange').disabled = true;
+                                selectedSizeInput.value = this.dataset.size;
+                                buyNowSize.value = this.dataset.size;
 
-        sizeOptions.forEach(option => {
-            option.addEventListener('click', function () {
+                                addBtn.disabled = false;
+                                document.querySelector('.btn-outline-orange').disabled = false;
+                            });
+                        });
 
-                sizeOptions.forEach(o => o.classList.remove('active'));
-                this.classList.add('active');
 
-                selectedSizeInput.value = this.dataset.size;
-                buyNowSize.value = this.dataset.size;
+                        /* ---------------------------------------
+                           FAVORIT TOGGLE + BURST ANIMATION
+                        --------------------------------------- */
+                        @auth
+                            document.getElementById("favoriteBtn").addEventListener("click", async function () {
 
-                addBtn.disabled = false;
-                document.querySelector('.btn-outline-orange').disabled = false;
-            });
-        });
+                                const btn = this;
+                                const icon = btn.querySelector("i");
+                                const burst = btn.querySelectorAll(".burst span");
+                                const isActive = btn.classList.contains("active");
 
-        // ======================================================
-        //            PERBAIKAN: HANDLE USER LOGIN
-        // ======================================================
+                                const url = isActive
+                                    ? "{{ route('favorit.destroy', $produk->id) }}"
+                                    : "{{ route('favorit.store', $produk->id) }}";
 
-        @guest
-        addBtn.addEventListener('click', () => {
-            window.location.href = "{{ route('login') }}";
-        });
+                                const method = isActive ? "DELETE" : "POST";
 
-        document.querySelector('.btn-outline-orange').addEventListener('click', () => {
-            window.location.href = "{{ route('login') }}";
-        });
-        @endguest
+                                // AJAX
+                                const response = await fetch(url, {
+                                    method: method,
+                                    headers: {
+                                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                        "Content-Type": "application/json"
+                                    }
+                                });
 
-        @auth
-        addToCartForm.addEventListener('submit', async function (e) {
-            e.preventDefault();
+                                // UI update
+                                if (response.ok) {
+                                    btn.classList.toggle("active");
 
-            if (!selectedSizeInput.value) {
-                alert("Pilih ukuran dulu!");
-                return;
-            }
+                                    icon.className = btn.classList.contains("active") ? "fas fa-heart" : "far fa-heart";
 
-            const originalText = addBtn.innerHTML;
-            addBtn.disabled = true;
-            addBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menambahkan...';
+                                    btn.setAttribute("data-tooltip",
+                                        btn.classList.contains("active")
+                                            ? "Hapus dari Favorit"
+                                            : "Tambahkan ke Favorit"
+                                    );
 
-            const formData = new FormData(this);
+                                    // Burst animation
+                                    if (btn.classList.contains("active")) {
+                                        burst.forEach((el) => {
+                                            el.style.animation = "none";
+                                            void el.offsetWidth;
+                                            el.style.animation = "burstAnim .45s ease-out";
+                                        });
+                                    }
+                                } else {
+                                    alert("Gagal mengubah favorit.");
+                                }
+                            });
+                        @endauth
+                    </script>
 
-            try {
-                const response = await fetch(this.action, {
-                    method: 'POST',
-                    headers: { 'X-CSRF-TOKEN': formData.get('_token') },
-                    body: formData
-                });
-
-                if (response.ok) {
-                    showCartSuccess("{{ $produk->nama_produk }}");
-                } else {
-                    alert('Gagal menambahkan ke keranjang.');
-                }
-            } catch (error) {
-                alert('Terjadi kesalahan. Silakan coba lagi.');
-            } finally {
-                addBtn.disabled = false;
-                addBtn.innerHTML = originalText;
-            }
-        });
-        @endauth
-
-        function showCartSuccess(productName) {
-            const backdrop = document.createElement('div');
-            backdrop.className = 'popup-backdrop';
-            document.body.appendChild(backdrop);
-
-            const popup = document.createElement('div');
-            popup.className = 'cart-success-popup';
-            popup.innerHTML = `
-                <div class="success-icon"><i class="fas fa-check"></i></div>
-                <h4>Berhasil Ditambahkan!</h4>
-                <p>${productName} berhasil dimasukkan ke keranjang.</p>
-                <a href="{{ route('keranjang.index') }}" class="btn-green">Lihat Keranjang</a>
-            `;
-            document.body.appendChild(popup);
-
-            setTimeout(() => {
-                popup.remove();
-                backdrop.remove();
-            }, 2800);
-        }
-
-        document.getElementById("qty").addEventListener("input", function () {
-            document.getElementById("buyNowQty").value = this.value;
-        });
-    </script>
 @endsection

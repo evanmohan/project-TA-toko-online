@@ -50,4 +50,9 @@ class Product extends Model
     return $this->hasMany(Iklan::class, 'produk_id');
 }
 
+public function favorits()
+{
+    return $this->hasMany(Favorit::class);
+}
+
 }

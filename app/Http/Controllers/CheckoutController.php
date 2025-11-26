@@ -13,9 +13,6 @@ use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
-    // =============================
-    // 1. GENERATE KODE ORDER
-    // =============================
     private function generateKodeOrder()
     {
         return 'ORD-' . strtoupper(uniqid());
@@ -36,6 +33,9 @@ class CheckoutController extends Controller
             'harga_satuan'   => $product->harga,
             'subtotal'       => $product->harga * $qty,
             'image'          => $product->image,
+
+            // BUY NOW tidak gunakan cart_id
+            'cart_id'        => null,
         ]];
 
         session(['checkout_items' => $items]);
@@ -55,17 +55,16 @@ class CheckoutController extends Controller
         }
 
         $ids = collect($selected)->pluck('id');
-
         $cartItems = Keranjang::whereIn('id', $ids)->with('product')->get();
 
         $items = [];
 
         foreach ($cartItems as $cart) {
             $match = collect($selected)->firstWhere('id', $cart->id);
-
             $qty = $match['qty'];
 
             $items[] = [
+                'cart_id'        => $cart->id, // ⬅ DITAMBAHKAN
                 'product_id'     => $cart->product_id,
                 'nama_produk'    => $cart->product->nama_produk,
                 'qty'            => $qty,
@@ -105,7 +104,7 @@ class CheckoutController extends Controller
     }
 
     // =============================
-    // 5. PROSES CHECKOUT (SAVE ORDER)
+    // 5. PROSES CHECKOUT
     // =============================
     public function store(Request $request)
     {
@@ -126,11 +125,12 @@ class CheckoutController extends Controller
 
         $items = $cart->map(function ($i) {
             return [
-                'product_id' => $i['product_id'],
-                'qty'        => $i['qty'],
-                'harga'      => $i['harga_satuan'],
-                'subtotal'   => $i['subtotal'],
-                'image'      => $i['image'],
+                'cart_id'     => $i['cart_id'] ?? null, // ⬅ tambahan
+                'product_id'   => $i['product_id'],
+                'qty'          => $i['qty'],
+                'harga'        => $i['harga_satuan'],
+                'subtotal'     => $i['subtotal'],
+                'image'        => $i['image'],
             ];
         });
 
@@ -166,11 +166,15 @@ class CheckoutController extends Controller
         }
 
         // =========================
-        // HAPUS ITEM KERANJANG YANG DI-CHECKOUT
+        // FIX: HAPUS KERANJANG SESUAI CART_ID
         // =========================
-        Keranjang::where('user_id', auth()->id())
-            ->whereIn('product_id', $items->pluck('product_id'))
-            ->delete();
+        $cartIds = $items->pluck('cart_id')->filter()->toArray();
+
+        if (!empty($cartIds)) {
+            Keranjang::where('user_id', auth()->id())
+                ->whereIn('id', $cartIds)
+                ->delete();
+        }
 
         // =========================
         // HANDLE METODE PEMBAYARAN
@@ -191,7 +195,7 @@ class CheckoutController extends Controller
     }
 
     // =============================
-    // 6. BUY NOW (ALTERNATIF)
+    // 6. BUY NOW
     // =============================
     public function buyNow(Request $request, $id)
     {
@@ -201,6 +205,7 @@ class CheckoutController extends Controller
         session([
             'checkout_items' => [
                 [
+                    'cart_id'       => null, // ⬅ BUY NOW tidak hapus keranjang
                     'product_id'     => $product->id,
                     'nama_produk'    => $product->nama_produk,
                     'qty'            => $qty,
@@ -215,7 +220,7 @@ class CheckoutController extends Controller
     }
 
     // =============================
-    // 7. CHECKOUT DARI KERANJANG (ALTERNATIF)
+    // 7. CHECKOUT CART (ALTERNATIF)
     // =============================
     public function fromCart(Request $request)
     {
@@ -239,6 +244,7 @@ class CheckoutController extends Controller
             $product = $cart->product;
 
             $items[] = [
+                'cart_id'       => $cart->id, // ⬅ DITAMBAHKAN
                 'product_id'    => $product->id,
                 'nama_produk'   => $product->nama_produk,
                 'qty'           => $cartItem['qty'],
@@ -275,4 +281,3 @@ class CheckoutController extends Controller
         ]);
     }
 }
-

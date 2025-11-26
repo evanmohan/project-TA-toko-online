@@ -28,10 +28,14 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    
+
     // Relasi ke pesanan (satu user bisa punya banyak pesanan)
     public function pesanan()
     {
         return $this->hasMany(Pesanan::class, 'user_id');
+    }
+    public function favorits()
+    {
+        return $this->hasMany(Favorit::class);
     }
 }
