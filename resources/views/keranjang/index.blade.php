@@ -52,7 +52,6 @@
         }
 
         .cart-item-info h6 {
-            font-weight: 500;
             font-size: 15px;
             margin-bottom: 5px;
         }
@@ -67,13 +66,10 @@
             background: #eee;
             border: none;
             border-radius: 6px;
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             font-weight: bold;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .summary-card {
@@ -126,6 +122,9 @@
     <div class="container cart-container">
         <h4 class="mb-4 fw-bold">Keranjang</h4>
 
+        {{-- ===================================== --}}
+        {{--  JIKA KERANJANG KOSONG                --}}
+        {{-- ===================================== --}}
         @if ($items->isEmpty())
             <div class="row">
                 <div class="col-lg-8">
@@ -146,17 +145,18 @@
                             <strong>Total</strong><span>-</span>
                         </div>
                         <hr>
-                        <div class="p-3 mt-2" style="background:#eaffe6; border:1px solid #bff5c2; border-radius:12px;">
-                            <strong>✨ Makin hemat pakai promo</strong>
-                        </div>
-                        <button class="checkout-btn mt-4" disabled style="background:#f0f0f0; color:#bfbfbf;">
+                        <button class="checkout-btn mt-4" disabled>
                             Beli
                         </button>
                     </div>
                 </div>
             </div>
+
         @else
 
+            {{-- ===================================== --}}
+            {{--              HEADER                  --}}
+            {{-- ===================================== --}}
             <div class="cart-header">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="checkAll">
@@ -167,48 +167,58 @@
             <div class="row">
                 <div class="col-lg-8">
                     <div class="cart-box">
+
                         @foreach($items as $it)
-                                <div class="cart-item">
-                                    {{-- CHECKBOX --}}
-                                    <input class="form-check-input item-check me-3" type="checkbox" value="{{ $it->id }}"
-                                        data-price="{{ $it->harga_satuan }}" data-qty="{{ $it->qty }}">
+                            <div class="cart-item">
 
-                                    {{-- GAMBAR PRODUK --}}
-                                    <img src="{{ $it->product->image
-                            ? asset('storage/' . $it->product->image)
-                            : asset('argon/assets/img/default-product.png') }}" alt="{{ $it->product->nama_produk }}" class="product-image"
-                                        style="width: 75px; height: 75px; object-fit: cover; border-radius: 10px; margin-right: 15px;">
+                                {{-- CHECKBOX --}}
+                                <input class="form-check-input item-check me-3"
+                                       type="checkbox"
+                                       value="{{ $it->id }}"
+                                       data-price="{{ $it->harga_satuan }}"
+                                       data-qty="{{ $it->qty }}">
 
+                                {{-- GAMBAR PRODUK --}}
+                                <img src="{{ $it->product->image ? asset('storage/' . $it->product->image) : asset('argon/assets/img/default-product.png') }}"
+                                     alt="{{ $it->product->nama_produk }}">
 
-                                    {{-- INFO PRODUK --}}
-                                    <div class="cart-item-info">
-                                        <h6>{{ $it->product->nama_produk ?? $it->product->name }}</h6>
-                                        <small>{{ Str::limit($it->product->deskripsi ?? '-', 60) }}</small>
-                                        <div class="text-success mt-1 fw-semibold">
-                                            Rp {{ number_format($it->harga_satuan, 0, ',', '.') }}
-                                        </div>
+                                {{-- INFO PRODUK --}}
+                                <div class="cart-item-info">
+                                    <h6>{{ $it->product->nama_produk }}</h6>
+                                    <small>{{ Str::limit($it->product->deskripsi ?? '-', 60) }}</small>
+
+                                    <div class="text-success mt-1 fw-semibold">
+                                        Rp {{ number_format($it->harga_satuan, 0, ',', '.') }}
                                     </div>
-
-                                    {{-- QTY & DELETE --}}
-                                    <div class="cart-item-actions">
-                                        <button class="qty-btn decrease">-</button>
-
-                                        <input type="number" min="1" class="form-control form-control-sm text-center qty-input"
-                                            value="{{ $it->qty }}" style="width: 60px;">
-
-                                        <button class="qty-btn increase">+</button>
-
-                                        <button class="btn btn-sm btn-outline-danger delete-btn"
-                                            data-url="{{ route('keranjang.remove', $it->id) }}">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-
                                 </div>
+
+                                {{-- QTY & DELETE --}}
+                                <div class="cart-item-actions">
+                                    <button class="qty-btn decrease" data-id="{{ $it->id }}">-</button>
+
+                                    <input type="number"
+                                           class="form-control form-control-sm text-center qty-input"
+                                           min="1"
+                                           value="{{ $it->qty }}"
+                                           style="width: 60px;">
+
+                                    <button class="qty-btn increase" data-id="{{ $it->id }}">+</button>
+
+                                    <button class="btn btn-sm btn-outline-danger delete-btn"
+                                            data-url="{{ route('keranjang.remove', $it->id) }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+
+                            </div>
                         @endforeach
+
                     </div>
                 </div>
 
+                {{-- =============================== --}}
+                {{--        SUMMARY KANAN            --}}
+                {{-- =============================== --}}
                 <div class="col-lg-4">
                     <div class="summary-card">
                         <h5>Ringkasan Belanja</h5>
@@ -242,7 +252,7 @@
                         </form>
 
                         <button class="clear-btn"
-                            onclick="if(confirm('Kosongkan semua isi keranjang?')) location.href='{{ route('keranjang.clear') }}'">
+                                onclick="if(confirm('Kosongkan semua isi keranjang?')) location.href='{{ route('keranjang.clear') }}'">
                             Kosongkan Keranjang
                         </button>
                     </div>
@@ -252,12 +262,17 @@
         @endif
     </div>
 
+    {{-- ===================================== --}}
+    {{--           JAVASCRIPT LOGIC            --}}
+    {{-- ===================================== --}}
     <script>
-        document.querySelector('#checkAll')?.addEventListener('change', function () {
-            document.querySelectorAll('.item-check').forEach(i => i.checked = this.checked);
+        // PILIH SEMUA
+        document.getElementById('checkAll')?.addEventListener('change', function () {
+            document.querySelectorAll('.item-check').forEach(c => c.checked = this.checked);
             updateSummary();
         });
 
+        // UPDATE TOTAL
         function updateSummary() {
             let totalQty = 0;
             let totalPrice = 0;
@@ -272,38 +287,44 @@
             document.getElementById('totalItems').innerText = totalQty;
             document.getElementById('totalPrice').innerText = 'Rp ' + totalPrice.toLocaleString('id-ID');
             document.getElementById('subtotal').innerText = 'Rp ' + totalPrice.toLocaleString('id-ID');
+
             document.getElementById('buyBtn').disabled = totalQty === 0;
         }
 
+        // KUMPULKAN ITEMS TERPILIH
         function gatherSelectedItems() {
             let selected = [];
             document.querySelectorAll('.item-check:checked').forEach(c => {
                 selected.push({
                     id: c.value,
-                    qty: parseInt(c.dataset.qty)
+                    qty: c.dataset.qty
                 });
             });
 
             document.getElementById('selectedItems').value = JSON.stringify(selected);
         }
 
-        document.querySelector('#buyBtn').addEventListener('click', function () {
-            gatherSelectedItems();
-        });
+        document.getElementById('buyBtn')?.addEventListener('click', gatherSelectedItems);
 
+        // EVENT: CENTANG ITEM
         document.querySelectorAll('.item-check').forEach(chk => {
-            chk.addEventListener('change', () => updateSummary());
+            chk.addEventListener('change', updateSummary);
         });
 
+        // QTY BUTTON (+)
         document.querySelectorAll('.increase').forEach((btn, i) => {
             btn.addEventListener('click', () => {
                 let input = document.querySelectorAll('.qty-input')[i];
                 input.value = parseInt(input.value) + 1;
+
+                // update dataset
                 document.querySelectorAll('.item-check')[i].dataset.qty = input.value;
+
                 updateSummary();
             });
         });
 
+        // QTY BUTTON (-)
         document.querySelectorAll('.decrease').forEach((btn, i) => {
             btn.addEventListener('click', () => {
                 let input = document.querySelectorAll('.qty-input')[i];
@@ -315,6 +336,7 @@
             });
         });
 
+        // DELETE ITEM
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', function () {
                 if (confirm('Hapus produk ini dari keranjang?')) {
@@ -323,5 +345,4 @@
             });
         });
     </script>
-
 @endsection

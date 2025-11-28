@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\LaporanPesananController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentMethodController;
+use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
@@ -47,8 +48,34 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
     // Produk CRUD
     Route::get('/produk', [ProdukController::class, 'index'])->name('produk.index');
     Route::post('/produk', [ProdukController::class, 'store'])->name('produk.store');
-    Route::put('/produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
-    Route::delete('/produk/{id}', [ProdukController::class, 'destroy'])->name('produk.destroy');
+    Route::put('/produk/{slug}', [ProdukController::class, 'update'])->name('produk.update');
+    Route::delete('/produk/{slug}', [ProdukController::class, 'destroy'])->name('produk.destroy');
+
+
+    Route::get('/produk/{slug}/variant', [ProductVariantController::class, 'index'])
+        ->name('produk.variant.index');
+
+    Route::post('/produk/{slug}/variant', [ProductVariantController::class, 'store'])
+        ->name('produk.variant.store');
+
+    Route::put('/variant/{id}', [ProductVariantController::class, 'update'])
+        ->name('variant.update');
+
+    Route::delete('/variant/{id}', [ProductVariantController::class, 'destroy'])
+        ->name('variant.destroy');
+
+    // Variant size untuk warna tertentu
+    Route::post('/variant/{variantId}/size', [ProductVariantController::class, 'storeSize'])
+        ->name('variant.size.store');
+
+    Route::get('/variant/{variantId}/detail', [ProductVariantController::class, 'detail'])
+        ->name('variant.detail');
+
+    Route::put('/size/{id}', [ProductVariantController::class, 'updateSize'])
+        ->name('variant.size.update');
+
+    Route::delete('/size/{id}', [ProductVariantController::class, 'destroySize'])
+        ->name('variant.size.destroy');
 
     // Kategori CRUD
     Route::get('/kategori', [KategoriController::class, 'index'])->name('kategori.index');
@@ -179,7 +206,7 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // ===================== PRODUK DETAIL =====================
-Route::get('/produk/{id}', [ProdukController::class, 'show'])->name('produk.show');
+Route::get('/produk/{slug}', [ProdukController::class, 'show'])->name('produk.show');
 
 // ===================== RESET PASSWORD =====================
 Route::get('/reset-password', fn() => view('auth.reset-password'))->name('reset-password');

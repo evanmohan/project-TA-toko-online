@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Keranjang;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,46 +19,75 @@ class KeranjangController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $items = Keranjang::with('product')->where('user_id', $user->id)->get();
+        $items = Keranjang::with(['product', 'variant'])
+                    ->where('user_id', $user->id)
+                    ->get();
 
         $total = $items->sum(fn($i) => $i->qty * $i->harga_satuan);
 
         return view('keranjang.index', compact('items', 'total'));
     }
 
-    // Tambah produk ke keranjang (POST)
+    // Tambah produk ke keranjang
     public function add(Request $request, $productId)
     {
         $user = Auth::user();
         $product = Product::findOrFail($productId);
 
         $request->validate([
-            'qty' => 'nullable|integer|min:1',
+            'qty'        => 'nullable|integer|min:1',
+            'variant_id' => 'nullable',
+            'size'       => 'nullable|string',
+            'color'      => 'nullable|string',
         ]);
 
         $qty = $request->qty ?? 1;
 
-        // cek apakah sudah ada di keranjang user
-        $cart = Keranjang::where('user_id', $user->id)->where('product_id', $product->id)->first();
+        // Jika ada variant
+        $variant = null;
+        if ($request->variant_id) {
+            $variant = ProductVariant::find($request->variant_id);
+        }
 
-        if ($cart) {
-            // update qty
-            $cart->qty = $cart->qty + $qty;
-            // keep harga_satuan as snapshot (do not update)
-            $cart->save();
+        // Ambil harga
+        $price = 0;
+
+        if ($variant) {
+            $price = $variant->harga; // pastikan kolom "harga" ada di variant
         } else {
+            $price = $product->price ?? 0; // fallback, tidak boleh null
+        }
+
+        // Cek apakah item sudah ada di keranjang
+        $existing = Keranjang::where('user_id', $user->id)
+                            ->where('product_id', $product->id)
+                            ->where('variant_id', $request->variant_id)
+                            ->first();
+
+        if ($existing) {
+
+            // Jika sama-sama product + variant → update qty
+            $existing->qty += $qty;
+            $existing->save();
+
+        } else {
+
+            // Buat item baru
             Keranjang::create([
-                'user_id' => $user->id,
-                'product_id' => $product->id,
-                'qty' => $qty,
-                'harga_satuan' => $product->harga,
+                'user_id'      => $user->id,
+                'product_id'   => $product->id,
+                'variant_id'   => $request->variant_id,
+                'size'         => $request->size,
+                'color'        => $request->color,
+                'qty'          => $qty,
+                'harga_satuan' => $price,
             ]);
         }
 
-        return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke keranjang.');
+        return back()->with('success', 'Produk berhasil ditambahkan ke keranjang.');
     }
 
-    // Update qty (POST)
+    // Update qty
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -65,9 +95,7 @@ class KeranjangController extends Controller
         ]);
 
         $item = Keranjang::findOrFail($id);
-        if ($item->user_id != Auth::id()) {
-            abort(403);
-        }
+        if ($item->user_id != Auth::id()) abort(403);
 
         $item->qty = $request->qty;
         $item->save();
@@ -75,11 +103,12 @@ class KeranjangController extends Controller
         return redirect()->route('keranjang.index')->with('success', 'Keranjang diperbarui.');
     }
 
-    // Hapus item (DELETE or GET)
+    // Hapus item
     public function remove($id)
     {
         $item = Keranjang::findOrFail($id);
         if ($item->user_id != Auth::id()) abort(403);
+
         $item->delete();
 
         return redirect()->route('keranjang.index')->with('success', 'Produk dihapus dari keranjang.');
@@ -89,6 +118,7 @@ class KeranjangController extends Controller
     public function clear()
     {
         Keranjang::where('user_id', Auth::id())->delete();
+
         return redirect()->route('keranjang.index')->with('success', 'Keranjang dikosongkan.');
     }
 }
