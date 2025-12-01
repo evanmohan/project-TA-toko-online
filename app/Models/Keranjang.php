@@ -14,10 +14,8 @@ class Keranjang extends Model
     protected $fillable = [
         'user_id',
         'product_id',
-        'variant_id',   // aman, jika tidak ada di DB, tidak masalah
-        'size',         // aman
-        'color',        // aman
-        'image',        // aman
+        'variant_id',
+        'size_id',        // pakai size_id sesuai DB
         'qty',
         'harga_satuan',
     ];
@@ -37,6 +35,13 @@ class Keranjang extends Model
         return $this->belongsTo(ProductVariant::class, 'variant_id');
     }
 
+    // relasi ke tabel product_variant_sizes
+    public function size()
+    {
+        return $this->belongsTo(ProductVariantSize::class, 'size_id');
+    }
+
+    // subtotal otomatis
     public function getSubtotalAttribute()
     {
         return $this->qty * $this->harga_satuan;

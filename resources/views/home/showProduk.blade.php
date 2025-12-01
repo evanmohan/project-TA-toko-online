@@ -24,7 +24,7 @@
     .product-image {
         border-radius: 12px;
         width: 100%;
-        height: 350px;
+        height: 500px;
         object-fit: cover;
     }
 
@@ -86,7 +86,6 @@
         border: 1px solid #ccc;
     }
 
-    /* Quantity input */
     .quantity-wrapper {
         display: flex;
         align-items: center;
@@ -123,6 +122,23 @@
     }
 </style>
 
+{{-- ========================= --}}
+{{--   POPUP SUCCESS SWEETALERT --}}
+{{-- ========================= --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@if(session('success'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: "{{ session('success') }}",
+        showConfirmButton: false,
+        timer: 2000
+    });
+</script>
+@endif
+
 <div class="container">
     <div class="product-detail row">
         <div class="col-md-5">
@@ -143,7 +159,6 @@
 
             <p>{{ $produk->deskripsi ?? 'Tidak ada deskripsi.' }}</p>
 
-            {{-- VARIANT SELECTION --}}
             @if($produk->variants->count() > 0)
             <div class="mb-3">
                 <label class="fw-semibold">Warna / Variant</label>
@@ -160,20 +175,17 @@
                 </div>
             </div>
 
-            {{-- SIZE SELECTION --}}
             <div class="mb-3" id="sizeWrapper" style="display:none;">
                 <label class="fw-semibold">Ukuran</label>
                 <div id="sizeOptions"></div>
             </div>
             @endif
 
-            {{-- FORM ADD TO CART --}}
             <form id="addToCartForm" action="{{ route('keranjang.add', $produk->id) }}" method="POST">
                 @csrf
                 <input type="hidden" name="variant_id" id="variant_id">
                 <input type="hidden" name="size_id" id="size_id">
 
-                {{-- QUANTITY SELECTION --}}
                 <label class="form-label fw-semibold">Kuantitas</label>
                 <div class="quantity-wrapper">
                     <div class="quantity-btn" id="qtyMinus">-</div>
@@ -198,6 +210,7 @@
                     </button>
                 </form>
             </div>
+
         </div>
     </div>
 </div>
@@ -243,6 +256,7 @@ variantOptions.forEach(v => {
 
         const selectedVariant = variants.find(v => v.id == variantId);
         sizeOptionsContainer.innerHTML = '';
+
         if(selectedVariant.sizes.length > 0){
             sizeWrapper.style.display = 'block';
             selectedVariant.sizes.forEach(size => {
@@ -283,7 +297,6 @@ variantOptions.forEach(v => {
     });
 });
 
-// Quantity buttons
 qtyMinus.addEventListener('click', () => {
     let val = parseInt(qtyInput.value);
     if(val > 1) qtyInput.value = val - 1;
@@ -293,7 +306,6 @@ qtyPlus.addEventListener('click', () => {
     if(val < parseInt(qtyInput.max)) qtyInput.value = val + 1;
 });
 
-// Batasi input manual
 qtyInput.addEventListener('input', () => {
     let max = parseInt(qtyInput.max) || 1;
     if(parseInt(qtyInput.value) > max) qtyInput.value = max;

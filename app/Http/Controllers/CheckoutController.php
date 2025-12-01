@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ekspedisi;
-use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Keranjang;
 use App\Models\PaymentMethod;
-use Illuminate\Support\Str;
+use App\Models\ProductVariant;
+use App\Models\ProductVariantSize;
+use Illuminate\Http\Request;
 
 class CheckoutController extends Controller
 {
@@ -19,60 +20,77 @@ class CheckoutController extends Controller
     }
 
     // =============================
-    // 2. CHECKOUT BELI SEKARANG
+    // 1. BUY NOW / CHECKOUT SINGLE
     // =============================
-    public function checkoutSingle(Request $request)
+    public function buyNow(Request $request, $id)
     {
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::findOrFail($id);
         $qty = $request->qty ?? 1;
 
-        $items = [[
-            'product_id'     => $product->id,
-            'nama_produk'    => $product->nama_produk,
-            'qty'            => $qty,
-            'harga_satuan'   => $product->harga,
-            'subtotal'       => $product->harga * $qty,
-            'image'          => $product->image,
+        $variant = $request->variant_id ? ProductVariant::find($request->variant_id) : null;
+        $size    = $request->size_id ? ProductVariantSize::find($request->size_id) : null;
 
-            // BUY NOW tidak gunakan cart_id
-            'cart_id'        => null,
-        ]];
+        $harga_satuan = $variant?->harga ?? $product->harga;
 
-        session(['checkout_items' => $items]);
+        session(['checkout_items' => [[
+            'cart_id'      => null,
+            'product_id'   => $product->id,
+            'nama_produk'  => $product->nama_produk,
+            'image'        => $product->image,
+
+            'variant_name' => $variant?->warna,
+            'size_name'    => $size?->size,
+            'variant'      => $variant,
+            'size'         => $size,
+
+            'qty'          => $qty,
+            'harga_satuan' => $harga_satuan,
+            'subtotal'     => $qty * $harga_satuan,
+        ]]]);
 
         return redirect()->route('checkout.page');
     }
 
     // =============================
-    // 3. CHECKOUT DARI KERANJANG
+    // 2. CHECKOUT DARI KERANJANG
     // =============================
     public function checkoutCart(Request $request)
     {
         $selected = json_decode($request->items, true);
 
-        if (!is_array($selected) || count($selected) == 0) {
-            return redirect()->route('keranjang.index')->with('error', 'Tidak ada produk yang dipilih.');
+        if (!is_array($selected) || empty($selected)) {
+            return redirect()->route('keranjang.index')->with('error', 'Pilih minimal satu produk.');
         }
 
         $ids = collect($selected)->pluck('id');
-        $cartItems = Keranjang::whereIn('id', $ids)->with('product')->get();
 
-        $items = [];
+        $cartItems = Keranjang::whereIn('id', $ids)
+            ->with(['product', 'variant', 'size'])
+            ->get();
 
-        foreach ($cartItems as $cart) {
-            $match = collect($selected)->firstWhere('id', $cart->id);
-            $qty = $match['qty'];
+        $items = $cartItems->map(function ($cart) use ($selected) {
+            $selectedItem = collect($selected)->firstWhere('id', $cart->id);
+            $qty = $selectedItem['qty'] ?? $cart->qty;
 
-            $items[] = [
-                'cart_id'        => $cart->id, // ⬅ DITAMBAHKAN
-                'product_id'     => $cart->product_id,
-                'nama_produk'    => $cart->product->nama_produk,
-                'qty'            => $qty,
-                'harga_satuan'   => $cart->harga_satuan,
-                'subtotal'       => $qty * $cart->harga_satuan,
-                'image'          => $cart->product->image,
+            return [
+                'cart_id'      => $cart->id,
+                'product_id'   => $cart->product_id,
+                'nama_produk'  => $cart->product->nama_produk,
+                'image'        => $cart->product->image,
+
+                // INI YANG BIKIN LANGSUNG MUNCUL DI CHECKOUT
+                'variant_name' => $cart->variant?->warna,
+                'size_name'    => $cart->size?->size,
+
+                // Bonus biar Blade lama kamu juga tetap jalan
+                'variant'      => $cart->variant,
+                'size'         => $cart->size,
+
+                'qty'          => $qty,
+                'harga_satuan' => $cart->harga_satuan,
+                'subtotal'     => $qty * $cart->harga_satuan,
             ];
-        }
+        })->all();
 
         session(['checkout_items' => $items]);
 
@@ -80,7 +98,7 @@ class CheckoutController extends Controller
     }
 
     // =============================
-    // 4. HALAMAN CHECKOUT
+    // 3. HALAMAN CHECKOUT
     // =============================
     public function page()
     {
@@ -95,23 +113,23 @@ class CheckoutController extends Controller
         $paymentMethods = PaymentMethod::where('aktif', 1)->get();
 
         return view('checkout.checkout', [
-            'items'        => $items,
-            'total_barang' => $items->sum('qty'),
-            'total_harga'  => $items->sum(fn($i) => $i['subtotal']),
-            'ekspedisi'    => $ekspedisi,
+            'items'          => $items,
+            'total_barang'   => $items->sum('qty'),
+            'total_harga'    => $items->sum(fn($i) => $i['subtotal']),
+            'ekspedisi'      => $ekspedisi,
             'paymentMethods' => $paymentMethods
         ]);
     }
 
     // =============================
-    // 5. PROSES CHECKOUT
+    // 4. PROSES CHECKOUT
     // =============================
     public function store(Request $request)
     {
         $request->validate([
             'metode_pengiriman' => 'required|exists:ekspedisi,id',
             'metode_pembayaran' => 'required|exists:payment_methods,id',
-            'ongkir' => 'required|numeric'
+            'ongkir'            => 'required|numeric',
         ]);
 
         $cart = collect(session('checkout_items', []));
@@ -123,64 +141,61 @@ class CheckoutController extends Controller
         $exp = Ekspedisi::findOrFail($request->metode_pengiriman);
         $paymentMethod = PaymentMethod::findOrFail($request->metode_pembayaran);
 
-        $items = $cart->map(function ($i) {
-            return [
-                'cart_id'     => $i['cart_id'] ?? null, // ⬅ tambahan
-                'product_id'   => $i['product_id'],
-                'qty'          => $i['qty'],
-                'harga'        => $i['harga_satuan'],
-                'subtotal'     => $i['subtotal'],
-                'image'        => $i['image'],
-            ];
-        });
+        $items = $cart->map(fn($i) => [
+            'cart_id'       => $i['cart_id'] ?? null,
+            'product_id'    => $i['product_id'],
+            'variant_id'    => $i['variant_id'] ?? null,
+            'size_id'       => $i['size_id'] ?? null,
+            'qty'           => $i['qty'],
+            'harga'         => $i['harga_satuan'],
+            'subtotal'      => $i['subtotal'],
+            'image'         => $i['image'],
+        ]);
 
         $total_barang = $items->sum('qty');
         $total_harga  = $items->sum('subtotal');
         $ongkir       = $request->ongkir;
         $total_bayar  = $total_harga + $ongkir;
 
+        // Buat Order
         $order = Order::create([
             'user_id'           => auth()->id(),
             'nama'              => auth()->user()->username,
             'telepon'           => auth()->user()->no_hp,
             'alamat'            => auth()->user()->alamat,
-
             'total_barang'      => $total_barang,
             'total_harga'       => $total_harga,
             'ongkir'            => $ongkir,
             'total_bayar'       => $total_bayar,
-
             'metode_pengiriman' => $exp->nama,
             'metode_pembayaran' => $paymentMethod->nama_metode,
             'kode_order'        => $this->generateKodeOrder(),
         ]);
 
+        // Buat OrderItem
         foreach ($items as $item) {
             OrderItem::create([
                 'order_id'   => $order->id,
                 'product_id' => $item['product_id'],
+                'variant_id' => $item['variant_id'] ?? null,
+                'size_id'    => $item['size_id'] ?? null,
                 'qty'        => $item['qty'],
                 'harga'      => $item['harga'],
                 'subtotal'   => $item['subtotal'],
             ]);
         }
 
-        // =========================
-        // FIX: HAPUS KERANJANG SESUAI CART_ID
-        // =========================
+        // Hapus item dari keranjang jika ada cart_id
         $cartIds = $items->pluck('cart_id')->filter()->toArray();
-
         if (!empty($cartIds)) {
             Keranjang::where('user_id', auth()->id())
                 ->whereIn('id', $cartIds)
                 ->delete();
         }
 
-        // =========================
-        // HANDLE METODE PEMBAYARAN
-        // =========================
         session()->forget('checkout_items');
 
+        // Redirect sesuai metode pembayaran
         if ($paymentMethod->tipe === 'BANK') {
             return redirect()->route('payment.bayar', $order->id);
         }
@@ -192,92 +207,5 @@ class CheckoutController extends Controller
         }
 
         return redirect()->route('payment.index')->with('success', 'Pesanan berhasil dibuat!');
-    }
-
-    // =============================
-    // 6. BUY NOW
-    // =============================
-    public function buyNow(Request $request, $id)
-    {
-        $product = Product::findOrFail($id);
-        $qty = $request->qty ?? 1;
-
-        session([
-            'checkout_items' => [
-                [
-                    'cart_id'       => null, // ⬅ BUY NOW tidak hapus keranjang
-                    'product_id'     => $product->id,
-                    'nama_produk'    => $product->nama_produk,
-                    'qty'            => $qty,
-                    'harga_satuan'   => $product->harga,
-                    'subtotal'       => $qty * $product->harga,
-                    'image'          => $product->image,
-                ]
-            ]
-        ]);
-
-        return redirect()->route('checkout.page');
-    }
-
-    // =============================
-    // 7. CHECKOUT CART (ALTERNATIF)
-    // =============================
-    public function fromCart(Request $request)
-    {
-        $selected = json_decode($request->selected_items, true);
-
-        if (!$selected || count($selected) == 0) {
-            return back()->with('error', 'Tidak ada produk yang dipilih.');
-        }
-
-        $items = [];
-        $total = 0;
-
-        foreach ($selected as $cartItem) {
-
-            $cart = Keranjang::where('id', $cartItem['id'])
-                ->where('user_id', auth()->id())
-                ->first();
-
-            if (!$cart) continue;
-
-            $product = $cart->product;
-
-            $items[] = [
-                'cart_id'       => $cart->id, // ⬅ DITAMBAHKAN
-                'product_id'    => $product->id,
-                'nama_produk'   => $product->nama_produk,
-                'qty'           => $cartItem['qty'],
-                'harga_satuan'  => $cart->harga_satuan,
-                'subtotal'      => $cartItem['qty'] * $cart->harga_satuan,
-                'image'         => $product->image,
-            ];
-
-            $total += $cartItem['qty'] * $cart->harga_satuan;
-        }
-
-        session()->put('checkout_items', $items);
-        session()->put('checkout_total', $total);
-
-        return redirect()->route('checkout.page');
-    }
-
-    // =============================
-    // 8. VIEW CHECKOUT
-    // =============================
-    public function view()
-    {
-        $items = session('checkout_items');
-        $total = session('checkout_total');
-
-        if (!$items) {
-            return redirect()->route('keranjang.index')->with('error', 'Tidak ada item untuk checkout');
-        }
-
-        return view('checkout.index', [
-            'items'       => $items,
-            'total_harga' => $total,
-            'user'        => auth()->user()
-        ]);
     }
 }

@@ -26,13 +26,15 @@ class PembayaranController extends Controller
     // LIST PEMBAYARAN
     // =========================
     public function list()
-    {
-        $orders = Order::where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc')
-            ->get();
+{
+    $orders = Order::with(['items.product']) // <- tambahkan ini
+        ->where('user_id', Auth::id())
+        ->orderBy('created_at', 'desc')
+        ->get();
 
-        return view('payment.index', compact('orders'));
-    }
+    return view('payment.index', compact('orders'));
+}
+
 
     // =========================
     // BATALKAN PEMBAYARAN

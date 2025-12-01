@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Keranjang;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\ProductVariantSize;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,7 +20,8 @@ class KeranjangController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $items = Keranjang::with(['product', 'variant'])
+
+        $items = Keranjang::with(['product', 'variant', 'size'])
                     ->where('user_id', $user->id)
                     ->get();
 
@@ -36,49 +38,44 @@ class KeranjangController extends Controller
 
         $request->validate([
             'qty'        => 'nullable|integer|min:1',
-            'variant_id' => 'nullable',
-            'size'       => 'nullable|string',
-            'color'      => 'nullable|string',
+            'variant_id' => 'nullable|exists:product_variants,id',
+            'size_id'    => 'nullable|exists:product_variant_sizes,id',
         ]);
 
         $qty = $request->qty ?? 1;
 
-        // Jika ada variant
-        $variant = null;
-        if ($request->variant_id) {
-            $variant = ProductVariant::find($request->variant_id);
-        }
+        // Ambil variant jika ada
+        $variant = $request->variant_id
+            ? ProductVariant::find($request->variant_id)
+            : null;
 
-        // Ambil harga
-        $price = 0;
+        // Ambil size jika ada
+        $size = $request->size_id
+            ? ProductVariantSize::find($request->size_id)
+            : null;
 
-        if ($variant) {
-            $price = $variant->harga; // pastikan kolom "harga" ada di variant
-        } else {
-            $price = $product->price ?? 0; // fallback, tidak boleh null
-        }
+        // Tentukan harga
+        $price = $variant
+            ? $variant->harga
+            : ($product->price ?? 0);
 
-        // Cek apakah item sudah ada di keranjang
+        // Cek apakah item sudah ada (cocok product + variant + size)
         $existing = Keranjang::where('user_id', $user->id)
                             ->where('product_id', $product->id)
                             ->where('variant_id', $request->variant_id)
+                            ->where('size_id', $request->size_id)
                             ->first();
 
         if ($existing) {
-
-            // Jika sama-sama product + variant → update qty
+            // Jika item sama, tambahkan qty
             $existing->qty += $qty;
             $existing->save();
-
         } else {
-
-            // Buat item baru
             Keranjang::create([
                 'user_id'      => $user->id,
                 'product_id'   => $product->id,
                 'variant_id'   => $request->variant_id,
-                'size'         => $request->size,
-                'color'        => $request->color,
+                'size_id'      => $request->size_id,
                 'qty'          => $qty,
                 'harga_satuan' => $price,
             ]);
@@ -114,7 +111,7 @@ class KeranjangController extends Controller
         return redirect()->route('keranjang.index')->with('success', 'Produk dihapus dari keranjang.');
     }
 
-    // Kosongkan keranjang user
+    // Kosongkan keranjang
     public function clear()
     {
         Keranjang::where('user_id', Auth::id())->delete();

@@ -57,7 +57,7 @@
         font-weight: 700;
     }
 
-    /* ❌ Tombol hapus favorit */
+    /* Tombol hapus favorit */
     .remove-fav-btn {
         position: absolute;
         top: 10px;
@@ -72,8 +72,6 @@
         cursor: pointer;
         transition: .2s;
         z-index: 10;
-
-        /* Glow hover */
         box-shadow: 0 0 0 rgba(255, 0, 0, 0);
     }
 
@@ -84,7 +82,6 @@
         box-shadow: 0 0 12px rgba(255, 50, 50, 0.7);
     }
 
-    /* Tooltip */
     .remove-fav-btn:hover::after {
         content: "Hapus dari Favorit";
         position: absolute;
@@ -116,78 +113,66 @@
         0% { transform: scale(0); opacity: 0.8; }
         100% { transform: scale(2.4); opacity: 0; }
     }
-</style>
 
+    /* EMPTY STATE CENTERED */
+    .empty-fav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        min-height: 60vh; /* pastikan center vertikal */
+        text-align: center;
+    }
+
+    .empty-fav img {
+        max-width: 180px;
+        margin-bottom: 20px;
+    }
+</style>
 
 <div class="container mt-4">
 
-    {{-- ⭐⭐⭐ JUDUL FAVORIT DI TENGAH ⭐⭐⭐ --}}
     <h2 class="fav-title">Produk Favorit</h2>
 
-
-    {{-- =====================================================
-        📌 JIKA FAVORIT KOSONG
-    ====================================================== --}}
+    {{-- EMPTY STATE --}}
     @if ($favorits->count() == 0)
-
-        <div class="d-flex justify-content-center my-5">
-            <div class="text-center">
-
-                <img src="{{ asset('assets/images/Favorit.png') }}" width="150" class="mb-3">
-
-                <h4 class="fw-bold">Belum Ada Produk Favorit</h4>
-
-                <p class="text-muted mb-4" style="font-size: 15px;">
-                    Kamu belum menambahkan produk ke daftar favorit.<br>
-                    Klik ikon ❤️ pada produk untuk menyimpannya di sini.
-                </p>
-
-                <a href="{{ route('home') }}" class="btn btn-success px-4 py-2" style="border-radius:12px;">
-                    Mulai Belanja
-                </a>
-
-            </div>
+        <div class="empty-fav">
+            <img src="{{ asset('assets/images/Favorit.png') }}" alt="Favorit">
+            <h4 class="fw-bold">Belum Ada Produk Favorit</h4>
+            <p class="text-muted mb-4" style="font-size: 15px;">
+                Kamu belum menambahkan produk ke daftar favorit.<br>
+                Klik ikon ❤️ pada produk untuk menyimpannya di sini.
+            </p>
+            <a href="{{ route('home') }}" class="btn btn-success px-4 py-2" style="border-radius:12px;">
+                Mulai Belanja
+            </a>
         </div>
-
     @else
-
-        {{-- =====================================================
-            📌 GRID PRODUK FAVORIT
-        ====================================================== --}}
+        {{-- GRID FAVORIT --}}
         <div class="fav-grid">
-
             @foreach ($favorits as $fav)
                 <div class="product-card">
 
-                    {{-- Tombol hapus favorit --}}
+                    {{-- Hapus favorit --}}
                     <form action="{{ route('favorit.destroy', $fav->produk->id) }}"
                           method="POST" class="remove-fav-form position-relative">
                         @csrf
                         @method('DELETE')
-
-                        <button class="remove-fav-btn fav-delete-btn" type="submit">
-                            ✕
-                        </button>
+                        <button class="remove-fav-btn fav-delete-btn" type="submit">✕</button>
                     </form>
 
                     {{-- Gambar Produk --}}
                     <a href="{{ route('produk.show', $fav->produk->id) }}">
                         <img src="{{ $fav->produk->image
                                     ? asset('storage/' . $fav->produk->image)
-                                    : asset('argon/assets/img/default-product.png') }}">
+                                    : asset('argon/assets/img/default-product.png') }}"
+                             alt="{{ $fav->produk->nama_produk }}">
                     </a>
 
                     <div class="p-3 text-center">
-
                         <h6 class="fw-semibold">{{ $fav->produk->nama_produk ?? 'Produk Tanpa Nama' }}</h6>
-                        <p class="text-muted small">
-                            {{ $fav->produk->kategori->nama_kategori ?? 'Tanpa Kategori' }}
-                        </p>
-
-                        <p class="price">
-                            Rp {{ number_format($fav->produk->harga, 0, ',', '.') }}
-                        </p>
-
+                        <p class="text-muted small">{{ $fav->produk->kategori->nama_kategori ?? 'Tanpa Kategori' }}</p>
+                        <p class="price">Rp {{ number_format($fav->produk->harga, 0, ',', '.') }}</p>
                         <a href="{{ route('produk.show', $fav->produk->id) }}"
                            class="btn btn-primary btn-sm w-100 mb-2">
                             Lihat Detail
@@ -196,16 +181,12 @@
 
                 </div>
             @endforeach
-
         </div>
     @endif
 
 </div>
 
-
-{{-- =====================================================
-    ✨ JAVASCRIPT UNTUK BURST EFFECT
-====================================================== --}}
+{{-- BURST EFFECT --}}
 <script>
     document.querySelectorAll(".fav-delete-btn").forEach(btn => {
         btn.addEventListener("click", function (e) {

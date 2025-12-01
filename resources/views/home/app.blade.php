@@ -232,6 +232,11 @@
                 font-size: 13px;
             }
         }
+
+        .content {
+            min-height: 70vh;
+            /* padding: 20px 0; */
+        }
     </style>
 </head>
 
@@ -322,7 +327,7 @@
     </nav>
 
     <!-- CONTENT -->
-    <main>
+    <main class="content">
         @yield('content')
     </main>
 

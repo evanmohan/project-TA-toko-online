@@ -93,11 +93,11 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
-
+{{-- 
                                                         <div class="col-md-6 mb-3">
                                                             <label class="form-label">Harga Utama</label>
                                                             <input type="number" name="harga" class="form-control" value="{{ $p->harga }}" required>
-                                                        </div>
+                                                        </div> --}}
 
                                                         <div class="col-md-6 mb-3">
                                                             <label class="form-label">Gambar Produk</label>
@@ -164,10 +164,10 @@
                             </select>
                         </div>
 
-                        <div class="col-md-6 mb-3">
+                        {{-- <div class="col-md-6 mb-3">
                             <label class="form-label">Harga Utama</label>
                             <input type="number" name="harga" class="form-control" required>
-                        </div>
+                        </div> --}}
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Gambar Produk</label>

@@ -1,159 +1,110 @@
+{{-- resources/views/checkout/checkout.blade.php --}}
+
 @extends('home.app')
 
 @section('content')
-
     <style>
         body {
-            background: #f5f5f5;
-            font-family: "Poppins", sans-serif;
+            background-color: #f5f7fa;
+            font-family: 'Poppins', sans-serif;
         }
-
-        .card-shopee {
-            background: #fff;
-            border-radius: 10px;
-            padding: 18px 22px;
-            border: 1px solid #e5e7eb;
-            margin-bottom: 20px;
+        .checkout-container { margin-top: 40px; }
+        .checkout-box {
+            background: #fff; border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 20px; margin-bottom: 20px;
         }
-
-        .title-section {
-            font-size: 17px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #333;
+        .checkout-header {
+            font-size: 18px; font-weight: 600; margin-bottom: 15px;
         }
-
-        .address-box {
-            line-height: 1.6;
-            font-size: 14px;
-            color: #444;
+        .checkout-item {
+            display: flex; align-items: center;
+            padding: 15px 0; border-bottom: 1px solid #f0f0f0;
         }
-
-        .address-box strong {
-            font-size: 15px;
+        .checkout-item:last-child { border-bottom: none; }
+        .checkout-item img {
+            border-radius: 10px; width: 75px; height: 75px;
+            object-fit: cover; margin-right: 15px;
         }
-
-        .product-item {
-            display: flex;
-            gap: 15px;
-            padding: 16px 0;
-            border-bottom: 1px solid #eee;
+        .checkout-item-info { flex: 1; }
+        .checkout-item-info h6 { font-size: 15px; margin-bottom: 5px; }
+        .checkout-item-info small { font-size: 13px; color: #555; display: block; }
+        .checkout-price {
+            font-weight: 600; color: #ff5722; white-space: nowrap;
         }
-
-        .product-item:last-child {
-            border-bottom: none;
+        .summary-card {
+            background: #fff; border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 25px;
         }
-
-        .product-img {
-            width: 70px;
-            height: 70px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: 1px solid #ddd;
+        .checkout-btn {
+            background-color: #00b14f; color: white;
+            border: none; border-radius: 8px;
+            padding: 12px; font-weight: 600;
+            width: 100%; margin-top: 10px;
         }
-
-        .product-name {
-            font-weight: 600;
-            font-size: 15px;
-        }
-
-        .product-qty {
-            font-size: 13px;
-            color: #777;
-        }
-
-        .product-price {
-            font-weight: 700;
-            color: #ff5722;
-            white-space: nowrap;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-
-        .summary-total {
-            border-top: 1px solid #ddd;
-            padding-top: 12px;
-            font-size: 17px;
-            font-weight: 700;
-            color: #d84315;
-        }
-
-        .btn-shopee {
-            background: #ff5722;
-            border: none;
-            color: white;
-            padding: 14px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 17px;
-            width: 100%;
-            transition: 0.2s;
-        }
-
-        .btn-shopee:hover {
-            background: #e64a19;
-        }
+        .checkout-btn:disabled { background-color: #a9dfbf; cursor: not-allowed; }
     </style>
 
-    <div class="container mt-4">
+    <div class="container checkout-container">
+        <h4 class="mb-4 fw-bold">Checkout</h4>
 
         <div class="row">
-
-            <!-- LEFT SIDE -->
+            {{-- LEFT SIDE --}}
             <div class="col-lg-7">
-
-                <!-- Alamat Pengiriman -->
-                <div class="card-shopee">
-                    <div class="title-section">Alamat Pengiriman</div>
-
-                    <div class="address-box">
-                        <strong>{{ Auth::user()->username }}</strong> • {{ Auth::user()->no_hp }} <br>
+                {{-- Alamat Pengiriman --}}
+                <div class="checkout-box">
+                    <div class="checkout-header">Alamat Pengiriman</div>
+                    <div>
+                        <strong>{{ Auth::user()->username }}</strong> • {{ Auth::user()->no_hp }}<br>
                         {{ Auth::user()->alamat }}
                     </div>
                 </div>
 
-                <!-- Produk -->
-                <div class="card-shopee">
-                    <div class="title-section">Produk Dipesan</div>
+                {{-- Produk Dipesan --}}
+                <div class="checkout-box">
+                    <div class="checkout-header">Produk Dipesan</div>
 
                     @foreach ($items as $i)
-                        <div class="product-item">
+                        <div class="checkout-item">
+                            {{-- GAMBAR SUDAH FIX --}}
+                            <img src="{{ $i['image'] ? asset('storage/' . $i['image']) : asset('assets/images/card_search.png') }}"
+                                 alt="Produk">
 
-                            {{-- IMAGE PRODUK --}}
-                            {{-- <img
-                                src="{{ $i['image'] ? asset('storage/' . $i['image']) : asset('assets/images/default-product.png') }}"
-                                class="product-img"> --}}
+                            <div class="checkout-item-info">
+                                <h6>{{ $i['nama_produk'] }}</h6>
 
-                            <div style="flex-grow:1;">
-                                <div class="product-name">{{ $i['nama_produk'] }}</div>
-                                <div class="product-qty">Qty: {{ $i['qty'] }}</div>
+                                <small>
+                                    Variant: <strong>
+                                        {{ $i['variant_name'] ?? ($i['variant']['warna'] ?? '-') }}
+                                    </strong>
+                                </small>
+
+                                <small>
+                                    Size: <strong>
+                                        {{ $i['size_name'] ?? ($i['size']['size'] ?? '-') }}
+                                    </strong>
+                                </small>
+
+                                <small>Jumlah: {{ $i['qty'] }}</small>
                             </div>
 
-                            <div class="product-price">
-                                Rp {{ number_format($i['subtotal'], 0, ',', '.') }}
+                            <div class="checkout-price">
+                                Rp {{ number_format($i['subtotal'],0,',','.') }}
                             </div>
-
                         </div>
                     @endforeach
                 </div>
-
             </div>
 
-            <!-- RIGHT SIDE -->
+            {{-- RIGHT SIDE --}}
             <div class="col-lg-5">
-
                 <form action="{{ route('checkout.store') }}" method="POST">
                     @csrf
 
-                    <!-- Ekspedisi -->
-                    <div class="card-shopee">
-                        <div class="title-section">Pengiriman</div>
-
+                    {{-- Ekspedisi --}}
+                    <div class="checkout-box">
+                        <div class="checkout-header">Pengiriman</div>
                         <label class="form-label">Pilih Ekspedisi</label>
                         <select name="metode_pengiriman" class="form-select mb-3" id="ekspedisi-select" required>
                             <option value="">Pilih Ekspedisi</option>
@@ -163,79 +114,67 @@
                                 </option>
                             @endforeach
                         </select>
-
                         <input type="hidden" name="ongkir" id="ongkir-hidden">
                     </div>
 
-                    <!-- Payment Method From DB -->
-                    <div class="card-shopee">
-                        <div class="title-section">Metode Pembayaran</div>
-
+                    {{-- Payment --}}
+                    <div class="checkout-box">
+                        <div class="checkout-header">Metode Pembayaran</div>
                         <label class="form-label">Pilih Metode Pembayaran</label>
                         <select name="metode_pembayaran" class="form-select" required>
                             <option value="">Pilih Metode Pembayaran</option>
-
                             @foreach ($paymentMethods as $pm)
                                 <option value="{{ $pm->id }}">
                                     {{ $pm->nama_metode }} - {{ ucfirst($pm->tipe) }}
-                                    @if ($pm->tipe == 'bank')
+                                    @if($pm->tipe == 'bank')
                                         • {{ $pm->no_rekening }} ({{ $pm->atas_nama }})
                                     @endif
                                 </option>
                             @endforeach
-
                         </select>
-
                     </div>
 
-                    <!-- Summary -->
-                    <div class="card-shopee">
-                        <div class="title-section">Ringkasan Belanja</div>
-
-                        <div class="summary-row">
-                            <span>Total Harga</span>
-                            <span>Rp {{ number_format($total_harga, 0, ',', '.') }}</span>
+                    {{-- Summary --}}
+                    <div class="summary-card">
+                        <div class="checkout-header">Ringkasan Belanja</div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong>Total Barang</strong>
+                            <span>{{ $items->sum('qty') }}</span>
                         </div>
-
-                        <div class="summary-row">
-                            <span>Ongkir</span>
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong>Total Harga</strong>
+                            <span>Rp {{ number_format($items->sum('subtotal'),0,',','.') }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong>Ongkir</strong>
                             <span id="ongkir-display">Rp 0</span>
                         </div>
-
-                        <div class="summary-row summary-total">
-                            <span>Total Tagihan</span>
-                            <span id="total-tagihan">Rp {{ number_format($total_harga, 0, ',', '.') }}</span>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong>Total Bayar</strong>
+                            <span id="totalTagihan">Rp {{ number_format($items->sum('subtotal'),0,',','.') }}</span>
                         </div>
 
-                        <button class="btn-shopee mt-2">
-                            Buat Pesanan
-                        </button>
-
+                        <button type="submit" class="checkout-btn">Buat Pesanan</button>
                     </div>
-
                 </form>
-
             </div>
-
         </div>
     </div>
 
     <script>
         const ekspedisiSelect = document.getElementById("ekspedisi-select");
         const ongkirDisplay = document.getElementById("ongkir-display");
-        const totalTagihan = document.getElementById("total-tagihan");
+        const totalTagihan = document.getElementById("totalTagihan");
         const ongkirHidden = document.getElementById("ongkir-hidden");
 
-        const baseTotal = {{ $total_harga }};
+        const baseTotal = {{ $items->sum('subtotal') }};
 
         ekspedisiSelect.addEventListener("change", function () {
             let ongkir = parseInt(this.options[this.selectedIndex].dataset.ongkir) || 0;
-
-            ongkirDisplay.innerText = "Rp " + ongkir.toLocaleString();
-            totalTagihan.innerText = "Rp " + (baseTotal + ongkir).toLocaleString();
-
+            ongkirDisplay.innerText = "Rp " + ongkir.toLocaleString('id-ID');
+            totalTagihan.innerText = "Rp " + (baseTotal + ongkir).toLocaleString('id-ID');
             ongkirHidden.value = ongkir;
         });
     </script>
-
 @endsection

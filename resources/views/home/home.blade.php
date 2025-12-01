@@ -69,7 +69,7 @@
         top: 50%;
         width: 360px;
         height: 360px;
-        object-fit: cover; /* FIX BUG IMAGE */
+        object-fit: cover;
         transform: translateY(-50%);
         border-radius: 15px;
     }
@@ -149,7 +149,7 @@
     .category-box img {
         width: 55px;
         height: 55px;
-        object-fit: cover; /* FIX BUG IMAGE */
+        object-fit: cover;
         border-radius: 12px;
     }
 
@@ -171,7 +171,7 @@
     .product-card img {
         width: 100%;
         height: 220px;
-        object-fit: cover; /* FIX BUG IMAGE */
+        object-fit: contain;
         border-radius: 15px 15px 0 0;
     }
 
@@ -187,26 +187,6 @@
         border-left: 6px solid var(--blue);
         padding-left: 12px;
         color: var(--blue-dark);
-    }
-
-    .btn-primary {
-        background-color: var(--blue);
-        border-color: var(--blue);
-    }
-
-    .btn-primary:hover {
-        background-color: var(--blue-soft);
-        border-color: var(--blue-soft);
-    }
-
-    .btn-outline-secondary {
-        border-color: var(--blue-dark);
-        color: var(--blue-dark);
-    }
-
-    .btn-outline-secondary:hover {
-        background-color: var(--blue-dark);
-        color: white;
     }
 </style>
 
@@ -268,27 +248,26 @@
     <div class="row">
         @forelse ($products as $product)
         <div class="col-6 col-md-3 mb-4">
-            <div class="product-card h-100">
-                <img src="{{ $product->image ? asset('storage/' . $product->image) : 'https://via.placeholder.com/300x220?text=No+Image' }}" class="image-product">
 
-                <div class="p-3 text-center">
-                    <h6 class="fw-semibold">{{ $product->nama_produk }}</h6>
-                    <p class="text-muted small">{{ $product->kategori->nama_kategori ?? 'Tanpa Kategori' }}</p>
+            <a href="{{ route('produk.show', $product->slug) }}" class="text-decoration-none text-dark">
+                <div class="product-card h-100" style="cursor:pointer;">
 
-                    @if($product->variants->count() > 0)
-                        <p class="price">Mulai dari Rp {{ number_format($product->variants->min('harga'), 0, ',', '.') }}</p>
-                    @else
-                        <p class="price">Rp {{ number_format($product->harga, 0, ',', '.') }}</p>
-                    @endif
+                    <img src="{{ $product->image ? asset('storage/' . $product->image) : 'https://via.placeholder.com/300x220?text=No+Image' }}" class="image-product">
 
-                    <a href="{{ route('produk.show', $product->slug) }}" class="btn btn-primary btn-sm w-100 mb-2">Lihat Detail</a>
+                    <div class="p-3 text-center">
+                        <h6 class="fw-semibold">{{ $product->nama_produk }}</h6>
+                        <p class="text-muted small">{{ $product->kategori->nama_kategori ?? 'Tanpa Kategori' }}</p>
 
-                    <form action="{{ route('checkout.buy-now', $product->slug) }}" method="POST">
-                        @csrf
-                        <button class="btn btn-outline-secondary btn-sm w-100">Beli Sekarang</button>
-                    </form>
+                        @if($product->variants->count() > 0)
+                            <p class="price">Mulai dari Rp {{ number_format($product->variants->min('harga'), 0, ',', '.') }}</p>
+                        @else
+                            <p class="price">Rp {{ number_format($product->harga, 0, ',', '.') }}</p>
+                        @endif
+                    </div>
+
                 </div>
-            </div>
+            </a>
+
         </div>
         @empty
         <p class="text-center">Belum ada produk.</p>
