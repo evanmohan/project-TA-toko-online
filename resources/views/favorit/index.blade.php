@@ -143,7 +143,7 @@
                 Kamu belum menambahkan produk ke daftar favorit.<br>
                 Klik ikon ❤️ pada produk untuk menyimpannya di sini.
             </p>
-            <a href="{{ route('home') }}" class="btn btn-success px-4 py-2" style="border-radius:12px;">
+            <a href="{{ route('home') }}" class="btn btn-primary px-4 py-2" style="border-radius:12px;">
                 Mulai Belanja
             </a>
         </div>

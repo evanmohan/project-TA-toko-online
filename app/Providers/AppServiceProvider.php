@@ -25,14 +25,26 @@ class AppServiceProvider extends ServiceProvider
         // Kirim jumlah item keranjang ke semua view
         View::composer('*', function ($view) {
             if (Auth::check()) {
-                // Total qty di keranjang user
-                $cartCount = Keranjang::where('user_id', Auth::id())->sum('qty');
+                $cartItems = Keranjang::where('user_id', Auth::id())
+                    ->with('product')
+                    ->get();
+
+                $cartTotal = $cartItems->sum(function ($item) {
+                    return $item->qty * $item->harga_satuan;
+                });
+
+                $cartCount = $cartItems->sum('qty');
             } else {
+                $cartItems = collect();
+                $cartTotal = 0;
                 $cartCount = 0;
             }
 
-            // kirim ke semua view
-            $view->with('cartCount', $cartCount);
+            $view->with([
+                'cartItems' => $cartItems,
+                'cartTotal' => $cartTotal,
+                'cartCount' => $cartCount
+            ]);
         });
     }
 }

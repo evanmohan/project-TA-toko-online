@@ -82,7 +82,7 @@
                 Tidak ada hasil untuk pencarian: <b>"{{ $keyword }}"</b><br>
                 Coba gunakan kata kunci lain.
             </p>
-            <a href="{{ route('home') }}" class="btn btn-success px-4 py-2" style="border-radius:12px;">
+            <a href="{{ route('home') }}" class="btn btn-primary px-4 py-2" style="border-radius:12px;">
                 Kembali Belanja
             </a>
         </div>

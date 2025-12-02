@@ -26,9 +26,7 @@
             --light-grey: #e9ecef;
         }
 
-        /* ===========================
-           NAVBAR WRAPPER
-        ============================ */
+        /* NAVBAR WRAPPER */
         .navbar-wrapper {
             display: flex;
             flex-direction: column;
@@ -43,9 +41,7 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
-        /* ===========================
-           TOP NAVBAR
-        ============================ */
+        /* TOP NAVBAR */
         .top-navbar {
             width: 100%;
             padding: 8px 30px;
@@ -56,47 +52,51 @@
         }
 
         .top-navbar a {
-            color: #212529 !important;
+            color: #fff !important;
             font-weight: 600;
             text-decoration: none;
+            transition: 0.3s;
         }
 
         .top-navbar a:hover {
             color: #000 !important;
         }
 
-        /* ===========================
-           MAIN NAVBAR
-        ============================ */
-        .main-navbar {
-            padding: 12px 30px;
-            display: flex;
-            justify-content: center;
-            /* Tengah */
-            align-items: center;
-            gap: 25px;
-
-            max-width: 1200px;
-            /* Batasi lebar agar tidak melebar ke seluruh layar */
-            /* margin: 0 auto; */
-            /* MENENGAHKAN NAVBAR */
-            width: 100%;
+        .top-navbar span {
+            margin: 0 5px;
+            color: #fff;
         }
 
+        /* MAIN NAVBAR */
+        .main-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 30px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .main-navbar .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
 
         .main-navbar .logo img {
             height: 45px;
         }
 
         .main-navbar .logo h4 {
-            color: #212529 !important;
             margin: 0;
             font-weight: bold;
+            color: #fff;
         }
 
         .main-navbar .search-bar {
             flex: 1;
-            max-width: 550px;
+            margin: 0 20px;
             position: relative;
         }
 
@@ -114,128 +114,204 @@
             bottom: 3px;
             width: 45px;
             border: none;
-            background: var(--grey);
-            color: #212529 !important;
+            background: var(--dark-grey);
+            color: #fff !important;
             border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
         }
 
         .icons a {
-            color: #212529 !important;
-            font-weight: 600;
             text-decoration: none;
+            color: #fff !important;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .icons a:hover {
+            color: #000 !important;
         }
 
         .icons .badge {
             background: red;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 600;
             position: absolute;
             top: -5px;
             right: -10px;
+            padding: 2px 5px;
+            border-radius: 50%;
         }
 
-        /* ===========================
-           FOOTER
-        ============================ */
+        /* ===================== */
+        /* MINI CART DROPDOWN BARU */
+        /* ===================== */
+        .cart-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 420px;
+            max-height: 520px;
+            background: #fff;
+            border-radius: 8px;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 3000;
+            overflow: hidden;
+        }
+
+        .cart-dropdown.active {
+            display: flex;
+        }
+
+        .cart-header {
+            background: #f5f5f5;
+            padding: 12px 15px;
+            font-weight: 600;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-items {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f2f2f2;
+        }
+
+        .cart-item img {
+            width: 55px;
+            height: 55px;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+
+        .top-nav-cart {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .cart-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .cart-price {
+            color: #000;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .cart-variant {
+            color: #666;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .more-items {
+            /* padding: 10px 15px; */
+            font-size: 13px;
+            color: #888;
+        }
+
+        .cart-footer {
+            /* padding: 15px; */
+            background: #fff;
+            border-top: 1px solid #eee;
+            text-align: center;
+        }
+
+        .bottom-modal-cart {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .cart-footer button {
+            background: var(--dark-grey);
+            border: none;
+            color: #fff;
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* ====================== */
+
+        @media (max-width: 992px) {
+            .main-navbar {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .main-navbar .search-bar {
+                width: 100%;
+                margin: 0;
+            }
+
+            .main-navbar .icons {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-navbar {
+                flex-direction: column;
+                gap: 3px;
+                text-align: center;
+            }
+
+            .top-navbar div:first-child {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        .content {
+            min-height: 70vh;
+        }
+
         footer {
             margin-top: 50px;
             background: linear-gradient(90deg, var(--grey), var(--dark-grey));
-            color: #212529 !important;
+            color: #fff !important;
             padding: 40px 0;
         }
 
         footer a {
-            color: #212529 !important;
+            color: #fff !important;
             font-weight: 500;
             text-decoration: none;
         }
 
         footer a:hover {
             color: #000 !important;
-        }
-
-
-        /* ============================================================
-           RESPONSIVE SHOPEE-LIKE NAVBAR
-        ============================================================ */
-
-        /* Tablet */
-        @media (max-width: 992px) {
-            .main-navbar {
-                flex-direction: column;
-                justify-content: center;
-                text-align: center;
-            }
-
-            .main-navbar .search-bar {
-                max-width: 100%;
-            }
-        }
-
-        /* Mobile */
-        @media (max-width: 768px) {
-            .top-navbar {
-                flex-direction: column;
-                text-align: center;
-                gap: 6px;
-            }
-
-            .top-navbar div:first-child {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 5px;
-            }
-
-            .main-navbar {
-                flex-direction: column;
-                gap: 15px;
-                padding: 15px 20px;
-            }
-
-            .main-navbar .logo {
-                justify-content: center;
-            }
-
-            .main-navbar .search-bar {
-                width: 100%;
-                max-width: 100% !important;
-            }
-
-            .main-navbar .icons {
-                justify-content: center;
-                gap: 25px;
-            }
-
-            .icons .badge {
-                top: -7px;
-                right: -12px;
-            }
-        }
-
-
-        /* Extra small */
-        @media (max-width: 480px) {
-            .top-navbar {
-                font-size: 12px;
-                padding: 5px 10px;
-            }
-
-            .main-navbar .logo h4 {
-                font-size: 16px;
-            }
-
-            .main-navbar .search-bar input {
-                font-size: 13px;
-            }
-
-            .icon-link span {
-                font-size: 13px;
-            }
-        }
-
-        .content {
-            min-height: 70vh;
-            /* padding: 20px 0; */
         }
     </style>
 </head>
@@ -246,7 +322,7 @@
     <nav class="navbar-wrapper">
         <!-- TOP NAVBAR -->
         <div class="top-navbar container">
-            <div>
+            <div class="d-flex flex-wrap align-items-center gap-2">
                 <a href="#"><i class="bi bi-info-circle me-1"></i>Tentang Kami</a>
                 <span>|</span>
                 <a href="#"><i class="bi bi-question-circle me-1"></i>Bantuan</a>
@@ -256,33 +332,27 @@
 
             <div class="dropdown">
                 @auth
-                    <a class="dropdown-toggle text-dark text-decoration-none d-flex align-items-center" href="#"
-                        id="userDropdown" role="button" data-bs-toggle="dropdown">
+                    <a class="dropdown-toggle text-white d-flex align-items-center" href="#" id="userDropdown" role="button"
+                        data-bs-toggle="dropdown">
                         <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->username }}
                     </a>
-
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a href="#" class="dropdown-item">Edit Profil</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li>
-                            <a href="{{ route('favorit.index') }}" class="dropdown-item">
+                        <li><a href="{{ route('favorit.index') }}" class="dropdown-item">
                                 <i class="bi bi-heart me-2 text-danger"></i>Favorit Anda
-                            </a>
-                        </li>
+                            </a></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST" class="m-0 p-0">
                                 @csrf
                                 <button class="dropdown-item text-danger d-flex align-items-center gap-2">
-                                    <i class="bi bi-box-arrow-right"></i>
-                                    Logout
+                                    <i class="bi bi-box-arrow-right"></i> Logout
                                 </button>
                             </form>
                         </li>
-
                     </ul>
-
                 @else
                     <a href="{{ route('login') }}">Masuk</a> |
                     <a href="{{ route('register') }}">Daftar</a>
@@ -292,37 +362,86 @@
 
         <!-- MAIN NAVBAR -->
         <div class="main-navbar container">
-
-            <a href="{{ route('home') }}" class="logo d-flex align-items-center gap-2 text-decoration-none">
+            <a href="{{ route('home') }}" class="logo">
                 <img src="{{ asset('assets/images/logo.png') }}" alt="Logo">
                 <h4>Second Store</h4>
             </a>
 
             <div class="search-bar position-relative">
-                <form action="{{ route('product.search') }}" method="GET" class="search-bar position-relative">
+                <form action="{{ route('product.search') }}" method="GET">
                     <input type="text" name="search" placeholder="Cari produk..." required>
                     <button type="submit"><i class="bi bi-search"></i></button>
                 </form>
-
             </div>
 
-            <div class="icons d-flex align-items-center gap-4">
-                <a href="{{ route('keranjang.index') }}" class="icon-link">
-                    <i class="bi bi-cart3 fs-5"></i>
-                    <span>Keranjang</span>
-                    @if(isset($cartCount) && $cartCount > 0)
-                        <span class="badge">{{ $cartCount }}</span>
-                    @endif
-                </a>
-
+            <div class="icons">
                 @auth
+                    <div class="position-relative">
+                        <a href="{{ route('keranjang.index') }}" class="icon-link" id="cartIcon">
+                            <i class="bi bi-cart3 fs-5"></i>
+                            <span>Keranjang</span>
+                            @if(isset($cartCount) && $cartCount > 0)
+                                <span class="badge">{{ $cartCount }}</span>
+                            @endif
+                        </a>
+
+                        <!-- 💥 MINI DROPDOWN KERANJANG BARU (SUDAH DIUBAH) -->
+                        <div class="cart-dropdown" id="cartDropdown">
+
+                            @if(isset($cartItems) && count($cartItems) > 0)
+
+                                <div class="cart-header">Baru Ditambahkan</div>
+
+                                <div class="cart-items">
+                                    @foreach($cartItems as $item)
+                                        <div class="cart-item">
+                                            <img src="{{ $item->variant->image ? asset('storage/' . $item->variant->image) : asset('assets/images/default-product.png') }}"
+                                                alt="Produk">
+
+                                            <div class="w-100">
+                                                <div class="top-nav-cart">
+                                                    <div class="cart-name">
+                                                        {{ Str::limit($item->product->nama_produk, 40) }}
+                                                    </div>
+                                                    <div class="cart-price">
+                                                        Rp{{ number_format($item->variant->harga, 0, ',', '.') }}
+                                                    </div>
+                                                </div>
+                                                <div class="bottom-nav-cart">
+                                                    <div class="cart-variant">
+                                                        {{ $item->variant->warna }}, {{ $item->size->size }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div class="bottom-modal-cart">
+
+                                    <div class="more-items">
+                                        {{ count($cartItems) }} Produk Lainnya
+                                    </div>
+
+                                    <div class="cart-footer">
+                                        <button onclick="window.location.href='{{ route('keranjang.index') }}'">
+                                            Tampilkan Keranjang Belanja
+                                        </button>
+                                    </div>
+                                </div>
+
+                            @else
+                                <div class="p-3 text-center">Keranjang kosong</div>
+                            @endif
+                        </div>
+                    </div>
+
                     <a href="{{ route('payment.index') }}" class="icon-link">
                         <i class="bi bi-clock-history fs-5"></i>
                         <span>Riwayat</span>
                     </a>
                 @endauth
             </div>
-
         </div>
     </nav>
 
@@ -370,59 +489,19 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
-    </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Toggle mini cart dropdown
         document.addEventListener('DOMContentLoaded', function () {
-            const searchInput = document.getElementById('searchInput');
-            const resultsDiv = document.getElementById('searchResults');
-            let timeout = null;
+            const cartIcon = document.getElementById('cartIcon');
+            const cartDropdown = document.getElementById('cartDropdown');
 
-            searchInput.addEventListener('keyup', function () {
-                clearTimeout(timeout);
-                const query = this.value.trim();
-
-                if (query.length < 2) {
-                    resultsDiv.style.display = 'none';
-                    resultsDiv.innerHTML = '';
-                    return;
-                }
-
-                timeout = setTimeout(() => {
-                    fetch(`/produk/live-search?q=${encodeURIComponent(query)}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.length === 0) {
-                                resultsDiv.innerHTML = '<div class="p-2 text-muted small">Tidak ada hasil</div>';
-                            } else {
-                                resultsDiv.innerHTML = data.map(item => `
-                            <a href="/produk/${item.id}" class="d-flex align-items-center text-decoration-none text-dark p-2 border-bottom">
-                                <img src="${item.image ? '/storage/' + item.image : '/assets/images/default-product.png'}"
-                                     width="50" height="50" class="me-2" style="object-fit:cover;">
-                                <div>
-                                    <div class="fw-semibold">${item.nama_produk}</div>
-                                    <div class="text-muted small">
-                                        Rp ${parseInt(item.harga).toLocaleString('id-ID')}
-                                    </div>
-                                </div>
-                            </a>
-                        `).join('');
-                            }
-
-                            resultsDiv.style.display = 'block';
-                        });
-                }, 300);
-            });
-
-            document.addEventListener('click', function (e) {
-                if (!resultsDiv.contains(e.target) && e.target !== searchInput) {
-                    resultsDiv.style.display = 'none';
-                }
-            });
+            cartIcon.addEventListener('mouseenter', () => cartDropdown.classList.add('active'));
+            cartIcon.addEventListener('mouseleave', () => cartDropdown.classList.remove('active'));
+            cartDropdown.addEventListener('mouseenter', () => cartDropdown.classList.add('active'));
+            cartDropdown.addEventListener('mouseleave', () => cartDropdown.classList.remove('active'));
         });
     </script>
-
 
 </body>
 

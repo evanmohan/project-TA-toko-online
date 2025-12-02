@@ -52,10 +52,29 @@ class HomeController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function searchByKategori($slug)
     {
-        //
+        // cari kategori berdasarkan slug
+        $kategori = Kategori::where('slug', $slug)->first();
+
+        if (!$kategori) {
+            return redirect()->back()->with('error', 'Kategori tidak ditemukan');
+        }
+
+        // ambil produk berdasarkan kategori
+        $products = Product::where('kategori_id', $kategori->id)
+            ->latest()
+            ->paginate(12);
+
+        return view('home.search_kategori', [
+            'products'     => $products,
+            'kategori'     => $kategori,
+            'kategoriList' => Kategori::all(),
+            'iklans'       => Iklan::all(),
+        ]);
     }
+
+
 
     /**
      * Store a newly created resource in storage.

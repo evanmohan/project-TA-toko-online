@@ -38,12 +38,12 @@
             padding: 25px;
         }
         .checkout-btn {
-            background-color: #00b14f; color: white;
+            background-color: #437acb; color: white;
             border: none; border-radius: 8px;
             padding: 12px; font-weight: 600;
             width: 100%; margin-top: 10px;
         }
-        .checkout-btn:disabled { background-color: #a9dfbf; cursor: not-allowed; }
+        .checkout-btn:disabled { background-color:#003ab8; cursor: not-allowed; }
     </style>
 
     <div class="container checkout-container">

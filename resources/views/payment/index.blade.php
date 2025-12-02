@@ -44,17 +44,17 @@
     }
 
     .badge-paid {
-        background: #03ac0e;
+        background: #0263e0;
         color: white;
     }
 
     .badge-pending {
-        background: #e67e22;
+        background: #0263e0;
         color: white;
     }
 
     .btn-tokped-pay {
-        background: #03ac0e;
+        background: #595959;
         color: white;
         border-radius: 10px;
         padding: 10px 22px;
@@ -66,13 +66,13 @@
     }
 
     .btn-tokped-pay:hover {
-        background: #02950c;
+        background: #3d3d3d;
     }
 
     .btn-tokped-cancel {
-        background: white;
-        border: 1px solid #dcdcdc;
-        color: #333;
+        background: red;
+        border: 1px solid #ff0000;
+        color: white;
         border-radius: 10px;
         padding: 10px 22px;
         font-size: 14px;
@@ -81,7 +81,7 @@
     }
 
     .btn-tokped-cancel:hover {
-        background: #f3f3f3;
+        background: #cc0000;
     }
 
     .product-item {
@@ -147,7 +147,7 @@
                 Belum ada transaksi pembayaran yang tercatat.
             </p>
             <a href="{{ route('home') }}"
-               class="btn btn-success px-4 py-2"
+               class="btn btn-primary px-4 py-2"
                style="border-radius:10px; font-weight:600;">
                 Mulai Belanja
             </a>

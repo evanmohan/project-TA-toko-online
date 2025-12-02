@@ -151,7 +151,8 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
 // ===================== USER =====================
 Route::middleware(['auth'])->group(function () {
 
-
+    Route::get('/search/kategori/{slug}', [HomeController::class, 'searchByKategori'])
+        ->name('product.searchByKategori');
     Route::get('/search', [HomeController::class, 'search'])->name('product.search');
 
     // ================= CHECKOUT =================

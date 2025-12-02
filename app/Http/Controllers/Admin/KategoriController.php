@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class KategoriController extends Controller
 {
@@ -16,7 +17,7 @@ class KategoriController extends Controller
         return view('admin.kategori.index', compact('kategoris'));
     }
 
-    // Menampilkan form create (tidak digunakan tapi tetap ada)
+    // Menampilkan form create
     public function create()
     {
         return view('admin.kategori.index');
@@ -32,6 +33,9 @@ class KategoriController extends Controller
         ]);
 
         $data = $request->only(['nama_kategori', 'deskripsi']);
+
+        // Generate slug
+        $data['slug'] = Str::slug($request->nama_kategori);
 
         // Upload image jika ada
         if ($request->hasFile('image')) {
@@ -62,12 +66,12 @@ class KategoriController extends Controller
 
         $data = [
             'nama_kategori' => $request->nama_kategori,
-            'deskripsi' => $request->deskripsi,
+            'deskripsi'     => $request->deskripsi,
+            'slug'          => Str::slug($request->nama_kategori),
         ];
 
         // Jika upload image baru
         if ($request->hasFile('image')) {
-            // Hapus image lama
             if ($kategori->image) {
                 Storage::disk('public')->delete($kategori->image);
             }
