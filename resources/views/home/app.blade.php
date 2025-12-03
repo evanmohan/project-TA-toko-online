@@ -337,7 +337,7 @@
                         <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->username }}
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a href="#" class="dropdown-item">Edit Profil</a></li>
+                       <li><a href="{{ route('profile.edit') }}" class="dropdown-item">Akun Saya</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>

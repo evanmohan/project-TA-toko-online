@@ -21,20 +21,13 @@
             margin-top: 30px;
         }
 
-        /* GAMBAR UTAMA - TIDAK DI-CROP (tampil utuh) */
         .main-image {
             border-radius: 12px;
             width: 100%;
             max-height: 580px;
-            /* batas tinggi maksimal */
             height: auto;
-            /* tinggi menyesuaikan rasio */
             object-fit: contain;
-            /* INI YANG PENTING: contain = tidak crop */
             background: #f8f9fa;
-            /* background putih supaya rapi */
-            padding: 10px;
-            /* sedikit ruang di dalam */
             box-sizing: border-box;
             cursor: zoom-in;
         }
@@ -44,15 +37,13 @@
             display: flex;
             gap: 10px;
             overflow-x: auto;
-            padding: 5acier: 5px 0;
+            padding: 5px 0;
         }
 
-        /* THUMBNAIL JUGA TIDAK DI-CROP */
         .thumb-img {
             width: 80px;
             height: 80px;
             object-fit: contain;
-            /* thumbnail juga tampil utuh */
             background: #fff;
             border-radius: 10px;
             border: 2px solid #ddd;
@@ -71,7 +62,6 @@
             box-shadow: var(--glow);
         }
 
-        /* Sisanya tetap sama (harga, tombol, variant, dll) */
         .price {
             color: var(--primary);
             font-weight: 700;
@@ -237,14 +227,12 @@
     <div class="container">
         <div class="product-detail row">
             <div class="col-md-5">
-                <!-- GAMBAR UTAMA TIDAK DI-CROP -->
                 <img src="{{ $produk->image ? asset('storage/' . $produk->image) : asset('argon/assets/img/default-product.png') }}"
                     alt="{{ $produk->nama_produk }}" class="main-image" id="mainImage">
 
                 <div class="thumbnail-wrapper" id="thumbnailWrapper"></div>
             </div>
 
-            <!-- Detail produk (sama seperti sebelumnya) -->
             <div class="col-md-7">
                 <div class="d-flex justify-content-between align-items-start">
                     <h3 class="mb-0">{{ $produk->nama_produk }}</h3>
@@ -344,6 +332,14 @@
         let isVariantSelected = false;
         let isSizeSelected = false;
 
+        // === CEK STATUS FAVORIT DI AWAL ===
+        const isFavorited = {{ Auth::check() && \App\Models\Favorit::where('user_id', auth()->id())->where('produk_id', $produk->id)->exists() ? 'true' : 'false' }};
+
+        if (isFavorited) {
+            favoriteBtn.classList.add('liked');
+            favoriteBtn.innerHTML = '<i class="bi bi-heart-fill"></i>';
+        }
+
         function updateButtonState() {
             const hasSizes = sizeWrapper.style.display === 'block';
             const ready = isVariantSelected && (!hasSizes || isSizeSelected);
@@ -369,14 +365,89 @@
             });
         }
 
-        favoriteBtn.addEventListener('click', function () {
-            this.classList.toggle('liked');
-            this.querySelector('i').classList.toggle('bi-heart');
-            this.querySelector('i').classList.toggle('bi-heart-fill');
+        // ==============================
+        // TOMBOL FAVORIT (BERFUNGSI 100%)
+        // ==============================
+        favoriteBtn.addEventListener('click', async function () {
+            @if(!Auth::check())
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Login Diperlukan',
+                    text: 'Silakan login untuk menyimpan ke favorit',
+                    confirmButtonText: 'Login Sekarang'
+                }).then((r) => { if (r.isConfirmed) location.href = "{{ route('login') }}"; });
+                return;
+            @endif
+
+            const produkId = {{ $produk->id }};
+            const isLiked = this.classList.contains('liked');
+
+            try {
+                const response = await fetch(`/favorit/${produkId}`, {
+                    method: isLiked ? 'DELETE' : 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    if (!isLiked) {
+                        this.classList.add('liked');
+                        this.innerHTML = '<i class="bi bi-heart-fill"></i>';
+                        Swal.fire({ icon: 'success', title: 'Ditambahkan!', text: result.message, timer: 1500, showConfirmButton: false });
+                    } else {
+                        this.classList.remove('liked');
+                        this.innerHTML = '<i class="bi bi-heart"></i>';
+                        Swal.fire({ icon: 'info', title: 'Dihapus', text: result.message, timer: 1500, showConfirmButton: false });
+                    }
+                } else {
+                    Swal.fire('Oops!', result.message || 'Terjadi kesalahan', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Error', 'Tidak dapat terhubung ke server', 'error');
+            }
         });
 
+        // =============================
+        // VARIANT LOGIC + UNSELECT + HOVER
+        // =============================
         variantOptions.forEach(el => {
             el.addEventListener('click', function () {
+                // Unselect jika sudah aktif
+                if (this.classList.contains('active')) {
+                    this.classList.remove('active');
+
+                    // Kembalikan harga & gambar default
+                    @if($produk->variants->count() > 0)
+                        dynamicPrice.innerHTML = `Rp {{ number_format($produk->variants->min('harga'), 0, ',', '.') }}
+                                @if($produk->variants->min('harga') != $produk->variants->max('harga'))
+                                    - Rp {{ number_format($produk->variants->max('harga'), 0, ',', '.') }}
+                                @endif`;
+                    @else
+                        dynamicPrice.innerHTML = `Rp {{ number_format($produk->harga, 0, ',', '.') }}`;
+                    @endif
+
+                    mainImage.src = "{{ $produk->image ? asset('storage/' . $produk->image) : asset('argon/assets/img/default-product.png') }}";
+
+                    // Reset semua
+                    variantInput.value = buyVariantInput.value = '';
+                    sizeInput.value = buySizeInput.value = '';
+                    sizeOptionsContainer.innerHTML = '';
+                    sizeWrapper.style.display = 'none';
+                    isVariantSelected = isSizeSelected = false;
+                    qtyInput.value = qtyDisplay.value = 1;
+                    stokInfo.textContent = 'Tersedia 0';
+
+                    updateButtonState();
+                    return;
+                }
+
+                // Pilih variant baru
                 variantOptions.forEach(o => o.classList.remove('active'));
                 this.classList.add('active');
 
@@ -387,13 +458,11 @@
                 dynamicPrice.innerHTML = 'Rp ' + Number(harga).toLocaleString('id-ID');
                 mainImage.src = image;
 
-                variantInput.value = variantId;
-                buyVariantInput.value = variantId;
-
+                variantInput.value = buyVariantInput.value = variantId;
                 isVariantSelected = true;
                 isSizeSelected = false;
-                sizeInput.value = '';
-                buySizeInput.value = '';
+
+                sizeInput.value = buySizeInput.value = '';
                 sizeOptionsContainer.innerHTML = '';
 
                 const selected = variants.find(x => x.id == variantId);
@@ -412,14 +481,12 @@
                             if (size.stok == 0) return;
                             document.querySelectorAll('.size-option').forEach(s => s.classList.remove('active'));
                             this.classList.add('active');
-                            sizeInput.value = size.id;
-                            buySizeInput.value = size.id;
+                            sizeInput.value = buySizeInput.value = size.id;
                             isSizeSelected = true;
 
                             const stok = parseInt(size.stok);
                             qtyDisplay.max = stok;
-                            qtyInput.value = 1;
-                            qtyDisplay.value = 1;
+                            qtyInput.value = qtyDisplay.value = 1;
                             stokInfo.textContent = `Tersedia ${stok}`;
                             updateButtonState();
                         };
@@ -428,32 +495,38 @@
                 } else {
                     sizeWrapper.style.display = 'none';
                     qtyDisplay.max = 9999;
-                    qtyInput.value = 1;
-                    qtyDisplay.value = 1;
+                    qtyInput.value = qtyDisplay.value = 1;
                     stokInfo.textContent = '';
                     isSizeSelected = true;
                 }
+
                 updateButtonState();
+            });
+
+            // Hover preview
+            el.addEventListener('mouseenter', () => mainImage.src = el.dataset.image);
+            el.addEventListener('mouseleave', () => {
+                const active = document.querySelector('.variant-option.active');
+                mainImage.src = active ? active.dataset.image : "{{ $produk->image ? asset('storage/' . $produk->image) : asset('argon/assets/img/default-product.png') }}";
             });
         });
 
+        // Quantity buttons
         document.getElementById('qtyMinus').onclick = () => {
             if (parseInt(qtyInput.value) > 1) {
-                qtyInput.value = parseInt(qtyInput.value) - 1;
-                qtyDisplay.value = qtyInput.value;
+                qtyInput.value = --qtyDisplay.value;
             }
         };
+
         document.getElementById('qtyPlus').onclick = () => {
             const max = parseInt(qtyDisplay.max) || 9999;
             if (parseInt(qtyInput.value) < max) {
-                qtyInput.value = parseInt(qtyInput.value) + 1;
-                qtyDisplay.value = qtyInput.value;
+                qtyInput.value = ++qtyDisplay.value;
             }
         };
 
         generateThumbnails();
         updateButtonState();
     </script>
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11/font/bootstrap-icons.css">
 @endsection

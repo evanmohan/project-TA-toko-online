@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DashboardController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\admin\LaporanController;
 use App\Http\Controllers\FavoritController;
 use App\Http\Controllers\PembayaranController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -150,6 +152,17 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
 
 // ===================== USER =====================
 Route::middleware(['auth'])->group(function () {
+
+    // PROFILE
+    Route::get('/profil/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profil/update', [ProfileController::class, 'update'])->name('profile.update');
+
+
+    Route::get('/profil/alamat', [AlamatController::class, 'index'])->name('alamat.index');
+    Route::post('/profil/alamat', [AlamatController::class, 'store'])->name('alamat.store');
+    Route::put('/profil/alamat/{id}', [AlamatController::class, 'update'])->name('alamat.update');
+    Route::delete('/profil/alamat/{id}', [AlamatController::class, 'destroy'])->name('alamat.destroy');
+    Route::post('/profil/alamat/{id}/utama', [AlamatController::class, 'setPrimary'])->name('alamat.setPrimary');
 
     Route::get('/search/kategori/{slug}', [HomeController::class, 'searchByKategori'])
         ->name('product.searchByKategori');

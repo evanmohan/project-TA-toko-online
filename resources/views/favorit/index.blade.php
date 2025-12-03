@@ -12,7 +12,6 @@
         --text-dark: #2C2C2C;
     }
 
-    /* Judul Produk Favorit */
     .fav-title {
         text-align: center;
         font-size: 2rem;
@@ -21,14 +20,12 @@
         margin-bottom: 25px;
     }
 
-    /* Grid sama seperti halaman home */
     .fav-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 20px;
     }
 
-    /* Card produk */
     .product-card {
         border-radius: 15px;
         background: white;
@@ -57,7 +54,6 @@
         font-weight: 700;
     }
 
-    /* Tombol hapus favorit */
     .remove-fav-btn {
         position: absolute;
         top: 10px;
@@ -97,7 +93,6 @@
         pointer-events: none;
     }
 
-    /* Burst Effect */
     .burst {
         position: absolute;
         width: 120px;
@@ -114,13 +109,12 @@
         100% { transform: scale(2.4); opacity: 0; }
     }
 
-    /* EMPTY STATE CENTERED */
     .empty-fav {
         display: flex;
         justify-content: center;
         align-items: center;
         flex-direction: column;
-        min-height: 60vh; /* pastikan center vertikal */
+        min-height: 60vh;
         text-align: center;
     }
 
@@ -134,7 +128,6 @@
 
     <h2 class="fav-title">Produk Favorit</h2>
 
-    {{-- EMPTY STATE --}}
     @if ($favorits->count() == 0)
         <div class="empty-fav">
             <img src="{{ asset('assets/images/Favorit.png') }}" alt="Favorit">
@@ -148,13 +141,12 @@
             </a>
         </div>
     @else
-        {{-- GRID FAVORIT --}}
         <div class="fav-grid">
             @foreach ($favorits as $fav)
                 <div class="product-card">
 
-                    {{-- Hapus favorit --}}
-                    <form action="{{ route('favorit.destroy', $fav->produk->id) }}"
+                    {{-- Hapus favorit berdasarkan variant + size --}}
+                    <form action="{{ route('favorit.destroy', $fav->id) }}"
                           method="POST" class="remove-fav-form position-relative">
                         @csrf
                         @method('DELETE')
@@ -171,8 +163,17 @@
 
                     <div class="p-3 text-center">
                         <h6 class="fw-semibold">{{ $fav->produk->nama_produk ?? 'Produk Tanpa Nama' }}</h6>
-                        <p class="text-muted small">{{ $fav->produk->kategori->nama_kategori ?? 'Tanpa Kategori' }}</p>
-                        <p class="price">Rp {{ number_format($fav->produk->harga, 0, ',', '.') }}</p>
+                        <p class="text-muted small">
+                            {{ $fav->produk->kategori->nama_kategori ?? 'Tanpa Kategori' }}
+                        </p>
+
+                        {{-- Tampilkan Variant & Size Favorit --}}
+                        <p class="mt-1 mb-2" style="font-size: 14px; color:#444;">
+                            <strong>Variant:</strong> {{ $fav->variant->nama_variant ?? '-' }}
+                            <br>
+                            <strong>Size:</strong> {{ $fav->size->nama_size ?? '-' }}
+                        </p>
+
                         <a href="{{ route('produk.show', $fav->produk->id) }}"
                            class="btn btn-primary btn-sm w-100 mb-2">
                             Lihat Detail
@@ -186,7 +187,6 @@
 
 </div>
 
-{{-- BURST EFFECT --}}
 <script>
     document.querySelectorAll(".fav-delete-btn").forEach(btn => {
         btn.addEventListener("click", function (e) {

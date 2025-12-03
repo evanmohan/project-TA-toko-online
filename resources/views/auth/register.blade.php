@@ -15,6 +15,7 @@
                 </div>
             </div>
         </div>
+
         <div class="container">
             <div class="row mt-lg-n10 mt-md-n11 mt-n10 justify-content-center">
                 <div class="col-xl-4 col-lg-5 col-md-7 mx-auto">
@@ -23,49 +24,55 @@
                             <h5>Register</h5>
                         </div>
                         <div class="card-body">
+
                             <form method="POST" action="{{ route('register.post') }}">
                                 @csrf
+
                                 <div class="mb-3">
                                     <input type="text" name="username" class="form-control" placeholder="Username"
-                                        value="{{ old('username') }}" required>
+                                           value="{{ old('username') }}" required>
                                 </div>
+
                                 <div class="mb-3">
                                     <input type="email" name="email" class="form-control" placeholder="Email"
-                                        value="{{ old('email') }}" required>
+                                           value="{{ old('email') }}" required>
                                 </div>
+
                                 <div class="mb-3">
                                     <input type="password" name="password" class="form-control" placeholder="Password"
-                                        required>
+                                           required>
                                 </div>
+
                                 <div class="mb-3">
                                     <input type="password" name="password_confirmation" class="form-control"
-                                        placeholder="Confirm Password" required>
+                                           placeholder="Confirm Password" required>
                                 </div>
+
                                 <div class="mb-3">
                                     <input type="text" name="no_hp" class="form-control" placeholder="Nomor Hp"
-                                        value="{{ old('no_hp') }}" required>
+                                           value="{{ old('no_hp') }}" required>
                                 </div>
-                                <div class="mb-3">
-                                    <input type="text" name="alamat" class="form-control" placeholder="Alamat"
-                                        value="{{ old('alamat') }}" required>
-                                </div>
+
+                                <!-- 🔥 Alamat DIHAPUS karena sudah pindah ke tabel alamat -->
+                                <!-- Tidak ada yang dihapus selain field alamat -->
+
                                 <div class="text-center">
                                     <button type="submit" class="btn btn-primary w-100">Register</button>
                                 </div>
                             </form>
 
-                            <!-- Tambahan teks ke login -->
                             <div class="card-footer text-center pt-0 px-lg-2 px-1">
                                 <p class="mb-4 text-sm mx-auto">
                                     Apakah anda sudah memiliki akun?
-                                    <a href="{{ route('login') }}"
-                                        class="text-primary text-gradient font-weight-bold">Login</a>
+                                    <a href="{{ route('login') }}" class="text-primary text-gradient font-weight-bold">Login</a>
                                 </p>
                             </div>
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </main>
 @endsection

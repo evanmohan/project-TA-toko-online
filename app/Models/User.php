@@ -7,7 +7,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
-
 {
     use HasFactory, Notifiable;
 
@@ -28,14 +27,25 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    // ============================
+    // RELATIONS
+    // ============================
 
-    // Relasi ke pesanan (satu user bisa punya banyak pesanan)
+    // Relasi ke orders (dulu namanya Pesanan)
     public function pesanan()
     {
-        return $this->hasMany(Pesanan::class, 'user_id');
+        return $this->hasMany(Order::class, 'user_id');
     }
+
+    // Relasi ke favorit
     public function favorits()
     {
-        return $this->hasMany(Favorit::class);
+        return $this->hasMany(Favorit::class, 'user_id');
+    }
+
+    // Relasi ke alamats
+    public function alamats()
+    {
+        return $this->hasMany(Alamat::class, 'user_id');
     }
 }

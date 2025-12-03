@@ -7,13 +7,19 @@ use Illuminate\Http\Request;
 
 class FavoritController extends Controller
 {
-    // Tambah ke favorit
-    public function store($produk_id)
+    /**
+     * Tambah ke favorit berdasarkan variant & size
+     */
+    public function store(Request $request)
     {
-        Favorit::firstOrCreate([
+        $data = [
             'user_id' => auth()->id(),
-            'produk_id' => $produk_id
-        ]);
+            'produk_id' => $request->produk_id,
+            'variant_id' => $request->variant_id,
+            'size_id' => $request->size_id,
+        ];
+
+        Favorit::firstOrCreate($data);
 
         return response()->json([
             'success' => true,
@@ -21,30 +27,36 @@ class FavoritController extends Controller
         ]);
     }
 
-    // Hapus dari favorit
-    public function destroy($produk_id)
+
+    /**
+     * Hapus favorit berdasarkan produk + variant + size
+     */
+    public function destroy(Request $request)
     {
         Favorit::where('user_id', auth()->id())
-            ->where('produk_id', $produk_id)
+            ->where('produk_id', $request->produk_id)
+            ->where('variant_id', $request->variant_id)
+            ->where('size_id', $request->size_id)
             ->delete();
 
-        // Jika request AJAX → balikan JSON
-        if (request()->ajax()) {
+        if ($request->ajax()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Produk dihapus dari favorit'
             ]);
         }
 
-        // Jika bukan AJAX → redirect back
         return back()->with('success', 'Produk dihapus dari favorit!');
     }
 
 
-    // List favorit user
+
+    /**
+     * List semua favorit user
+     */
     public function index()
     {
-        $favorits = Favorit::with('produk')
+        $favorits = Favorit::with(['produk', 'variant', 'size'])
             ->where('user_id', auth()->id())
             ->get();
 

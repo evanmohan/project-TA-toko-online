@@ -9,6 +9,8 @@ class Favorit extends Model
     protected $fillable = [
         'user_id',
         'produk_id',
+        'variant_id',
+        'size_id',
     ];
 
     public function user()
@@ -19,5 +21,15 @@ class Favorit extends Model
     public function produk()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class);
+    }
+
+    public function size()
+    {
+        return $this->belongsTo(ProductVariantSize::class, 'size_id');
     }
 }

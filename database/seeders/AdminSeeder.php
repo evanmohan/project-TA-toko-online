@@ -22,7 +22,6 @@ class AdminSeeder extends Seeder
                 'email'      => 'admin@example.com',
                 'password'   => Hash::make('1234'), // ✅ jangan lupa pakai Hash
                 'no_hp'      => '-',
-                'alamat'     => '-',
                 'role'       => 'admin',            // pastikan kolom 'role' ada di tabel
                 'created_at' => now(),
                 'updated_at' => now(),

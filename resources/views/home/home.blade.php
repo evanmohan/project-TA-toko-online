@@ -160,11 +160,12 @@
 
         /* PRODUCT CARD */
         .product-card {
-            border-radius: 15px;
+            border-radius: 0;
             background: white;
             border: 1px solid var(--soft-gray);
             transition: .3s;
             position: relative;
+            overflow: hidden;
         }
 
         .product-card:hover {
@@ -177,13 +178,30 @@
             width: 100%;
             height: 220px;
             object-fit: contain;
-            border-radius: 15px 15px 0 0;
         }
 
-        .price {
+        /* FIX: HARGA TANPA BACKGROUND */
+        .price-tag {
+            position: absolute;
+            bottom: 8px;
+            left: 10px;
             color: var(--blue);
-            font-size: 1.2rem;
-            font-weight: 700;
+            font-size: 16px;
+            font-weight: 600;
+            background: none !important;
+            padding: 0 !important;
+        }
+
+        /* FIX: SOLD COUNT TANPA BACKGROUND */
+        .sold-tag {
+            position: absolute;
+            bottom: 8px;
+            right: 10px;
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+            background: none !important;
+            padding: 0 !important;
         }
 
         .section-title {
@@ -192,6 +210,18 @@
             border-left: 6px solid var(--blue);
             padding-left: 12px;
             color: var(--blue-dark);
+        }
+
+        @media (min-width: 768px) {
+            .custom-20 {
+                flex: 0 0 20%;
+                max-width: 20%;
+            }
+        }
+
+        .row {
+            row-gap: 15px !important;
+            --bs-gutter-x: 10px !important;
         }
     </style>
 
@@ -212,7 +242,6 @@
                                         <small>Selamat Datang Di Second Store🤙</small>
                                         <h1>Pilih Barang<br>Yang & Bagus</h1>
                                         <div class="hero-price">Kepoin Barang Kita😊👌</div>
-                                        <!-- Scroll ke produk terbaru -->
                                         <a href="#produkTerbaru" class="btn btn-light mt-3 px-4 py-2 fw-semibold">Shop Now →</a>
                                     </div>
                                     <img src="{{ $ads->gambar ? asset('storage/' . $ads->gambar) : 'https://via.placeholder.com/360' }}"
@@ -252,38 +281,51 @@
     <div class="container mt-4" id="produkTerbaru">
         <h4 class="section-title">Produk Terbaru</h4>
         <div class="row">
+
             @forelse ($products as $product)
-                <div class="col-6 col-md-3 mb-4">
+                @php
+                    $namaPendek = strlen($product->nama_produk) > 18
+                        ? substr($product->nama_produk, 0, 18) . '...'
+                        : $product->nama_produk;
 
+                    $harga = $product->variants->count() > 0
+                        ? $product->variants->min('harga')
+                        : $product->harga;
+
+                    $sold = $product->sold_count ?? 0;
+                @endphp
+
+                <div class="col-6 col-md-2 custom-20 mb-4">
                     <a href="{{ route('produk.show', $product->slug) }}" class="text-decoration-none text-dark">
-                        <div class="product-card h-100" style="cursor:pointer;">
+                        <div class="product-card h-100">
 
-                            <img src="{{ $product->image ? asset('storage/' . $product->image) : 'https://via.placeholder.com/300x220?text=No+Image' }}"
-                                class="image-product">
+                            <img src="{{ $product->image ? asset('storage/' . $product->image) : 'https://via.placeholder.com/300x220?text=No+Image' }}">
+
+                            <div class="price-tag">
+                                Rp {{ number_format($harga, 0, ',', '.') }}
+                            </div>
+
+                            <div class="sold-tag">
+                                Terjual {{ $sold }}
+                            </div>
 
                             <div class="p-3 text-center">
-                                <h6 class="fw-semibold">{{ $product->nama_produk }}</h6>
+                                <h6 class="fw-semibold">{{ $namaPendek }}</h6>
                                 <p class="text-muted small">{{ $product->kategori->nama_kategori ?? 'Tanpa Kategori' }}</p>
-
-                                @if($product->variants->count() > 0)
-                                    <p class="price">Mulai dari Rp
-                                        {{ number_format($product->variants->min('harga'), 0, ',', '.') }}</p>
-                                @else
-                                    <p class="price">Rp {{ number_format($product->harga, 0, ',', '.') }}</p>
-                                @endif
                             </div>
 
                         </div>
                     </a>
-
                 </div>
+
             @empty
                 <p class="text-center">Belum ada produk.</p>
             @endforelse
+
         </div>
     </div>
 
-    {{-- JAVASCRIPT CAROUSEL --}}
+    {{-- JAVASCRIPT --}}
     <script>
         let index = 0;
         const slides = document.querySelectorAll(".hero-slide");

@@ -31,28 +31,28 @@ class AuthController extends Controller
             if (Auth::attempt($credentials)) {
                 $request->session()->regenerate();
 
+                // Jika admin → ke dashboard
                 if (Auth::user()->role === 'admin') {
                     return redirect()->route('admin.dashboard');
                 }
 
-                // 🔹 Jika ada redirect di query, arahkan ke sana
+                // Jika ada "redirect=url"
                 if ($request->has('redirect')) {
                     return redirect()->to($request->query('redirect'));
                 }
 
-                // 🔹 Kalau tidak ada, arahkan ke halaman sebelumnya
+                // Balik ke halaman sebelumnya
                 return redirect()->back();
             }
 
             return back()->withErrors([
                 'email' => 'Email atau password salah.',
             ])->onlyInput('email');
+
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
     }
-
-
 
     /**
      * Tampilkan halaman register
@@ -72,7 +72,7 @@ class AuthController extends Controller
                 'username' => 'required|string|unique:users,username|max:50',
                 'email' => 'required|email|unique:users,email',
                 'no_hp' => 'nullable|string|max:20',
-                'alamat' => 'nullable|string',
+                // 'alamat' => 'nullable|string',
                 'password' => 'required|string|min:3|confirmed',
                 'role' => 'in:admin,customer',
             ]);
@@ -80,19 +80,20 @@ class AuthController extends Controller
             User::create([
                 'email' => $request->email,
                 'no_hp' => $request->no_hp,
-                'alamat' => $request->alamat,
+                // 'alamat' => $request->alamat,
                 'username' => $request->username,
                 'password' => Hash::make($request->password),
                 'role' => $request->role ?? 'customer',
             ]);
 
-            // Setelah register, arahkan ke halaman login dengan pesan sukses
             return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login.');
+
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Terjadi kesalahan saat registrasi: ' . $e->getMessage()]);
+            return back()->withErrors([
+                'error' => 'Terjadi kesalahan saat registrasi: ' . $e->getMessage()
+            ]);
         }
     }
-
 
     /**
      * Logout
@@ -100,9 +101,10 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route(route: 'home');
+        return redirect()->route('home');
     }
 }

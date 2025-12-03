@@ -3,6 +3,10 @@
 @section('content')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
+<!-- CropperJS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
 <div class="row mt-4 mx-4">
     <div class="col-12">
         <div class="card mb-4">
@@ -93,15 +97,10 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
-{{-- 
-                                                        <div class="col-md-6 mb-3">
-                                                            <label class="form-label">Harga Utama</label>
-                                                            <input type="number" name="harga" class="form-control" value="{{ $p->harga }}" required>
-                                                        </div> --}}
 
                                                         <div class="col-md-6 mb-3">
                                                             <label class="form-label">Gambar Produk</label>
-                                                            <input type="file" name="image" class="form-control">
+                                                            <input type="file" name="image" class="form-control image-cropper-input">
                                                             @if ($p->image)
                                                                 <img src="{{ asset('storage/' . $p->image) }}" class="mt-2 rounded" style="width:80px; height:80px; object-fit:cover;">
                                                             @endif
@@ -164,14 +163,9 @@
                             </select>
                         </div>
 
-                        {{-- <div class="col-md-6 mb-3">
-                            <label class="form-label">Harga Utama</label>
-                            <input type="number" name="harga" class="form-control" required>
-                        </div> --}}
-
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Gambar Produk</label>
-                            <input type="file" name="image" class="form-control">
+                            <input type="file" name="image" class="form-control image-cropper-input">
                         </div>
 
                         <div class="col-12 mb-3">
@@ -190,4 +184,86 @@
         </div>
     </div>
 </div>
+
+
+<!-- =============================== -->
+<!-- MODAL CROP GAMBAR -->
+<!-- =============================== -->
+<div class="modal fade" id="modalCropImage" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Crop Gambar Produk</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <img id="previewCrop" style="width:100%; max-height:500px; object-fit:contain;">
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button id="btnCrop" class="btn btn-primary">Gunakan Gambar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- =============================== -->
+<!-- SCRIPT CROP GAMBAR -->
+<!-- =============================== -->
+<script>
+let cropper;
+let targetInput;
+
+// SEMUA INPUT FILE DIAMBIL
+document.querySelectorAll('.image-cropper-input').forEach(input => {
+    input.addEventListener('change', function (e) {
+        targetInput = this;
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            document.getElementById('previewCrop').src = event.target.result;
+            let modal = new bootstrap.Modal(document.getElementById('modalCropImage'));
+            modal.show();
+
+            if (cropper) cropper.destroy();
+
+            cropper = new Cropper(document.getElementById('previewCrop'), {
+                aspectRatio: 1,
+                viewMode: 1,
+                autoCropArea: 1,
+                movable: true,
+                zoomable: true
+            });
+        };
+        reader.readAsDataURL(file);
+    });
+});
+
+document.getElementById('btnCrop').addEventListener('click', function () {
+    if (!cropper) return;
+
+    const canvas = cropper.getCroppedCanvas({
+        width: 600,
+        height: 600
+    });
+
+    canvas.toBlob(blob => {
+        const croppedFile = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+
+        const dt = new DataTransfer();
+        dt.items.add(croppedFile);
+        targetInput.files = dt.files;
+
+        bootstrap.Modal.getInstance(document.getElementById('modalCropImage')).hide();
+    }, "image/jpeg", 0.9);
+});
+</script>
+
 @endsection

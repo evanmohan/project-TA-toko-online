@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            // $table->string('nama', 100);
             $table->string('email', 100)->unique();
             $table->string('no_hp', 20)->nullable();
-            $table->text('alamat')->nullable();
+            // $table->text('alamat')->nullable(); // DIHAPUS
             $table->string('username', 50)->unique();
             $table->string('password', 255);
             $table->enum('role', ['admin', 'customer'])->default('customer');
