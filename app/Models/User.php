@@ -20,6 +20,7 @@ class User extends Authenticatable
         'username',
         'password',
         'role',
+        'image', // Tambahan kolom image
     ];
 
     protected $hidden = [
@@ -47,5 +48,17 @@ class User extends Authenticatable
     public function alamats()
     {
         return $this->hasMany(Alamat::class, 'user_id');
+    }
+
+    // ============================
+    // ACCESSORS / HELPERS
+    // ============================
+
+    /**
+     * Ambil URL image user atau default jika kosong
+     */
+    public function getImageUrlAttribute()
+    {
+        return $this->image ? asset('storage/' . $this->image) : asset('assets/images/profile.jpg');
     }
 }

@@ -15,11 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('email', 100)->unique();
             $table->string('no_hp', 20)->nullable();
-            // $table->text('alamat')->nullable(); // DIHAPUS
             $table->string('username', 50)->unique();
             $table->string('password', 255);
             $table->enum('role', ['admin', 'customer'])->default('customer');
-
+            $table->string('image', 255)->nullable();
             $table->timestamps();
         });
 

@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Second Store</title>
 
-    <!-- BOOTSTRAP -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/0698b5b56f.js" crossorigin="anonymous"></script>
@@ -66,6 +65,24 @@
             margin: 0 5px;
             color: #fff;
         }
+
+        /* PERBAIKAN DROPDOWN AKUN SAYA */
+        .top-navbar .dropdown-menu a {
+            color: #212529 !important;
+            /* Warna teks item dropdown menjadi hitam/dark-grey */
+        }
+
+        .top-navbar .dropdown-menu a:hover {
+            color: #fff !important;
+            /* Warna teks saat hover */
+            background-color: var(--dark-grey);
+            /* Latar belakang saat hover */
+        }
+
+        .top-navbar .dropdown-menu .dropdown-divider {
+            border-top-color: var(--light-grey);
+        }
+        /* END: PERBAIKAN DROPDOWN AKUN SAYA */
 
         /* MAIN NAVBAR */
         .main-navbar {
@@ -157,7 +174,7 @@
         }
 
         /* ===================== */
-        /* MINI CART DROPDOWN BARU */
+        /* MINI CART DROPDOWN */
         /* ===================== */
         .cart-dropdown {
             position: absolute;
@@ -167,13 +184,16 @@
             max-height: 520px;
             background: #fff;
             border-radius: 8px;
+            /* ✅ KEMBALI: Defaultnya disembunyikan */
             display: none;
+
             flex-direction: column;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             z-index: 3000;
             overflow: hidden;
         }
 
+        /* ✅ KEMBALI: Menggunakan class 'active' untuk menampilkan saat hover (dipicu oleh JS) */
         .cart-dropdown.active {
             display: flex;
         }
@@ -318,9 +338,7 @@
 
 <body>
 
-    <!-- NAVBAR -->
     <nav class="navbar-wrapper">
-        <!-- TOP NAVBAR -->
         <div class="top-navbar container">
             <div class="d-flex flex-wrap align-items-center gap-2">
                 <a href="#"><i class="bi bi-info-circle me-1"></i>Tentang Kami</a>
@@ -332,43 +350,37 @@
 
             <div class="dropdown">
                 @auth
-                    <a class="dropdown-toggle text-white d-flex align-items-center" href="#" id="userDropdown" role="button"
-                        data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->username }}
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                       <li><a href="{{ route('profile.edit') }}" class="dropdown-item">Akun Saya</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a href="{{ route('favorit.index') }}" class="dropdown-item">
-                                <i class="bi bi-heart me-2 text-danger"></i>Favorit Anda
-                            </a></li>
-                        <li>
-                            <form action="{{ route('logout') }}" method="POST" class="m-0 p-0">
-                                @csrf
-                                <button class="dropdown-item text-danger d-flex align-items-center gap-2">
-                                    <i class="bi bi-box-arrow-right"></i> Logout
-                                </button>
-                            </form>
-                        </li>
-                    </ul>
+                <a class="dropdown-toggle text-white d-flex align-items-center" href="#" id="userDropdown" role="button"
+                    data-bs-toggle="dropdown">
+                    <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->username ?? 'Pengguna' }}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><a href="{{ route('profile.edit') ?? '#' }}" class="dropdown-item profil-dropdown">Akun Saya</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <form action="{{ route('logout') ?? '#' }}" method="POST" class="m-0 p-0">
+                        @csrf
+                        <button type="submit" class="dropdown-item text-danger d-flex align-items-center gap-2">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </button>
+                    </form>
+                </ul>
                 @else
-                    <a href="{{ route('login') }}">Masuk</a> |
-                    <a href="{{ route('register') }}">Daftar</a>
+                <a href="{{ route('login') ?? '#' }}">Masuk</a> |
+                <a href="{{ route('register') ?? '#' }}">Daftar</a>
                 @endauth
             </div>
         </div>
 
-        <!-- MAIN NAVBAR -->
         <div class="main-navbar container">
-            <a href="{{ route('home') }}" class="logo">
-                <img src="{{ asset('assets/images/logo.png') }}" alt="Logo">
+            <a href="{{ route('home') ?? '#' }}" class="logo">
+                <img src="{{ asset('assets/images/logo.png') ?? '' }}" alt="Logo">
                 <h4>Second Store</h4>
             </a>
 
             <div class="search-bar position-relative">
-                <form action="{{ route('product.search') }}" method="GET">
+                <form action="{{ route('product.search') ?? '#' }}" method="GET">
                     <input type="text" name="search" placeholder="Cari produk..." required>
                     <button type="submit"><i class="bi bi-search"></i></button>
                 </form>
@@ -376,81 +388,78 @@
 
             <div class="icons">
                 @auth
-                    <div class="position-relative">
-                        <a href="{{ route('keranjang.index') }}" class="icon-link" id="cartIcon">
-                            <i class="bi bi-cart3 fs-5"></i>
-                            <span>Keranjang</span>
-                            @if(isset($cartCount) && $cartCount > 0)
-                                <span class="badge">{{ $cartCount }}</span>
-                            @endif
-                        </a>
-
-                        <!-- 💥 MINI DROPDOWN KERANJANG BARU (SUDAH DIUBAH) -->
-                        <div class="cart-dropdown" id="cartDropdown">
-
-                            @if(isset($cartItems) && count($cartItems) > 0)
-
-                                <div class="cart-header">Baru Ditambahkan</div>
-
-                                <div class="cart-items">
-                                    @foreach($cartItems as $item)
-                                        <div class="cart-item">
-                                            <img src="{{ $item->variant->image ? asset('storage/' . $item->variant->image) : asset('assets/images/default-product.png') }}"
-                                                alt="Produk">
-
-                                            <div class="w-100">
-                                                <div class="top-nav-cart">
-                                                    <div class="cart-name">
-                                                        {{ Str::limit($item->product->nama_produk, 40) }}
-                                                    </div>
-                                                    <div class="cart-price">
-                                                        Rp{{ number_format($item->variant->harga, 0, ',', '.') }}
-                                                    </div>
-                                                </div>
-                                                <div class="bottom-nav-cart">
-                                                    <div class="cart-variant">
-                                                        {{ $item->variant->warna }}, {{ $item->size->size }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-
-                                <div class="bottom-modal-cart">
-
-                                    <div class="more-items">
-                                        {{ count($cartItems) }} Produk Lainnya
-                                    </div>
-
-                                    <div class="cart-footer">
-                                        <button onclick="window.location.href='{{ route('keranjang.index') }}'">
-                                            Tampilkan Keranjang Belanja
-                                        </button>
-                                    </div>
-                                </div>
-
-                            @else
-                                <div class="p-3 text-center">Keranjang kosong</div>
-                            @endif
-                        </div>
-                    </div>
-
-                    <a href="{{ route('payment.index') }}" class="icon-link">
-                        <i class="bi bi-clock-history fs-5"></i>
-                        <span>Riwayat</span>
+                <div class="position-relative">
+                    <a href="{{ route('keranjang.index') ?? '#' }}" class="icon-link" id="cartIcon">
+                        <i class="bi bi-cart3 fs-5"></i>
+                        <span>Keranjang</span>
+                        @if(isset($cartCount) && $cartCount > 0)
+                        <span class="badge">{{ $cartCount }}</span>
+                        @endif
                     </a>
+
+                    <div class="cart-dropdown" id="cartDropdown">
+
+                        @if(isset($cartItems) && count($cartItems) > 0)
+
+                        <div class="cart-header">Baru Ditambahkan</div>
+
+                        <div class="cart-items">
+                            @foreach($cartItems as $item)
+                            <div class="cart-item">
+                                <img src="{{ $item->variant->image ? asset('storage/' . $item->variant->image) : asset('assets/images/default-product.png') }}"
+                                    alt="Produk">
+
+                                <div class="w-100">
+                                    <div class="top-nav-cart">
+                                        <div class="cart-name">
+                                            {{ Str::limit($item->product->nama_produk, 40) }}
+                                        </div>
+                                        <div class="cart-price">
+                                            Rp{{ number_format($item->variant->harga, 0, ',', '.') }}
+                                        </div>
+                                    </div>
+                                    <div class="bottom-nav-cart">
+                                        <div class="cart-variant">
+                                            {{ $item->variant->warna }}, {{ $item->size->size }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="bottom-modal-cart">
+
+                            <div class="more-items">
+                                {{ count($cartItems) }} Produk Lainnya
+                            </div>
+
+                            <div class="cart-footer">
+                                <button onclick="window.location.href='{{ route('keranjang.index') ?? '#' }}'">
+                                    Tampilkan Keranjang Belanja
+                                </button>
+                            </div>
+                        </div>
+
+                        @else
+                        <div class="p-3 text-center">Keranjang kosong</div>
+                        @endif
+                    </div>
+                </div>
+
+                <a href="{{ route('payment.index') ?? '#' }}" class="icon-link">
+                    <i class="bi bi-clock-history fs-5"></i>
+                    <span>Riwayat</span>
+                </a>
                 @endauth
             </div>
         </div>
     </nav>
 
-    <!-- CONTENT -->
     <main class="content">
         @yield('content')
     </main>
 
-    <!-- FOOTER -->
     <footer>
         <div class="container">
             <div class="row text-start">
@@ -496,10 +505,19 @@
             const cartIcon = document.getElementById('cartIcon');
             const cartDropdown = document.getElementById('cartDropdown');
 
-            cartIcon.addEventListener('mouseenter', () => cartDropdown.classList.add('active'));
-            cartIcon.addEventListener('mouseleave', () => cartDropdown.classList.remove('active'));
-            cartDropdown.addEventListener('mouseenter', () => cartDropdown.classList.add('active'));
-            cartDropdown.addEventListener('mouseleave', () => cartDropdown.classList.remove('active'));
+            // ✅ KEMBALI: Logika hover untuk membuka/menutup mini cart.
+            if (cartIcon && cartDropdown) {
+                cartIcon.addEventListener('mouseenter', () => cartDropdown.classList.add('active'));
+                cartIcon.addEventListener('mouseleave', () => cartDropdown.classList.remove('active'));
+                cartDropdown.addEventListener('mouseenter', () => cartDropdown.classList.add('active'));
+                cartDropdown.addEventListener('mouseleave', () => cartDropdown.classList.remove('active'));
+            }
+
+            // Inisialisasi dropdown Bootstrap secara manual jika diperlukan (optional)
+            var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
+            var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+                return new bootstrap.Dropdown(dropdownToggleEl)
+            })
         });
     </script>
 

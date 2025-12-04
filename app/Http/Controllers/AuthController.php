@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 
 class AuthController extends Controller
@@ -72,18 +73,25 @@ class AuthController extends Controller
                 'username' => 'required|string|unique:users,username|max:50',
                 'email' => 'required|email|unique:users,email',
                 'no_hp' => 'nullable|string|max:20',
-                // 'alamat' => 'nullable|string',
                 'password' => 'required|string|min:3|confirmed',
                 'role' => 'in:admin,customer',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Validasi file image
             ]);
+
+            // Simpan file image jika ada
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('users', 'public');
+            } else {
+                $imagePath = null;
+            }
 
             User::create([
                 'email' => $request->email,
                 'no_hp' => $request->no_hp,
-                // 'alamat' => $request->alamat,
                 'username' => $request->username,
                 'password' => Hash::make($request->password),
                 'role' => $request->role ?? 'customer',
+                'image' => $imagePath,
             ]);
 
             return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login.');

@@ -15,15 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('produk_id')->constrained('products')->onDelete('cascade');
-
-            // Variant & Size
-            $table->foreignId('variant_id')->nullable()->constrained('product_variants')->nullOnDelete();
-            $table->foreignId('size_id')->nullable()->constrained('product_variant_sizes')->nullOnDelete();
-
             $table->timestamps();
 
             // Unique: user bisa menyimpan favorit berdasarkan variant + size
-            $table->unique(['user_id', 'produk_id', 'variant_id', 'size_id']);
+            $table->unique(['user_id', 'produk_id']);
         });
     }
 

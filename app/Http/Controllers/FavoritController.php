@@ -15,8 +15,6 @@ class FavoritController extends Controller
         $data = [
             'user_id' => auth()->id(),
             'produk_id' => $request->produk_id,
-            'variant_id' => $request->variant_id,
-            'size_id' => $request->size_id,
         ];
 
         Favorit::firstOrCreate($data);
@@ -35,8 +33,6 @@ class FavoritController extends Controller
     {
         Favorit::where('user_id', auth()->id())
             ->where('produk_id', $request->produk_id)
-            ->where('variant_id', $request->variant_id)
-            ->where('size_id', $request->size_id)
             ->delete();
 
         if ($request->ajax()) {
@@ -54,12 +50,12 @@ class FavoritController extends Controller
     /**
      * List semua favorit user
      */
-    public function index()
+    public function index(Request $request)
     {
-        $favorits = Favorit::with(['produk', 'variant', 'size'])
-            ->where('user_id', auth()->id())
-            ->get();
+        $user = auth()->user();
+        $tab = $request->query('tab', 'biodata');
+        $favorits = $user->favorits()->with(['produk'])->get();
 
-        return view('favorit.index', compact('favorits'));
+        return view('user.profile', compact('user', 'tab', 'favorits'));
     }
 }

@@ -18,14 +18,15 @@ class Favorit extends Model
         return $this->belongsTo(User::class);
     }
 
+    // app/Models/Favorit.php
     public function produk()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'produk_id');
     }
 
     public function variant()
     {
-        return $this->belongsTo(ProductVariant::class);
+        return $this->belongsTo(ProductVariant::class, 'variant_id');
     }
 
     public function size()

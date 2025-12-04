@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Alamat;
 use App\Models\Ekspedisi;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -38,8 +39,12 @@ class CheckoutController extends Controller
             'nama_produk'  => $product->nama_produk,
             'image'        => $product->image,
 
+            'variant_id'   => $variant?->id,
+            'size_id'      => $size?->id,
+
             'variant_name' => $variant?->warna,
             'size_name'    => $size?->size,
+
             'variant'      => $variant,
             'size'         => $size,
 
@@ -78,11 +83,12 @@ class CheckoutController extends Controller
                 'nama_produk'  => $cart->product->nama_produk,
                 'image'        => $cart->product->image,
 
-                // INI YANG BIKIN LANGSUNG MUNCUL DI CHECKOUT
+                'variant_id'   => $cart->variant_id,
+                'size_id'      => $cart->size_id,
+
                 'variant_name' => $cart->variant?->warna,
                 'size_name'    => $cart->size?->size,
 
-                // Bonus biar Blade lama kamu juga tetap jalan
                 'variant'      => $cart->variant,
                 'size'         => $cart->size,
 
@@ -112,18 +118,26 @@ class CheckoutController extends Controller
         $ekspedisi = Ekspedisi::all();
         $paymentMethods = PaymentMethod::where('aktif', 1)->get();
 
+        $alamatUtama = Alamat::where('user_id', auth()->id())
+            ->where('is_utama', true)
+            ->first();
+
+        $alamats = Alamat::where('user_id', auth()->id())->get();
+
         return view('checkout.checkout', [
             'items'          => $items,
             'total_barang'   => $items->sum('qty'),
             'total_harga'    => $items->sum(fn($i) => $i['subtotal']),
             'ekspedisi'      => $ekspedisi,
-            'paymentMethods' => $paymentMethods
+            'paymentMethods' => $paymentMethods,
+            'alamatUtama'    => $alamatUtama,
+            'alamats'        => $alamats
         ]);
     }
 
-    // =============================
+    // =================================
     // 4. PROSES CHECKOUT
-    // =============================
+    // =================================
     public function store(Request $request)
     {
         $request->validate([
@@ -141,6 +155,10 @@ class CheckoutController extends Controller
         $exp = Ekspedisi::findOrFail($request->metode_pengiriman);
         $paymentMethod = PaymentMethod::findOrFail($request->metode_pembayaran);
 
+        $alamatUtama = Alamat::where('user_id', auth()->id())
+            ->where('is_utama', true)
+            ->first();
+
         $items = $cart->map(fn($i) => [
             'cart_id'       => $i['cart_id'] ?? null,
             'product_id'    => $i['product_id'],
@@ -157,12 +175,11 @@ class CheckoutController extends Controller
         $ongkir       = $request->ongkir;
         $total_bayar  = $total_harga + $ongkir;
 
-        // Buat Order
         $order = Order::create([
             'user_id'           => auth()->id(),
+            'alamat_id'         => $alamatUtama?->id,  // ✔ FIX
             'nama'              => auth()->user()->username,
             'telepon'           => auth()->user()->no_hp,
-            'alamat'            => auth()->user()->alamat,
             'total_barang'      => $total_barang,
             'total_harga'       => $total_harga,
             'ongkir'            => $ongkir,
@@ -172,7 +189,6 @@ class CheckoutController extends Controller
             'kode_order'        => $this->generateKodeOrder(),
         ]);
 
-        // Buat OrderItem
         foreach ($items as $item) {
             OrderItem::create([
                 'order_id'   => $order->id,
@@ -185,7 +201,6 @@ class CheckoutController extends Controller
             ]);
         }
 
-        // Hapus item dari keranjang jika ada cart_id
         $cartIds = $items->pluck('cart_id')->filter()->toArray();
         if (!empty($cartIds)) {
             Keranjang::where('user_id', auth()->id())
@@ -195,7 +210,6 @@ class CheckoutController extends Controller
 
         session()->forget('checkout_items');
 
-        // Redirect sesuai metode pembayaran
         if ($paymentMethod->tipe === 'BANK') {
             return redirect()->route('payment.bayar', $order->id);
         }

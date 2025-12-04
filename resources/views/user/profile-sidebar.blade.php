@@ -1,6 +1,6 @@
 <div class="profile-sidebar p-3 bg-white rounded shadow-sm">
     <div class="text-center mb-3">
-        <img src="{{ asset('img/user.png') }}" class="rounded-circle" width="90">
+        <img src="{{ asset('assets/images/profile.jpg') }}" class="rounded-circle" width="90">
         <h5 class="mt-2">{{ Auth::user()->username }}</h5>
         <button class="btn btn-sm btn-success mt-2">Tambah Nomor HP</button>
     </div>

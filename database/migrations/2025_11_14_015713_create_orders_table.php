@@ -11,9 +11,9 @@ class CreateOrdersTable extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('alamat_id')->nullable();
             $table->string('nama');
             $table->string('telepon');
-            $table->text('alamat');
             $table->integer('total_barang');
             $table->integer('total_harga');
             $table->integer('ongkir')->default(0);
@@ -23,6 +23,12 @@ class CreateOrdersTable extends Migration
             $table->string('kode_order')->unique();
             $table->enum('status', ['CANCELLED','NOT PAID', 'PAID'])->default('NOT PAID');
             $table->timestamps();
+
+            // Foreign key ke tabel users
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+
+            // Foreign key ke tabel alamats
+            $table->foreign('alamat_id')->references('id')->on('alamats')->onDelete('set null');
         });
     }
 

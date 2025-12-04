@@ -13,5 +13,10 @@ class DatabaseSeeder extends Seeder
     {
         // panggil AdminSeeder
         $this->call(AdminSeeder::class);
+        $this->call(KategoriSeeder::class);
+        $this->call(ProductSeeder::class);
+        $this->call(IklanSeeder::class);
+        $this->call(ProductVariantSeeder::class);
+        $this->call(ProductVariantSizeSeeder::class);
     }
 }

@@ -366,7 +366,7 @@
         }
 
         // ==============================
-        // TOMBOL FAVORIT (BERFUNGSI 100%)
+        // TOMBOL FAVORIT
         // ==============================
         favoriteBtn.addEventListener('click', async function () {
             @if(!Auth::check())
@@ -414,27 +414,26 @@
         });
 
         // =============================
-        // VARIANT LOGIC + UNSELECT + HOVER
+        // VARIANT LOGIC
         // =============================
         variantOptions.forEach(el => {
             el.addEventListener('click', function () {
-                // Unselect jika sudah aktif
+                if (this.classList.contains('disabled')) return;
+
                 if (this.classList.contains('active')) {
                     this.classList.remove('active');
 
-                    // Kembalikan harga & gambar default
-                    @if($produk->variants->count() > 0)
-                        dynamicPrice.innerHTML = `Rp {{ number_format($produk->variants->min('harga'), 0, ',', '.') }}
-                                @if($produk->variants->min('harga') != $produk->variants->max('harga'))
-                                    - Rp {{ number_format($produk->variants->max('harga'), 0, ',', '.') }}
-                                @endif`;
+                    dynamicPrice.innerHTML = `@if($produk->variants->count() > 0)
+                        Rp {{ number_format($produk->variants->min('harga'), 0, ',', '.') }}
+                        @if($produk->variants->min('harga') != $produk->variants->max('harga'))
+                            - Rp {{ number_format($produk->variants->max('harga'), 0, ',', '.') }}
+                        @endif
                     @else
-                        dynamicPrice.innerHTML = `Rp {{ number_format($produk->harga, 0, ',', '.') }}`;
-                    @endif
+                        Rp {{ number_format($produk->harga, 0, ',', '.') }}
+                    @endif`;
 
                     mainImage.src = "{{ $produk->image ? asset('storage/' . $produk->image) : asset('argon/assets/img/default-product.png') }}";
 
-                    // Reset semua
                     variantInput.value = buyVariantInput.value = '';
                     sizeInput.value = buySizeInput.value = '';
                     sizeOptionsContainer.innerHTML = '';
@@ -447,7 +446,6 @@
                     return;
                 }
 
-                // Pilih variant baru
                 variantOptions.forEach(o => o.classList.remove('active'));
                 this.classList.add('active');
 
@@ -503,7 +501,6 @@
                 updateButtonState();
             });
 
-            // Hover preview
             el.addEventListener('mouseenter', () => mainImage.src = el.dataset.image);
             el.addEventListener('mouseleave', () => {
                 const active = document.querySelector('.variant-option.active');
@@ -525,8 +522,34 @@
             }
         };
 
+        // ===========================================
+        // AUTO DISABLE PRODUK HABIS (TAMBAHAN BARU)
+        // ===========================================
+        const totalStok = {{ $produk->variants->count() == 0
+            ? ($produk->stok ?? 0)
+            : $produk->variants->flatMap->sizes->sum('stok') }};
+
+        if (totalStok <= 0) {
+            addToCartBtn.disabled = true;
+            buyNowBtn.disabled = true;
+
+            addToCartBtn.classList.remove('enabled');
+            buyNowBtn.classList.remove('enabled');
+
+            stokInfo.textContent = "Stok Habis";
+
+            document.querySelectorAll('.variant-option').forEach(v => {
+                v.classList.add('disabled');
+                v.style.opacity = "0.5";
+                v.style.cursor = "not-allowed";
+                v.onclick = null;
+            });
+        }
+
         generateThumbnails();
         updateButtonState();
     </script>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11/font/bootstrap-icons.css">
 @endsection
+

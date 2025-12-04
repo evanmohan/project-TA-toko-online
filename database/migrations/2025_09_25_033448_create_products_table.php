@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-
             $table->string('kode_produk', 20)->unique();
             $table->string('nama_produk', 100);
             $table->string('slug', 120)->unique(); // tambahkan slug unik

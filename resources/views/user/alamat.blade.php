@@ -6,7 +6,7 @@
 @if(session('success'))
     <div class="alert alert-success p-3 rounded mb-3">
         {{ session('success') }}
-    </div>x
+    </div>
 @endif
 
 {{-- Kalau belum ada alamat --}}
@@ -19,8 +19,21 @@
         </button>
     </div>
 @else
+
+    {{-- TOMBOL TAMBAH ALAMAT BARU --}}
+    <div class="d-flex justify-content-end mb-3">
+        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalTambahAlamat">
+            + Tambah Alamat Baru
+        </button>
+    </div>
+
+    @php
+        // --- SORTING: Alamat utama muncul paling atas ---
+        $alamats = auth()->user()->alamats->sortByDesc('is_utama');
+    @endphp
+
     {{-- Loop semua alamat user --}}
-    @foreach(auth()->user()->alamats as $alamat)
+    @foreach($alamats as $alamat)
         <div class="p-4 bg-light rounded mb-3 border {{ $alamat->is_utama ? 'border-primary border-3' : '' }} position-relative">
 
             @if($alamat->is_utama)
@@ -59,7 +72,6 @@
                 @if(!$alamat->is_utama)
                     <form action="{{ route('alamat.setPrimary', $alamat->id) }}" method="POST" class="d-inline">
                         @csrf
-                        @method('PUT')
                         <button type="submit" class="btn btn-sm btn-outline-success">
                             Jadikan Utama
                         </button>
@@ -70,7 +82,7 @@
     @endforeach
 @endif
 
-{{-- Modal Tambah/Edit Alamat (sama untuk dua-duanya) --}}
+{{-- Modal Tambah/Edit Alamat --}}
 <div class="modal fade" id="modalTambahAlamat" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <form id="formAlamat" action="{{ route('alamat.store') }}" method="POST">
